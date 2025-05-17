@@ -88,10 +88,13 @@ const handleAddToCart = (e) => {
     <ElDialog v-model="showAddToCartModal" title="Añadir al carrito" width="70%" @close="showAddToCartModal = false">
         <div class="flex flex-col gap-4 p-2">
             <div class="flex items-center gap-4">
-                <img :src="product.image" alt="" class="w-20 h-20 object-cover rounded shadow" />
+                <img :src="product.image" alt="" class="w-40 h-40 object-cover rounded shadow" />
                 <div>
                     <h4 class="text-lg font-bold text-stone-800">{{ product.name }}</h4>
                     <p class="text-stone-600 text-sm">{{ product.description }}</p>
+                    <p class="text-sm text-stone-600">Proveedor:
+                        <span class=" font-medium">{{ product.provider }}</span>
+                    </p>
                     <p class="text-stone-700 font-semibold mt-1">$ {{ product.price.toFixed(2) }}</p>
                 </div>
             </div>
