@@ -5,12 +5,12 @@ export const useShoppingCartStore = defineStore("shoppingCart", () => {
   const products = ref([]);
   const addProduct = (product, quantity) => {
     products.value.push({
-      product: JSON.parse(JSON.stringify(product)),
+      product,
       quantity,
     });
   };
   const removeProduct = (product) => {
-    products.value = products.value.filter((p) => p.id !== product.id);
+    products.value.splice(products.value.indexOf(product), 1);
   };
   const clearCart = () => {
     products.value = [];
