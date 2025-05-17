@@ -33,34 +33,34 @@ let productsExample = ref([
         price: 10.99,
         stock: 5,
         description: 'Descripción del producto 1.',
-        image: 'https://images.freeimages.com/slides/4f53a54c6e114a76a99b9df9573a8259.webp',
+        image: '/src/assets/images/product1.png',
         provider: "Parmalat"
     },
     {
         id: 2,
         name: 'Producto 2',
         price: 20.99,
-        stock: 0,
+        stock: 10,
         description: 'Descripción del producto 2.',
-        image: 'https://images.freeimages.com/slides/4f53a54c6e114a76a99b9df9573a8259.webp',
+        image: '/src/assets/images/product2.png',
         provider: "Parmalat"
     },
     {
         id: 3,
         name: 'Producto 3',
-        price: 15.99,
-        stock: 10,
+        price: 30.99,
+        stock: 0,
         description: 'Descripción del producto 3.',
-        image: 'https://images.freeimages.com/slides/4f53a54c6e114a76a99b9df9573a8259.webp',
+        image: '/src/assets/images/product3.png',
         provider: "Parmalat"
     },
     {
         id: 4,
         name: 'Producto 4',
-        price: 5.99,
-        stock: 0,
+        price: 40.99,
+        stock: 2,
         description: 'Descripción del producto 4.',
-        image: 'https://images.freeimages.com/slides/4f53a54c6e114a76a99b9df9573a8259.webp',
+        image: '/src/assets/images/product4.png',
         provider: "Parmalat"
     }, {
         id: 1,
@@ -68,34 +68,34 @@ let productsExample = ref([
         price: 10.99,
         stock: 5,
         description: 'Descripción del producto 1.',
-        image: 'https://images.freeimages.com/slides/4f53a54c6e114a76a99b9df9573a8259.webp',
+        image: '/src/assets/images/product1.png',
         provider: "Parmalat"
     },
     {
         id: 2,
         name: 'Producto 2',
         price: 20.99,
-        stock: 0,
+        stock: 10,
         description: 'Descripción del producto 2.',
-        image: 'https://images.freeimages.com/slides/4f53a54c6e114a76a99b9df9573a8259.webp',
+        image: '/src/assets/images/product2.png',
         provider: "Parmalat"
     },
     {
         id: 3,
         name: 'Producto 3',
-        price: 15.99,
-        stock: 10,
+        price: 30.99,
+        stock: 0,
         description: 'Descripción del producto 3.',
-        image: 'https://images.freeimages.com/slides/4f53a54c6e114a76a99b9df9573a8259.webp',
+        image: '/src/assets/images/product3.png',
         provider: "Parmalat"
     },
     {
         id: 4,
         name: 'Producto 4',
-        price: 5.99,
-        stock: 0,
+        price: 40.99,
+        stock: 2,
         description: 'Descripción del producto 4.',
-        image: 'https://images.freeimages.com/slides/4f53a54c6e114a76a99b9df9573a8259.webp',
+        image: '/src/assets/images/product4.png',
         provider: "Parmalat"
     }, {
         id: 1,
@@ -103,34 +103,34 @@ let productsExample = ref([
         price: 10.99,
         stock: 5,
         description: 'Descripción del producto 1.',
-        image: 'https://images.freeimages.com/slides/4f53a54c6e114a76a99b9df9573a8259.webp',
+        image: '/src/assets/images/product1.png',
         provider: "Parmalat"
     },
     {
         id: 2,
         name: 'Producto 2',
         price: 20.99,
-        stock: 0,
+        stock: 10,
         description: 'Descripción del producto 2.',
-        image: 'https://images.freeimages.com/slides/4f53a54c6e114a76a99b9df9573a8259.webp',
+        image: '/src/assets/images/product2.png',
         provider: "Parmalat"
     },
     {
         id: 3,
         name: 'Producto 3',
-        price: 15.99,
-        stock: 10,
+        price: 30.99,
+        stock: 0,
         description: 'Descripción del producto 3.',
-        image: 'https://images.freeimages.com/slides/4f53a54c6e114a76a99b9df9573a8259.webp',
+        image: '/src/assets/images/product3.png',
         provider: "Parmalat"
     },
     {
         id: 4,
         name: 'Producto 4',
-        price: 5.99,
-        stock: 0,
+        price: 40.99,
+        stock: 2,
         description: 'Descripción del producto 4.',
-        image: 'https://images.freeimages.com/slides/4f53a54c6e114a76a99b9df9573a8259.webp',
+        image: '/src/assets/images/product4.png',
         provider: "Parmalat"
     }, {
         id: 1,
@@ -138,34 +138,34 @@ let productsExample = ref([
         price: 10.99,
         stock: 5,
         description: 'Descripción del producto 1.',
-        image: 'https://images.freeimages.com/slides/4f53a54c6e114a76a99b9df9573a8259.webp',
+        image: '/src/assets/images/product1.png',
         provider: "Parmalat"
     },
     {
         id: 2,
         name: 'Producto 2',
         price: 20.99,
-        stock: 0,
+        stock: 10,
         description: 'Descripción del producto 2.',
-        image: 'https://images.freeimages.com/slides/4f53a54c6e114a76a99b9df9573a8259.webp',
+        image: '/src/assets/images/product2.png',
         provider: "Parmalat"
     },
     {
         id: 3,
         name: 'Producto 3',
-        price: 15.99,
-        stock: 10,
+        price: 30.99,
+        stock: 0,
         description: 'Descripción del producto 3.',
-        image: 'https://images.freeimages.com/slides/4f53a54c6e114a76a99b9df9573a8259.webp',
+        image: '/src/assets/images/product3.png',
         provider: "Parmalat"
     },
     {
         id: 4,
         name: 'Producto 4',
-        price: 5.99,
-        stock: 0,
+        price: 40.99,
+        stock: 2,
         description: 'Descripción del producto 4.',
-        image: 'https://images.freeimages.com/slides/4f53a54c6e114a76a99b9df9573a8259.webp',
+        image: '/src/assets/images/product4.png',
         provider: "Parmalat"
     }
 ])
