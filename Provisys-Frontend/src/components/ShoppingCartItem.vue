@@ -13,7 +13,7 @@ const props = defineProps({
 })
 
 const handleRemoveItem = () => {
-    shoppingCartStore.removeProduct(props.item)
+    shoppingCartStore.removeProduct(props.item.product)
 }
 
 /*

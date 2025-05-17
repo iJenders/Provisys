@@ -10,7 +10,11 @@ export const useShoppingCartStore = defineStore("shoppingCart", () => {
     });
   };
   const removeProduct = (product) => {
-    products.value.splice(products.value.indexOf(product), 1);
+    // Find the index of the product in the cart
+    let index = products.value.findIndex((p) => p.product.id === product.id);
+
+    // Remove the product from the cart
+    products.value.splice(index, 1);
   };
   const clearCart = () => {
     products.value = [];
