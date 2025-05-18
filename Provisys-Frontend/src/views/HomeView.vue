@@ -46,7 +46,7 @@ let productsExample = [
     <div class="flex flex-col items-center justify-center w-full h-[700px] relative">
         <div class="BannerImage flex items-center justify-center w-full h-full"></div>
         <div
-            class="flex flex-col gap-4 absolute bg-green-100 rounded-3xl p-10 w-[80vw] md:w-[640px] shadow-lg md:left-[calc(75%-320px)]">
+            class="flex flex-col gap-4 absolute bg-green-100 rounded-3xl p-10 max-w-[80vw] md:w-[640px] shadow-lg md:right-10">
             <p class="font-semibold text-stone-800">Tu aliado número uno en distribución de productos de consumo masivo
             </p>
             <h1 class="text-4xl font-bold text-green-700">Todo lo que Necesitas en un Solo Lugar</h1>
