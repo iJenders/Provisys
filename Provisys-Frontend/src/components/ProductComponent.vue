@@ -103,6 +103,12 @@ const handleAddToCart = (e) => {
                 <ElInputNumber id="quantity" :min="1" :max="product.stock" v-model="quantity" class="w-24" />
                 <span class="text-xs text-stone-500">(Stock: {{ product.stock }})</span>
             </div>
+            <div class="flex items-center justify-end gap-2">
+                <label for="quantity" class="text-stone-700 font-medium">Subtotal:</label>
+                <span class="text-lg text-green-600 font-medium">
+                    $ {{ (product.price * quantity).toFixed(2) }}
+                </span>
+            </div>
             <div class="flex justify-end gap-2 mt-4">
                 <ThemeButton class="bg-stone-200 text-stone-700 hover:bg-stone-300" @click="showAddToCartModal = false">
                     Cancelar

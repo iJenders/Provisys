@@ -46,7 +46,7 @@ let productsExample = [
     <div class="flex flex-col items-center justify-center w-full h-[700px] relative">
         <div class="BannerImage flex items-center justify-center w-full h-full"></div>
         <div
-            class="flex flex-col gap-4 absolute bg-green-100 rounded-3xl p-10 w-[640px] shadow-lg left-[calc(75%-320px)]">
+            class="flex flex-col gap-4 absolute bg-green-100 rounded-3xl p-10 w-[80vw] md:w-[640px] shadow-lg md:left-[calc(75%-320px)]">
             <p class="font-semibold text-stone-800">Tu aliado número uno en distribución de productos de consumo masivo
             </p>
             <h1 class="text-4xl font-bold text-green-700">Todo lo que Necesitas en un Solo Lugar</h1>
@@ -56,7 +56,7 @@ let productsExample = [
                 caracterizan en la región.
             </p>
             <ThemeButton
-                class="mt-5 px-10 py-4 w-max border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
+                class="mt-5 p-4 md:px-10 md:w-max border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
                 routerLink="/shop">
                 Explora nuestro catálogo de productos
             </ThemeButton>

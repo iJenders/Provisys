@@ -190,15 +190,16 @@ const orderOptionsAsc = ref(true);
     <!-- Main Banner -->
     <section class="flex flex-col items-center justify-center w-full h-[350px] relative">
         <div class="BannerImage flex flex-col items-center justify-center w-full h-full"></div>
-        <div class="flex flex-col items-center justify-center w-full h-full absolute">
-            <h1 class="text-5xl font-bold text-stone-700">Tienda Online</h1>
-            <p class="text-lg font-bold text-stone-500">Encuentra los mejores productos para tu negocio</p>
+        <div class="flex flex-col items-center justify-center w-full h-full absolute px-4">
+            <h1 class="text-5xl font-bold text-stone-700 text-center">Tienda Online</h1>
+            <p class="text-lg font-bold text-stone-500 text-center">Encuentra los mejores productos para tu negocio</p>
         </div>
     </section>
 
     <!-- Products Filter Panel -->
-    <div class="flex items-center justify-between w-full bg-green-100/50 p-6 md:px-20">
-        <div class="flex align-center gap-4 h-[32px]">
+    <div
+        class="flex flex-col gap-6 md:flex-row md:gap-0 items-center justify-between w-full bg-green-100/50 p-6 md:px-20">
+        <div class="flex align-center gap-4 min-h-[32px]">
             <a href="javascript:"
                 class="flex items-center justify-center gap-2 text-lg font-bold text-stone-700 hover:text-green-600 transition linear duration-160">
                 <SlidersHorizontal size="24" /> Filtrar
@@ -208,11 +209,12 @@ const orderOptionsAsc = ref(true);
                 Mostrando {{ getCurrentShowingProducts }} de {{ paginationInfo.totalProducts }} productos
             </p>
         </div>
-        <div class="flex align-center gap-4 h-[32px]">
+        <Line class="bg-stone-300 md:hidden" orientation="horizontal" />
+        <div class="flex align-center gap-4 min-h-[32px]">
             <p class=" text-lg font-bold text-stone-700">
                 Ordenar por:
             </p>
-            <div class="w-[160px]">
+            <div class="w-[160px] flex items-center">
                 <ElSelect v-model="orderOptionSelected" class="text-stone-700" placeholder="Seleccionar">
                     <ElOption v-for="option in orderOptions" :label="option.label" :value="option.value" />
                 </ElSelect>
@@ -237,7 +239,7 @@ const orderOptionsAsc = ref(true);
         </div>
     </div>
 
-    <!-- Products List -->
+    <!-- Products Wrapper -->
     <section class="flex flex-col items-center justify-center w-full p-6 md:px-20">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <ProductComponent v-for="product in productsExample" :key="product.id" :product="product" />

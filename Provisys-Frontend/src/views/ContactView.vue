@@ -1,3 +1,115 @@
+<script setup>
+import { ref, reactive, onMounted } from 'vue';
+import {
+    MapPin,
+    Phone,
+    Mail,
+    Clock,
+    Facebook,
+    Instagram,
+    Twitter,
+    Linkedin,
+    CheckCircle,
+    Loader
+} from 'lucide-vue-next';
+import L from 'leaflet';
+
+const form = reactive({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+});
+
+const errors = reactive({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+});
+
+const isSubmitting = ref(false);
+const formSubmitted = ref(false);
+
+const validateForm = () => {
+    let isValid = true;
+
+    errors.name = '';
+    errors.email = '';
+    errors.subject = '';
+    errors.message = '';
+
+    if (!form.name.trim()) {
+        errors.name = 'El nombre es requerido';
+        isValid = false;
+    }
+
+    if (!form.email.trim()) {
+        errors.email = 'El correo electrónico es requerido';
+        isValid = false;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+        errors.email = 'Por favor ingresa un correo electrónico válido';
+        isValid = false;
+    }
+
+    if (!form.subject.trim()) {
+        errors.subject = 'El asunto es requerido';
+        isValid = false;
+    }
+
+    if (!form.message.trim()) {
+        errors.message = 'El mensaje es requerido';
+        isValid = false;
+    } else if (form.message.trim().length < 10) {
+        errors.message = 'El mensaje debe tener al menos 10 caracteres';
+        isValid = false;
+    }
+
+    return isValid;
+};
+
+const submitForm = async () => {
+    if (!validateForm()) {
+        return;
+    }
+
+    isSubmitting.value = true;
+
+    try {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        form.name = '';
+        form.email = '';
+        form.subject = '';
+        form.message = '';
+
+        formSubmitted.value = true;
+
+        setTimeout(() => {
+            formSubmitted.value = false;
+        }, 5000);
+    } catch (error) {
+        console.error('Error submitting form:', error);
+    } finally {
+        isSubmitting.value = false;
+    }
+};
+
+onMounted(() => {
+    let mapOptions = {
+        center: [10.022526, -69.243098],
+        zoom: 18
+    }
+    let map = new L.map('map', mapOptions);
+
+    let layer = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+    map.addLayer(layer);
+
+    let marker = new L.Marker([10.02235, -69.2431]);
+    marker.addTo(map);
+})
+</script>
+
 <template>
     <div class="contact-container bg-white min-h-screen">
         <div class="max-w-5xl mx-auto px-4 py-12 md:py-16">
@@ -152,115 +264,3 @@
         </div>
     </div>
 </template>
-
-<script setup>
-import { ref, reactive, onMounted } from 'vue';
-import {
-    MapPin,
-    Phone,
-    Mail,
-    Clock,
-    Facebook,
-    Instagram,
-    Twitter,
-    Linkedin,
-    CheckCircle,
-    Loader
-} from 'lucide-vue-next';
-import L from 'leaflet';
-
-const form = reactive({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
-});
-
-const errors = reactive({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
-});
-
-const isSubmitting = ref(false);
-const formSubmitted = ref(false);
-
-const validateForm = () => {
-    let isValid = true;
-
-    errors.name = '';
-    errors.email = '';
-    errors.subject = '';
-    errors.message = '';
-
-    if (!form.name.trim()) {
-        errors.name = 'El nombre es requerido';
-        isValid = false;
-    }
-
-    if (!form.email.trim()) {
-        errors.email = 'El correo electrónico es requerido';
-        isValid = false;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-        errors.email = 'Por favor ingresa un correo electrónico válido';
-        isValid = false;
-    }
-
-    if (!form.subject.trim()) {
-        errors.subject = 'El asunto es requerido';
-        isValid = false;
-    }
-
-    if (!form.message.trim()) {
-        errors.message = 'El mensaje es requerido';
-        isValid = false;
-    } else if (form.message.trim().length < 10) {
-        errors.message = 'El mensaje debe tener al menos 10 caracteres';
-        isValid = false;
-    }
-
-    return isValid;
-};
-
-const submitForm = async () => {
-    if (!validateForm()) {
-        return;
-    }
-
-    isSubmitting.value = true;
-
-    try {
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        form.name = '';
-        form.email = '';
-        form.subject = '';
-        form.message = '';
-
-        formSubmitted.value = true;
-
-        setTimeout(() => {
-            formSubmitted.value = false;
-        }, 5000);
-    } catch (error) {
-        console.error('Error submitting form:', error);
-    } finally {
-        isSubmitting.value = false;
-    }
-};
-
-onMounted(() => {
-    let mapOptions = {
-        center: [10.022526, -69.243098],
-        zoom: 18
-    }
-    let map = new L.map('map', mapOptions);
-
-    let layer = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
-    map.addLayer(layer);
-
-    let marker = new L.Marker([10.02235, -69.2431]);
-    marker.addTo(map);
-})
-</script>
