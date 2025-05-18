@@ -50,7 +50,7 @@ const router = createRouter({
       component: () => import("../views/SystemView.vue"),
       children: [
         {
-          path: "summary",
+          path: "",
           name: "system-summary",
           component: () => import("../views/System/SummaryView.vue"),
         },
@@ -73,6 +73,11 @@ const router = createRouter({
           path: "customers",
           name: "system-customers",
           component: () => import("../views/System/CustomersView.vue"),
+        },
+        {
+          path: "employees",
+          name: "system-employees",
+          component: () => import("../views/System/EmployeesView.vue"),
         },
         {
           path: "reports",

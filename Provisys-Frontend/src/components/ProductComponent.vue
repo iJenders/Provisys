@@ -21,10 +21,12 @@ const showAddToCartModal = ref(false);
 const quantity = ref(1);
 
 const handleAddToCart = (e) => {
-    e.preventDefault();
-    shoppingCartStore.addProduct(props.product, quantity.value);
-    emit('addToCart', props.product, quantity.value);
-    showAddToCartModal.value = false;
+    if (quantity.value > 0 && quantity.value <= props.product.stock && quantity.value !== null) {
+        e.preventDefault();
+        shoppingCartStore.addProduct(props.product, quantity.value);
+        emit('addToCart', props.product, quantity.value);
+        showAddToCartModal.value = false;
+    }
 }
 
 /*
@@ -115,7 +117,7 @@ const handleAddToCart = (e) => {
                     Cancelar
                 </ThemeButton>
                 <ThemeButton class="bg-green-600 text-white hover:bg-green-700"
-                    :disabled="quantity < 1 || quantity > product.stock" @click="handleAddToCart">
+                    :enabled="quantity > 0 && quantity <= product.stock && quantity !== null" @click="handleAddToCart">
                     <ShoppingCart :size="20" class="mr-1" />
                     Añadir
                 </ThemeButton>
