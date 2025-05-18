@@ -194,7 +194,7 @@ onMounted(() => {
     <!-- User Menu Tooltip -->
     <Transition>
         <aside v-show="showUserMenu"
-            class="fixed right-0 top-[76px] shadow-[0_0_20px_rgba(0,0,0,0.25)] bg-white w-full md:-[420px] p-8 rounded-2xl z-999">
+            class="fixed right-0 top-[76px] shadow-[0_0_20px_rgba(0,0,0,0.25)] bg-white w-full md:w-[420px] p-8 rounded-2xl z-999">
             <div class="flex flex-col gap-6">
                 <div class="flex justify-between items-center">
                     <h2 class="text-2xl font-bold text-black text-shadow-lg text-shadow-stone-300">Opciones de Usuario
