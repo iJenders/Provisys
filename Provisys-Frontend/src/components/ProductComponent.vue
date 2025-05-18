@@ -45,7 +45,8 @@ const handleAddToCart = (e) => {
 
 <template>
     <div class="relative shadow-lg w-[285px]" @mouseenter="showButtons = true" @mouseleave="showButtons = false">
-        <img :src="product.image" alt="" class="w-full h-auto">
+        <img :src="product.image" alt="" class="w-full h-auto"
+            :class="product.stock <= 0 ? 'brightness-50 saturate-50 opacity-80' : ''">
         <div class="flex flex-col p-4 gap-2">
             <h3 class="text-xl font-bold text-stone-800">{{ product.name }}</h3>
             <div>
