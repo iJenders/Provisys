@@ -15,11 +15,6 @@ const router = createRouter({
       component: () => import("../views/ShopView.vue"),
     },
     {
-      path: "/about",
-      name: "about",
-      component: () => import("../views/AboutView.vue"),
-    },
-    {
       path: "/contact",
       name: "contact",
       component: () => import("../views/ContactView.vue"),
@@ -50,7 +45,7 @@ const router = createRouter({
       component: () => import("../views/SystemView.vue"),
       children: [
         {
-          path: "",
+          path: "summary",
           name: "system-summary",
           component: () => import("../views/System/SummaryView.vue"),
         },
@@ -87,6 +82,9 @@ const router = createRouter({
       ],
     },
   ],
+  scrollBehavior: (to, from, savedPosition) => {
+    return { top: 0 };
+  },
 });
 
 export default router;

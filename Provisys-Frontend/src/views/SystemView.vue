@@ -1,11 +1,15 @@
 <script setup>
 import { LayoutDashboard, Truck, Apple, Package, User, ShieldUser, ScrollText } from 'lucide-vue-next';
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const systemLinks = [
     {
         name: 'Resumen',
         icon: LayoutDashboard,
-        link: '/system'
+        link: '/system/summary'
     },
     {
         name: 'Pedidos',
@@ -38,6 +42,12 @@ const systemLinks = [
         link: '/system/reports'
     }
 ]
+
+onMounted(() => {
+    if (router.currentRoute.value.path === '/system') {
+        router.push('/system/summary')
+    }
+})
 
 </script>
 

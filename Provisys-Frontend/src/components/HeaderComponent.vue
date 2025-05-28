@@ -20,10 +20,6 @@ const headerLinks = [
         link: '/shop'
     },
     {
-        name: 'Nosotros',
-        link: '/about'
-    },
-    {
         name: 'Contacto',
         link: '/contact'
     }
