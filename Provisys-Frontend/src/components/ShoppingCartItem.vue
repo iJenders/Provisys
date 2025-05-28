@@ -1,5 +1,4 @@
 <script setup>
-import { defineProps } from 'vue'
 import { X } from 'lucide-vue-next'
 import { useShoppingCartStore } from '@/stores/shoppingCart.js'
 

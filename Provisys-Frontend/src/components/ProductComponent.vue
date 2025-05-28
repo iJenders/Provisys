@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps, defineEmits } from 'vue'
+import { ref } from 'vue'
 import { Package, ShoppingCart } from 'lucide-vue-next'
 import { ElDialog, ElInputNumber } from 'element-plus'
 import { useShoppingCartStore } from '@/stores/shoppingCart.js'
