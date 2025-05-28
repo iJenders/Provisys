@@ -1,6 +1,8 @@
 <script setup>
 import ThemeButton from '@/components/ThemeButton.vue'
 import ProductComponent from '@/components/ProductComponent.vue'
+import { useMouse } from '@/composables/mouse.js'
+import { onMounted, ref } from 'vue'
 
 let productsExample = [
     {
@@ -40,11 +42,30 @@ let productsExample = [
         provider: "Parmalat"
     },
 ]
+
+const ratio = 0.05; // Cuanto mayor sea este valor, menos suave será la transición
+const withTransitionMouseX = ref(null);
+const withTransitionMouseY = ref(null);
+
+const { getMouseRelativeX, getMouseRelativeY } = useMouse()
+
+onMounted(() => {
+    withTransitionMouseX.value = getMouseRelativeX.value;
+    withTransitionMouseY.value = getMouseRelativeY.value;
+
+    let frame = () => {
+        requestAnimationFrame(frame);
+        withTransitionMouseX.value = (getMouseRelativeX.value - withTransitionMouseX.value) * ratio + withTransitionMouseX.value;
+        withTransitionMouseY.value = (getMouseRelativeY.value - withTransitionMouseY.value) * ratio + withTransitionMouseY.value;
+    }
+    frame();
+})
+
 </script>
 <template>
     <!-- Main Banner -->
-    <div class="flex flex-col items-center justify-center w-full h-[700px] relative">
-        <div class="BannerImage flex items-center justify-center w-full h-full"></div>
+    <div class="flex flex-col items-center justify-center w-full h-[700px] relative overflow-hidden">
+        <div class="BannerImage flex items-center justify-center w-full h-full relative"></div>
         <div
             class="flex flex-col gap-4 absolute bg-green-100 rounded-3xl p-10 max-w-[80vw] md:w-[640px] shadow-lg md:right-10">
             <p class="font-semibold text-stone-800">Tu aliado número uno en distribución de productos de consumo masivo
@@ -78,8 +99,11 @@ let productsExample = [
 
 <style scoped>
 .BannerImage {
+    width: calc(100% + 100px);
+    height: calc(100% + 100px);
     background-image: url('@/assets/images/banner.jpg');
     background-size: cover;
-    background-position: center;
+    top: calc(-50px + v-bind(withTransitionMouseY) * 50px);
+    left: calc(-50px + v-bind(withTransitionMouseX) * 100px);
 }
 </style>
