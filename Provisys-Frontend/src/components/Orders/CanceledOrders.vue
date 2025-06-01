@@ -37,13 +37,13 @@ const {
                                 <p class="w-[50px] shrink-0 text-stone-700 text-sm font-medium">Desde:</p>
                                 <el-date-picker style="width: 100%;" v-model="ordersFilter.date.from" type="date"
                                     placeholder="aaaa-mm-dd" size="default"
-                                    :disabled-date="(date) => { return date > Date.now() }" />
+                                    :disabled-date="(date) => { return date >= Date.now() }" />
                             </div>
                             <div class="w-full flex items-center gap-1">
                                 <p class="w-[50px] shrink-0 text-stone-700 text-sm font-medium">Hasta:</p>
                                 <el-date-picker style="width: 100%;" v-model="ordersFilter.date.to" type="date"
                                     placeholder="aaaa-mm-dd" size="default"
-                                    :disabled-date="(date) => { return date > Date.now() }" />
+                                    :disabled-date="(date) => { return (date >= Date.now()) || (date < ordersFilter.date.from) }" />
                             </div>
                         </div>
                     </div>

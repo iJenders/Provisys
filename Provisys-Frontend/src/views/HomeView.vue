@@ -88,7 +88,7 @@ onMounted(() => {
     <!-- Products -->
     <div class="p-10 flex flex-col items-center">
         <h2 class="text-3xl font-bold text-stone-700">Productos Destacados</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 mt-5">
             <ProductComponent v-for="product in productsExample" :product="product" />
         </div>
         <ThemeButton class="mt-5 px-10 py-4 w-max border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
@@ -203,12 +203,12 @@ onMounted(() => {
 
 <style scoped>
 .BannerImage {
-    width: calc(100% + 100px);
-    height: calc(100% + 100px);
+    width: calc(100% + 50px);
+    height: calc(100% + 50px);
     background-image: url('@/assets/images/banner.jpg');
     background-size: cover;
-    top: calc(-50px + v-bind(withTransitionMouseY) * 50px);
-    left: calc(-50px + v-bind(withTransitionMouseX) * 100px);
+    top: calc(-25px + v-bind(withTransitionMouseY) * 25px);
+    left: calc(-25px + v-bind(withTransitionMouseX) * 50px);
 }
 
 .CompanyHeader {
