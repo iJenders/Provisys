@@ -1,6 +1,6 @@
 <script setup>
 import { LayoutDashboard, Truck, Apple, Package, User, ShieldUser, ScrollText } from 'lucide-vue-next';
-import { onMounted } from 'vue';
+import { onMounted, onUpdated } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -49,12 +49,19 @@ onMounted(() => {
     }
 })
 
+onUpdated(() => {
+    if (router.currentRoute.value.path === '/system') {
+        router.push('/system/summary')
+    }
+})
+
 </script>
 
 <template>
-    <div class="p-6 flex flex-col md:flex-row gap-6">
+    <div class="w-full p-6 flex flex-col md:flex-row gap-6">
         <!-- System Links -->
-        <aside class="bg-white rounded-lg shadow-md p-6 w-full md:w-fit h-fit pr-28 md:sticky top-[100px]">
+        <aside
+            class="bg-white rounded-lg shadow-md p-6 w-full md:w-fit h-fit pr-28 md:sticky top-[100px] flex-shrink-0">
             <ul class="flex flex-col gap-4">
                 <li v-for="link in systemLinks" :key="link.name"
                     class="flex text-stone-800 font-medium items-center gap-4 hover:text-green-600 transition linear">
@@ -67,8 +74,9 @@ onMounted(() => {
                 </li>
             </ul>
         </aside>
+
         <!-- System Content -->
-        <RouterView class="bg-white rounded-lg shadow-md p-6 w-full" />
+        <RouterView />
     </div>
 </template>
 

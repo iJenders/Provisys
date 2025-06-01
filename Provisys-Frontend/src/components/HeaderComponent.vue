@@ -95,7 +95,7 @@ onMounted(() => {
 <template>
     <!-- Header Component -->
     <header
-        class="fixed flex flex-row items-center justify-between bg-emerald-700 text-white w-full h-[80px] px-10 z-1000">
+        class="fixed flex flex-row items-center justify-between bg-emerald-700 text-white w-full h-[80px] px-10 z-10000">
         <!-- Responsive Menu Toggle -->
         <div class="md:hidden flex items-center justify-center mr-4 cursor-pointer">
             <button @click="toggleLinksMenu" class="text-white">
@@ -113,7 +113,7 @@ onMounted(() => {
         <!-- Header Links -->
         <Transition>
             <section
-                class="HeaderLinks flex flex-col md:items-center md:justify-center fixed left-0 top-[80px] md:w-full bg-emerald-700 z-1000 overflow-hidden rounded-b-xl px-8 pb-8 md:relative md:left-auto md:top-auto md:w-auto md:h-auto md:bg-transparent md:px-0 md:pb-0"
+                class="HeaderLinks flex flex-col md:items-center md:justify-center fixed left-0 top-[80px] md:w-full bg-emerald-700 z-10000 overflow-hidden rounded-b-xl px-8 pb-8 md:relative md:left-auto md:top-auto md:w-auto md:h-auto md:bg-transparent md:px-0 md:pb-0"
                 v-show="showLinksMenu">
                 <ul class="flex flex-col md:flex-row md:items-center md:justify-center h-full gap-4 md:gap-0">
                     <li v-for="link in headerLinks" class="mx-4">
@@ -141,7 +141,7 @@ onMounted(() => {
     <!-- Shopping Cart Tooltip -->
     <Transition>
         <aside v-if="showShoppingCart"
-            class="fixed right-0 top-[76px] shadow-[0_0_20px_rgba(0,0,0,0.25)] bg-white w-full md:w-[420px] p-8 rounded-2xl z-999">
+            class="fixed right-0 top-[76px] shadow-[0_0_20px_rgba(0,0,0,0.25)] bg-white w-full md:w-[420px] p-8 rounded-2xl z-9999">
             <div class="flex flex-col gap-6">
                 <div class="flex justify-between items-center">
                     <h2 class="text-2xl font-bold text-black text-shadow-lg text-shadow-stone-300">Carrito de Compras
@@ -190,7 +190,7 @@ onMounted(() => {
     <!-- User Menu Tooltip -->
     <Transition>
         <aside v-show="showUserMenu"
-            class="fixed right-0 top-[76px] shadow-[0_0_20px_rgba(0,0,0,0.25)] bg-white w-full md:w-[420px] p-8 rounded-2xl z-999">
+            class="fixed right-0 top-[76px] shadow-[0_0_20px_rgba(0,0,0,0.25)] bg-white w-full md:w-[420px] p-8 rounded-2xl z-9999">
             <div class="flex flex-col gap-6">
                 <div class="flex justify-between items-center">
                     <h2 class="text-2xl font-bold text-black text-shadow-lg text-shadow-stone-300">Opciones de Usuario

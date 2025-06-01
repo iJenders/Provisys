@@ -1,5 +1,5 @@
 <template>
-    <div class="w-100 flex flex-col gap-4">
+    <div class="grow min-w-0 flex flex-col gap-4 bg-white shadow-md rounded-lg p-6">
         <h1 class="text-2xl font-bold text-gray-800">
             Resúmen
         </h1>
