@@ -49,7 +49,7 @@ const handleConfirmPayment = () => {
 <template>
     <div class="w-full gap-4 flex flex-col text-xl">
         <!-- Delivered Orders Content -->
-        <h1 class="text-stone-700 font-medium">Pedidos Facturados</h1>
+        <h1 class="text-stone-700 font-medium">Pedidos Entregados</h1>
         <Line class="bg-stone-200" orientation="horizontal" />
         <div class="w-full flex flex-col lg:flex-row gap-4" v-loading="fetchingOrders">
             <!-- Filters -->
@@ -63,13 +63,13 @@ const handleConfirmPayment = () => {
                             <div class="w-full flex items-center gap-1">
                                 <p class="w-[50px] shrink-0 text-stone-700 text-sm font-medium">Desde:</p>
                                 <el-date-picker style="width: 100%;" v-model="ordersFilter.date.from" type="date"
-                                    placeholder="yyyy-mm-dd" size="default"
+                                    placeholder="aaaa-mm-dd" size="default"
                                     :disabled-date="(date) => { return date > Date.now() }" />
                             </div>
                             <div class="w-full flex items-center gap-1">
                                 <p class="w-[50px] shrink-0 text-stone-700 text-sm font-medium">Hasta:</p>
                                 <el-date-picker style="width: 100%;" v-model="ordersFilter.date.to" type="date"
-                                    placeholder="yyyy-mm-dd" size="default"
+                                    placeholder="aaaa-mm-dd" size="default"
                                     :disabled-date="(date) => { return date > Date.now() }" />
                             </div>
                         </div>
