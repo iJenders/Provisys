@@ -59,4 +59,15 @@ class JWT
 
         return $decoded_payload;
     }
+
+    public static function getPayload($token)
+    {
+        $parts = explode('.', $token);
+        if (count($parts) !== 3) {
+            return null;
+        }
+
+        $payload = base64_decode(str_replace(['-', '_'], ['+', '/'], $parts[1]));
+        return json_decode($payload, true);
+    }
 }

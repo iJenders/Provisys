@@ -1,8 +1,19 @@
 <script setup>
-import { ref } from 'vue'
-import { RouterLink } from 'vue-router'
 import HeaderComponent from './components/HeaderComponent.vue'
 import FooterComponent from './components/FooterComponent.vue'
+import { onMounted } from 'vue';
+import { useAuthStore } from './stores/authStore';
+
+const authStore = useAuthStore();
+
+onMounted(() => {
+  // Check if the user is authenticated
+  const token = localStorage.getItem('token');
+  authStore.token = token;
+  if (!!token) {
+    authStore.refreshUser();
+  }
+})
 </script>
 
 <template>

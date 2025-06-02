@@ -3,9 +3,13 @@ import { computed, ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { User, ShoppingCart, MonitorCog, LogOut, UserPlus, LogIn, X, Menu } from 'lucide-vue-next'
 import { useShoppingCartStore } from '@/stores/shoppingCart.js'
+import { ElMessageBox, ElNotification } from 'element-plus'
+import { useAuthStore } from '@/stores/authStore'
 import Line from './Line.vue'
 import ThemeButton from './ThemeButton.vue'
 import ShoppingCartItem from './ShoppingCartItem.vue'
+
+const authStore = useAuthStore()
 
 // Shopping Cart Test Data
 let shoppingCart = ref([])
@@ -13,44 +17,59 @@ let shoppingCart = ref([])
 const headerLinks = [
     {
         name: 'Inicio',
-        link: '/'
+        link: '/',
+        userCondition: () => {
+            return true;
+        }
     },
     {
         name: 'Tienda',
-        link: '/shop'
+        link: '/shop',
+        userCondition: () => {
+            return true;
+        }
     },
     {
         name: 'Contacto',
-        link: '/contact'
+        link: '/contact',
+        userCondition: () => {
+            return true;
+        }
     }
 ]
 
 const userOptions = [
     {
-        name: 'Registrarse',
-        icon: UserPlus,
-        link: '/register'
-    },
-    {
         name: 'Iniciar Sesión',
         icon: LogIn,
-        link: '/login'
+        link: '/login',
+        userCondition: () => {
+            return !authStore.isAuthenticated;
+        }
+    },
+    {
+        name: 'Registrarse',
+        icon: UserPlus,
+        link: '/register',
+        userCondition: () => {
+            return !authStore.isAuthenticated;
+        }
     },
     {
         name: 'Mi Perfil',
         icon: User,
-        link: '/profile'
+        link: '/profile',
+        userCondition: () => {
+            return authStore.isAuthenticated;
+        }
     },
     {
         name: 'Sistema de Gestión',
         icon: MonitorCog,
-        link: '/system'
-    },
-    {
-        name: 'Cerrar Sesión',
-        icon: LogOut,
-        link: '/logout',
-        twColor: 'text-red-500'
+        link: '/system',
+        userCondition: () => {
+            return authStore.isAuthenticated && authStore.checkPermission('manage_system');
+        }
     },
 ]
 
@@ -82,6 +101,29 @@ const toggleLinksMenu = () => {
     showLinksMenu.value = !showLinksMenu.value
     showUserMenu.value = false
     showShoppingCart.value = false
+}
+
+const handleLogout = () => {
+    ElMessageBox.confirm('¿Estás seguro de que deseas cerrar sesión?', 'Confirmación', {
+        confirmButtonText: 'Sí',
+        cancelButtonText: 'No',
+        type: 'warning'
+    }).then(() => {
+        authStore.logout()
+        showUserMenu.value = false
+        showShoppingCart.value = false
+
+        ElNotification({
+            title: 'Éxito',
+            message: 'Has cerrado sesión correctamente.',
+            type: 'success',
+            duration: 3000,
+            offset: 80,
+            zIndex: 10000
+        })
+    }).catch(() => {
+        // El usuario canceló la acción
+    })
 }
 
 onMounted(() => {
@@ -117,7 +159,8 @@ onMounted(() => {
                 v-show="showLinksMenu">
                 <ul class="flex flex-col md:flex-row md:items-center md:justify-center h-full gap-4 md:gap-0">
                     <li v-for="link in headerLinks" class="mx-4">
-                        <RouterLink :to="link.link" class="text-white font-semibold hover:text-green-500 transition">
+                        <RouterLink v-if="link.userCondition()" :to="link.link"
+                            class="text-white font-semibold hover:text-green-500 transition">
                             {{ link.name }}
                         </RouterLink>
                     </li>
@@ -131,7 +174,8 @@ onMounted(() => {
                 @click="(e) => { e.preventDefault(); toggleUserMenu() }">
                 <User size="32" />
             </a>
-            <a href="" class="text-white font-semibold hover:text-green-500 transition"
+            <a v-if="!authStore.isAuthenticated || authStore.user.roleId === 2" href=""
+                class="text-white font-semibold hover:text-green-500 transition"
                 @click="(e) => { e.preventDefault(); toggleShoppingCart() }">
                 <ShoppingCart size="32" />
             </a>
@@ -202,13 +246,22 @@ onMounted(() => {
                     </ThemeButton>
                 </div>
                 <Line class="bg-stone-200" orientation="horizontal" />
-                <ul class="flex flex-col gap-4 max-h-[320px] overflow-y-auto px-4">
+                <ul class="flex flex-col max-h-[320px] overflow-y-auto px-4">
                     <li v-for="option in userOptions" :key="option.name">
-                        <RouterLink :to="option.link"
-                            class="flex items-center text-lg text-shadow-lg text-shadow-stone-200 transition linear duration-200"
+                        <RouterLink :to="option.link" v-if="option.userCondition()"
+                            class="flex items-center my-2 text-lg text-shadow-lg text-shadow-stone-200 transition linear duration-200"
                             :class="[option.twColor ? option.twColor : 'text-green-600']">
                             <component :is="option.icon" size="26" class="inline-block mr-3" />
                             <p class="text-lg font-normal">{{ option.name }}</p>
+                        </RouterLink>
+                    </li>
+                    <!-- Logout -->
+                    <li>
+                        <RouterLink v-if="authStore.isAuthenticated" to="#"
+                            class="flex items-center my-2 text-lg text-red-500 hover:text-red-700 transition"
+                            @click="handleLogout">
+                            <LogOut size="26" class="inline-block mr-3" />
+                            <p class="text-lg font-normal">Cerrar Sesión</p>
                         </RouterLink>
                     </li>
                 </ul>
