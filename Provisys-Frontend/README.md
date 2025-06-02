@@ -1,28 +1,39 @@
 # Provisys-Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+Interfaces gráficas del proyecto Provisys, desarrolladas con Vue.js.
 
-## Recommended IDE Setup
+## IDE para desarrollo
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
 
-## Customize configuration
+## Instalación
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+1. Clonar el repositorio
 
-## Project Setup
+    ```sh
+    git clone https://github.com/iJenders/Provisys
+    ```
 
-```sh
-npm install
-```
+2. Entrar a la carpeta del proyecto
+    ```sh
+    cd Provisys/Provisys-Frontend
+    ```
 
-### Compile and Hot-Reload for Development
+3. Instalar dependencias
+    ```sh
+    npm install
+    ```
 
-```sh
-npm run dev
-```
+4. Sigue las instrucciones de instalación para ejecutar el servidor.
 
-### Compile and Minify for Production
+6. Si es necesario, configura las variables de entorno en el archivo `.env`.
+
+5. Ejecutar el proyecto
+    ```sh
+    npm run dev
+    ```
+
+### Compilar y minificar para producción
 
 ```sh
 npm run build

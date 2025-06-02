@@ -1,7 +1,6 @@
 # ProviSys
 
-Este proyecto es un backend desarrollado en PHP que implementa un sistema modular para la gestión de envíos e inventario general.
-Funciona mediante una API RESTful y utiliza una base de datos MySQL para almacenar la información.
+Backend para el proyecto ProviSys, una aplicación web para la gestión de productos y pedidos.
 
 Se utiliza una arquitectura de capas MVC (Modelo-Vista-Controlador) para organizar la lógica de la aplicación. Adicionalmente, se ha implementado un sistema de autenticación basado en tokens JWT (JSON Web Tokens) para garantizar la seguridad de las rutas y la gestión de permisos.
 
