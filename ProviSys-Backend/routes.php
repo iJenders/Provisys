@@ -67,13 +67,12 @@ $POST_ROUTES = [
             ['GuestMiddleware']
         ]
     ],
-    '/user' => [
-        'action' => ['UserController', 'getUser'],
+    '/auth/user' => [
+        'action' => ['AuthController', 'user'],
         'middlewares' => [
             ['JsonMiddleware'],
-            ['AuthMiddleware'],
-            ['PermissionMiddleware', ['user_profile']]
+            ['AuthMiddleware']
         ]
-    ]
+    ],
 ];
 ?>

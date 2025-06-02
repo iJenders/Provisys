@@ -1,6 +1,35 @@
 <?php
 // FRONT CONTROLLER
 
+// Siempre es bueno incluir esto al principio de tu script PHP que maneja solicitudes API
+// para evitar cualquier salida accidental antes de las cabeceras.
+ob_start(); 
+
+// 1. Permite cualquier origen (*): Esto significa que cualquier dominio puede hacer solicitudes.
+header('Access-Control-Allow-Origin: *');
+
+// 2. Permite cualquier método HTTP (GET, POST, PUT, DELETE, OPTIONS, etc.):
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE');
+
+// 3. Permite cualquier cabecera HTTP personalizada que el cliente pueda enviar:
+// Esto es importante para cabeceras como Content-Type, Authorization, X-Requested-With, etc.
+header('Access-Control-Allow-Headers: *');
+
+// 4. (Opcional) Permite que el navegador cachee la respuesta de pre-vuelo (OPTIONS) por un tiempo.
+// Esto puede mejorar un poco el rendimiento en desarrollo, ya que el navegador no necesitará
+// hacer una solicitud OPTIONS para cada petición.
+header('Access-Control-Max-Age: 86400'); // 86400 segundos = 24 horas
+
+// 5. Manejo de solicitudes OPTIONS (pre-vuelo):
+// Los navegadores modernos envían una solicitud OPTIONS antes de la solicitud real (PUT, DELETE,
+// o POST con cabeceras/Content-Type no estándar) para preguntar al servidor si la solicitud
+// real está permitida. Si el método de la solicitud es OPTIONS, solo necesitamos enviar las cabeceras CORS y salir.
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    // Si estás usando PHP-FPM o Apache con mod_php, es crucial terminar el script aquí
+    // para que no se procese más lógica y no se envíe ningún cuerpo de respuesta innecesario.
+    exit(0); 
+}
+
 // Cargar los archivos necesarios para la aplicación
 include_once 'routes.php';
 include_once 'env.php';

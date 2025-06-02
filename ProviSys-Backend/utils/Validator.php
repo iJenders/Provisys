@@ -5,9 +5,17 @@ class Validator
     private string $text = "";
     private array $errors = [];
 
-    public function __construct(string $text)
+    private string $alias = "";
+
+    public function __construct(string $text, string $alias = "")
     {
         $this->text = $text;
+        $this->alias = $alias;
+    }
+
+    public function getAlias(): string
+    {
+        return $this->alias;
     }
 
     public function isValid(): bool
@@ -23,7 +31,7 @@ class Validator
     public function required(): Validator
     {
         if (empty($this->text) && $this->text !== '0' && $this->text !== 'false') {
-            $this->errors[] = 'El campo es obligatorio.';
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  es obligatorio.';
         }
         return $this;
     }
@@ -31,7 +39,7 @@ class Validator
     public function minLength(int $length): Validator
     {
         if (strlen($this->text) < $length) {
-            $this->errors[] = 'El campo debe tener al menos ' . $length . ' caracteres.';
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  debe tener al menos ' . $length . ' caracteres.';
         }
         return $this;
     }
@@ -39,7 +47,7 @@ class Validator
     public function maxLength(int $length): Validator
     {
         if (strlen($this->text) > $length) {
-            $this->errors[] = 'El campo no puede tener más de ' . $length . ' caracteres.';
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  no puede tener más de ' . $length . ' caracteres.';
         }
         return $this;
     }
@@ -47,7 +55,7 @@ class Validator
     public function email(): Validator
     {
         if (!filter_var($this->text, FILTER_VALIDATE_EMAIL)) {
-            $this->errors[] = 'El campo no es un correo electrónico válido.';
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  no es un correo electrónico válido.';
         }
         return $this;
     }
@@ -55,7 +63,7 @@ class Validator
     public function alpha(): Validator
     {
         if (!preg_match('/^[a-zA-Z]+$/', $this->text)) {
-            $this->errors[] = 'El campo solo puede contener letras.';
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  solo puede contener letras.';
         }
         return $this;
     }
@@ -63,7 +71,7 @@ class Validator
     public function numeric(): Validator
     {
         if (!is_numeric($this->text)) {
-            $this->errors[] = 'El campo solo puede contener números.';
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  solo puede contener números.';
         }
         return $this;
     }
@@ -71,7 +79,7 @@ class Validator
     public function alphaNumeric(): Validator
     {
         if (!preg_match('/^[a-zA-Z0-9]+$/', $this->text)) {
-            $this->errors[] = 'El campo solo puede contener letras y números.';
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  solo puede contener letras y números.';
         }
         return $this;
     }
@@ -87,7 +95,7 @@ class Validator
     public function phone(): Validator
     {
         if (!preg_match('/^\+?[0-9]{10,15}$/', $this->text)) {
-            $this->errors[] = 'El campo no es un número de teléfono válido.';
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  no es un número de teléfono válido.';
         }
         return $this;
     }
@@ -95,7 +103,7 @@ class Validator
     public function date(): Validator
     {
         if (!DateTime::createFromFormat('Y-m-d', $this->text)) {
-            $this->errors[] = 'El campo no es una fecha válida.';
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  no es una fecha válida.';
         }
         return $this;
     }
@@ -103,7 +111,7 @@ class Validator
     public function dateTime(): Validator
     {
         if (!DateTime::createFromFormat('Y-m-d H:i:s', $this->text)) {
-            $this->errors[] = 'El campo no es una fecha y hora válida.';
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  no es una fecha y hora válida.';
         }
         return $this;
     }
@@ -111,7 +119,7 @@ class Validator
     public function url(): Validator
     {
         if (!filter_var($this->text, FILTER_VALIDATE_URL)) {
-            $this->errors[] = 'El campo no es una URL válida.';
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  no es una URL válida.';
         }
         return $this;
     }
@@ -119,7 +127,7 @@ class Validator
     public function noSpecialChars(): Validator
     {
         if (preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $this->text)) {
-            $this->errors[] = 'El campo no puede contener caracteres especiales.';
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  no puede contener caracteres especiales.';
         }
         return $this;
     }
@@ -127,7 +135,7 @@ class Validator
     public function noNumbers(): Validator
     {
         if (preg_match('/[0-9]/', $this->text)) {
-            $this->errors[] = 'El campo no puede contener números.';
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  no puede contener números.';
         }
         return $this;
     }
@@ -135,7 +143,7 @@ class Validator
     public function alphaNumericWithDashes(): Validator
     {
         if (!preg_match('/^[a-zA-Z0-9-_]+$/', $this->text)) {
-            $this->errors[] = 'El campo solo puede contener letras, números, guiones y guiones bajos.';
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  solo puede contener letras, números, guiones y guiones bajos.';
         }
         return $this;
     }

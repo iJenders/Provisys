@@ -3,9 +3,13 @@ import { computed, ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { User, ShoppingCart, MonitorCog, LogOut, UserPlus, LogIn, X, Menu } from 'lucide-vue-next'
 import { useShoppingCartStore } from '@/stores/shoppingCart.js'
+import { ElMessageBox, ElNotification } from 'element-plus'
+import { useAuthStore } from '@/stores/authStore'
 import Line from './Line.vue'
 import ThemeButton from './ThemeButton.vue'
 import ShoppingCartItem from './ShoppingCartItem.vue'
+
+const authStore = useAuthStore()
 
 // Shopping Cart Test Data
 let shoppingCart = ref([])
@@ -13,48 +17,59 @@ let shoppingCart = ref([])
 const headerLinks = [
     {
         name: 'Inicio',
-        link: '/'
+        link: '/',
+        userCondition: () => {
+            return true;
+        }
     },
     {
         name: 'Tienda',
-        link: '/shop'
-    },
-    {
-        name: 'Nosotros',
-        link: '/about'
+        link: '/shop',
+        userCondition: () => {
+            return true;
+        }
     },
     {
         name: 'Contacto',
-        link: '/contact'
+        link: '/contact',
+        userCondition: () => {
+            return true;
+        }
     }
 ]
 
 const userOptions = [
     {
-        name: 'Registrarse',
-        icon: UserPlus,
-        link: '/register'
-    },
-    {
         name: 'Iniciar Sesión',
         icon: LogIn,
-        link: '/login'
+        link: '/login',
+        userCondition: () => {
+            return !authStore.isAuthenticated;
+        }
+    },
+    {
+        name: 'Registrarse',
+        icon: UserPlus,
+        link: '/register',
+        userCondition: () => {
+            return !authStore.isAuthenticated;
+        }
     },
     {
         name: 'Mi Perfil',
         icon: User,
-        link: '/profile'
+        link: '/profile',
+        userCondition: () => {
+            return authStore.isAuthenticated;
+        }
     },
     {
         name: 'Sistema de Gestión',
         icon: MonitorCog,
-        link: '/system'
-    },
-    {
-        name: 'Cerrar Sesión',
-        icon: LogOut,
-        link: '/logout',
-        twColor: 'text-red-500'
+        link: '/system',
+        userCondition: () => {
+            return authStore.isAuthenticated && authStore.checkPermission('manage_system');
+        }
     },
 ]
 
@@ -88,6 +103,29 @@ const toggleLinksMenu = () => {
     showShoppingCart.value = false
 }
 
+const handleLogout = () => {
+    ElMessageBox.confirm('¿Estás seguro de que deseas cerrar sesión?', 'Confirmación', {
+        confirmButtonText: 'Sí',
+        cancelButtonText: 'No',
+        type: 'warning'
+    }).then(() => {
+        authStore.logout()
+        showUserMenu.value = false
+        showShoppingCart.value = false
+
+        ElNotification({
+            title: 'Éxito',
+            message: 'Has cerrado sesión correctamente.',
+            type: 'success',
+            duration: 3000,
+            offset: 80,
+            zIndex: 10000
+        })
+    }).catch(() => {
+        // El usuario canceló la acción
+    })
+}
+
 onMounted(() => {
     shoppingCart.value = shoppingCartStore.products
     if (window.innerWidth < 768) {
@@ -99,7 +137,7 @@ onMounted(() => {
 <template>
     <!-- Header Component -->
     <header
-        class="fixed flex flex-row items-center justify-between bg-emerald-700 text-white w-full h-[80px] px-10 z-1000">
+        class="fixed flex flex-row items-center justify-between bg-emerald-700 text-white w-full h-[80px] px-10 z-10000">
         <!-- Responsive Menu Toggle -->
         <div class="md:hidden flex items-center justify-center mr-4 cursor-pointer">
             <button @click="toggleLinksMenu" class="text-white">
@@ -117,11 +155,12 @@ onMounted(() => {
         <!-- Header Links -->
         <Transition>
             <section
-                class="HeaderLinks flex flex-col md:items-center md:justify-center fixed left-0 top-[80px] md:w-full bg-emerald-700 z-1000 overflow-hidden rounded-b-xl px-8 pb-8 md:relative md:left-auto md:top-auto md:w-auto md:h-auto md:bg-transparent md:px-0 md:pb-0"
+                class="HeaderLinks flex flex-col md:items-center md:justify-center fixed left-0 top-[80px] md:w-full bg-emerald-700 z-10000 overflow-hidden rounded-b-xl px-8 pb-8 md:relative md:left-auto md:top-auto md:w-auto md:h-auto md:bg-transparent md:px-0 md:pb-0"
                 v-show="showLinksMenu">
                 <ul class="flex flex-col md:flex-row md:items-center md:justify-center h-full gap-4 md:gap-0">
                     <li v-for="link in headerLinks" class="mx-4">
-                        <RouterLink :to="link.link" class="text-white font-semibold hover:text-green-500 transition">
+                        <RouterLink v-if="link.userCondition()" :to="link.link"
+                            class="text-white font-semibold hover:text-green-500 transition">
                             {{ link.name }}
                         </RouterLink>
                     </li>
@@ -135,7 +174,8 @@ onMounted(() => {
                 @click="(e) => { e.preventDefault(); toggleUserMenu() }">
                 <User size="32" />
             </a>
-            <a href="" class="text-white font-semibold hover:text-green-500 transition"
+            <a v-if="!authStore.isAuthenticated || authStore.user.roleId === 2" href=""
+                class="text-white font-semibold hover:text-green-500 transition"
                 @click="(e) => { e.preventDefault(); toggleShoppingCart() }">
                 <ShoppingCart size="32" />
             </a>
@@ -145,7 +185,7 @@ onMounted(() => {
     <!-- Shopping Cart Tooltip -->
     <Transition>
         <aside v-if="showShoppingCart"
-            class="fixed right-0 top-[76px] shadow-[0_0_20px_rgba(0,0,0,0.25)] bg-white w-full md:w-[420px] p-8 rounded-2xl z-999">
+            class="fixed right-0 top-[76px] shadow-[0_0_20px_rgba(0,0,0,0.25)] bg-white w-full md:w-[420px] p-8 rounded-2xl z-9999">
             <div class="flex flex-col gap-6">
                 <div class="flex justify-between items-center">
                     <h2 class="text-2xl font-bold text-black text-shadow-lg text-shadow-stone-300">Carrito de Compras
@@ -194,7 +234,7 @@ onMounted(() => {
     <!-- User Menu Tooltip -->
     <Transition>
         <aside v-show="showUserMenu"
-            class="fixed right-0 top-[76px] shadow-[0_0_20px_rgba(0,0,0,0.25)] bg-white w-full md:w-[420px] p-8 rounded-2xl z-999">
+            class="fixed right-0 top-[76px] shadow-[0_0_20px_rgba(0,0,0,0.25)] bg-white w-full md:w-[420px] p-8 rounded-2xl z-9999">
             <div class="flex flex-col gap-6">
                 <div class="flex justify-between items-center">
                     <h2 class="text-2xl font-bold text-black text-shadow-lg text-shadow-stone-300">Opciones de Usuario
@@ -206,13 +246,22 @@ onMounted(() => {
                     </ThemeButton>
                 </div>
                 <Line class="bg-stone-200" orientation="horizontal" />
-                <ul class="flex flex-col gap-4 max-h-[320px] overflow-y-auto px-4">
+                <ul class="flex flex-col max-h-[320px] overflow-y-auto px-4">
                     <li v-for="option in userOptions" :key="option.name">
-                        <RouterLink :to="option.link"
-                            class="flex items-center text-lg text-shadow-lg text-shadow-stone-200 transition linear duration-200"
+                        <RouterLink :to="option.link" v-if="option.userCondition()"
+                            class="flex items-center my-2 text-lg text-shadow-lg text-shadow-stone-200 transition linear duration-200"
                             :class="[option.twColor ? option.twColor : 'text-green-600']">
                             <component :is="option.icon" size="26" class="inline-block mr-3" />
                             <p class="text-lg font-normal">{{ option.name }}</p>
+                        </RouterLink>
+                    </li>
+                    <!-- Logout -->
+                    <li>
+                        <RouterLink v-if="authStore.isAuthenticated" to="#"
+                            class="flex items-center my-2 text-lg text-red-500 hover:text-red-700 transition"
+                            @click="handleLogout">
+                            <LogOut size="26" class="inline-block mr-3" />
+                            <p class="text-lg font-normal">Cerrar Sesión</p>
                         </RouterLink>
                     </li>
                 </ul>
