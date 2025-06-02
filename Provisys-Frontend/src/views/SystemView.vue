@@ -76,12 +76,35 @@ onUpdated(() => {
         </aside>
 
         <!-- System Content -->
-        <RouterView />
+        <TransitionGroup name="system-category-fade" tag="div" class="w-full flex flex-col min-w-0 grow-0 relative">
+            <RouterView :key="router.currentRoute.value.path" />
+        </TransitionGroup>
     </div>
 </template>
 
 <style scoped>
 .router-link-active {
     color: var(--color-green-600);
+}
+
+.system-category-fade-move,
+.system-category-fade-enter-active,
+.system-category-fade-leave-active {
+    transition: all 0.2s cubic-bezier(0.55, 0, 0.1, 1);
+}
+
+.system-category-fade-enter-active {
+    transition-delay: 0.2s;
+}
+
+.system-category-fade-enter-from,
+.system-category-fade-leave-to {
+    opacity: 0;
+    transform: translate(0, 30px);
+}
+
+.system-category-fade-leave-active {
+    width: 100%;
+    position: absolute;
 }
 </style>

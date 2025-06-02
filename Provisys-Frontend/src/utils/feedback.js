@@ -1,4 +1,4 @@
-import { ElMessage, ElMessageBox, ElNotification } from "element-plus";
+import { ElMessageBox, ElNotification } from "element-plus";
 
 const confirmation = (title, message, successCallback, cancelCallback) => {
   ElMessageBox.confirm(message, title, {
@@ -7,10 +7,14 @@ const confirmation = (title, message, successCallback, cancelCallback) => {
     type: "warning",
   })
     .then(() => {
-      successCallback();
+      if (successCallback !== undefined) {
+        successCallback();
+      }
     })
     .catch(() => {
-      cancelCallback();
+      if (cancelCallback !== undefined) {
+        cancelCallback();
+      }
     });
 };
 
