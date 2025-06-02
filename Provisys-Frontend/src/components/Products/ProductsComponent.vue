@@ -270,7 +270,7 @@ const handlePageChange = (page) => {
             @closeModal="handleCloseDetailsModal" />
 
         <!-- New Product Modal -->
-        <NewProductModal v-model="addingProduct" @closeModal="handleCloseAddingModal" />
+        <ProductAddModal v-model="addingProduct" @closeModal="handleCloseAddingModal" />
     </div>
 </template>
 
