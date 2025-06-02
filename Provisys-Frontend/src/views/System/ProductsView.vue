@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { Apple, Shapes, Users } from 'lucide-vue-next';
 import ProductsComponent from '@/components/Products/ProductsComponent.vue';
 import CategoriesComponent from '@/components/Products/CategoriesComponent.vue';
+import ProvidersComponent from '@/components/Products/ProvidersComponent.vue';
 
 const productsButtons = [
     {
@@ -15,6 +16,11 @@ const productsButtons = [
         icon: Shapes,
         component: CategoriesComponent
     },
+    {
+        name: 'Proveedores',
+        icon: Users,
+        component: ProvidersComponent
+    }
 ]
 
 const activeSection = ref(0);
