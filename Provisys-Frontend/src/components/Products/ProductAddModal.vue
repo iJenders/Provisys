@@ -3,14 +3,24 @@ import { ref } from 'vue';
 import { confirmation, errorNotification, successNotification } from '@/utils/feedback';
 import { useFullScreenModals } from '@/composables/fullScreenModals';
 import Line from '@/components/Line.vue';
+import axios from 'axios';
 
 const { fullScreenModals } = useFullScreenModals();
 
-defineProps([
-    'selectedProduct'
-]);
+const emit = defineEmits(['closeModal']);
 
-defineEmits(['closeModal']);
+const newProduct = ref({
+    name: '',
+    description: '',
+    price: '',
+    stock: '',
+    provider: { id: null, name: '', phone: '', email: '', address: '' },
+    category: { id: null, name: '', description: '' },
+    iva: { id: null, name: '', iva: 0 },
+    warehouse: { id: null, name: '', description: '' },
+    image: null,
+});
+const productImage = ref(null);
 
 const fetchingModal = ref(false);
 const fetchingProviders = ref(false);
@@ -77,52 +87,110 @@ const handleWarehouseSearch = (value) => {
     }, 500);
 }
 
-const handleDeleteProduct = (product) => {
-    confirmation("Alerta", "¿Estás seguro de que deseas eliminar este producto?",
-        () => {
-            fetchingModal.value = true;
-            setTimeout(() => {
-                fetchingModal.value = false;
-                // Simular eliminación del producto
-                if (Math.random() > 0.5) {
-                    successNotification("Producto eliminado correctamente.");
-                } else {
-                    errorNotification("No se pudo eliminar el producto. Inténtalo de nuevo más tarde.");
-                }
-            }, 1000);
-        },
-    )
+const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            newProduct.value.image = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+};
+
+const validatedFields = () => {
+    // Validaciones
 }
 
-const handleEditProduct = (product) => {
-    confirmation("Alerta", "¿Estás seguro de que deseas guardar los cambios de este producto?",
+const handleAddProduct = () => {
+    confirmation("Alerta", "¿Estás seguro de que deseas guardar este producto?",
         () => {
             // Simular eliminación del producto
             fetchingModal.value = true;
+
+            // Validar todos los campos necesarios
+            if (validatedFields()) {
+                errorNotification("Por favor, completa todos los campos obligatorios.");
+                fetchingModal.value = false;
+                return;
+            }
+
+            let formData = new FormData();
+            // Eliminar la propiedad "image" del objeto newProduct, ya que no se enviará en el JSON
+            // (Se enviará como archivo separado)
+            let withoutImage = { ...newProduct.value };
+            delete withoutImage.image;
+
+            formData.append('product', JSON.stringify(withoutImage));
+            formData.append('image', productImage.value.files[0]);
+
+            // Simular una llamada a la API para agregar el producto
+            axios.post('/api/products', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+
             setTimeout(() => {
                 fetchingModal.value = false;
                 if (Math.random() > 0.5) {
-                    successNotification("Producto actualizado correctamente.");
+                    successNotification("Producto añadido correctamente.");
                 } else {
-                    errorNotification("No se pudo actualizar el producto. Inténtalo de nuevo más tarde.");
+                    errorNotification("No se pudo agregar el producto. Inténtalo de nuevo más tarde.");
                 }
             }, 1000);
         },
     )
 }
+
+const closeModalConfirmation = (done) => {
+    confirmation("Alerta", "¿Estás seguro de que deseas salir sin guardar?",
+        () => {
+            done();
+        },
+    );
+};
+
+const handleCloseModal = (e) => {
+    newProduct.value = {
+        name: '',
+        description: '',
+        price: '',
+        stock: '',
+        provider: { id: null, name: '', phone: '', email: '', address: '' },
+        category: { id: null, name: '', description: '' },
+        iva: { id: null, name: '', iva: 0 },
+        warehouse: { id: null, name: '', description: '' },
+        image: null,
+    };
+    productImage.value = null;
+    emit('closeModal');
+};
+
+const closeModal = () => {
+    confirmation("Alerta", "¿Estás seguro de que deseas salir sin guardar?",
+        () => {
+            handleCloseModal();
+        },
+    );
+};
 </script>
 
 <template>
-    <el-dialog title="Detalles del Producto" width="80%" @close="() => { $emit('closeModal') }"
-        :fullscreen="fullScreenModals" class="!p-6">
+    <el-dialog title="Nuevo Producto" width="80%" @close="handleCloseModal" :before-close="closeModalConfirmation"
+        :fullscreen="fullScreenModals" class="!p-6" :destroy-on-close="true">
         <!-- Modal Content -->
         <Line orientation="horizontal" class="bg-stone-200" />
-        <div v-if="selectedProduct" class="w-full flex flex-col md:flex-row gap-4 mt-4" v-loading="fetchingModal">
+        <div class="w-full flex flex-col md:flex-row gap-4 mt-4" v-loading="fetchingModal">
             <!-- Product Image -->
             <div
                 class="w-full md:w-fit justify-center items-center   shrink-0 justify-center flex relative md:border-stone-200 md:border-r-[2px] md:pr-4">
-                <img :src="selectedProduct.image" alt="Product Image"
-                    class="object-cover w-[300px] h-[300px] object-cover rounded-lg shadow-lg shadow-stone-300" />
+                <input type="file" accept="image/*" class="hidden" id="newProductImageInput" @change="handleImageChange"
+                    ref="productImage" />
+                <img :src="newProduct.image !== null ? newProduct.image : '/src/assets/images/product-placeholder.jpg'"
+                    alt="Product Image"
+                    class="object-cover w-[300px] h-[300px] object-cover rounded-lg shadow-lg shadow-stone-300 hover:shadow-stone-400 transition cursor-pointer"
+                    @click="() => { productImage.click() }" />
             </div>
 
             <Line orientation="horizontal" class="bg-stone-200 md:hidden" />
@@ -131,21 +199,20 @@ const handleEditProduct = (product) => {
             <div class="w-full min-w-0 flex flex-col gap-4">
                 <div class="w-full flex items-center gap-2 flex-wrap">
                     <p class="text-xl font-bold text-stone-700">Id:</p>
-                    <p class="text-xl font-normal text-stone-600">{{ selectedProduct.id }}</p>
+                    <el-input v-model="newProduct.id" class="w-full" type="text" placeholder="ID o Código de barras" />
                 </div>
                 <div class="w-full flex items-center gap-2 flex-wrap">
                     <p class="text-xl font-bold text-stone-700">Nombre:</p>
-                    <el-input v-model="selectedProduct.name" class="w-full" type="text"
-                        placeholder="Nombre del Producto" />
+                    <el-input v-model="newProduct.name" class="w-full" type="text" placeholder="Nombre del Producto" />
                 </div>
                 <div class="w-full flex items-center gap-2 flex-wrap">
                     <p class="text-xl font-bold text-stone-700">Descripción:</p>
-                    <el-input v-model="selectedProduct.description" class="w-full" type="textarea"
+                    <el-input v-model="newProduct.description" class="w-full" type="textarea"
                         placeholder="Descripción del Producto" />
                 </div>
                 <div class="w-full flex items-center gap-2 flex-wrap">
                     <p class="text-xl font-bold text-stone-700">Proveedor:</p>
-                    <el-select v-model="selectedProduct.provider" value-key="id" class="w-full"
+                    <el-select v-model="newProduct.provider" value-key="id" class="w-full"
                         placeholder="Seleccionar Proveedor" :loading="fetchingProviders" filterable remote
                         :remote-method="handleProviderSearch">
                         <el-option v-for="provider in providers" :key="provider.id" :label="provider.name"
@@ -154,7 +221,7 @@ const handleEditProduct = (product) => {
                 </div>
                 <div class="w-full flex items-center gap-2 flex-wrap">
                     <p class="text-xl font-bold text-stone-700">Precio Actual:</p>
-                    <el-input-number v-model="selectedProduct.currentPrice" controls-position="right" :precision="2"
+                    <el-input-number v-model="newProduct.currentPrice" controls-position="right" :precision="2"
                         :min="0.01" :max="9999999999.99" class="!w-fit">
                         <template #prefix>
                             <span>$</span>
@@ -163,7 +230,7 @@ const handleEditProduct = (product) => {
                 </div>
                 <div class="w-full flex items-center gap-2 flex-wrap">
                     <p class="text-xl font-bold text-stone-700">Categoría:</p>
-                    <el-select v-model="selectedProduct.category" value-key="id" class="w-full"
+                    <el-select v-model="newProduct.category" value-key="id" class="w-full"
                         placeholder="Seleccionar Categoría" :loading="fetchingCategories" filterable remote
                         :remote-method="handleCategorySearch">
                         <el-option v-for="category in categories" :key="category.id" :label="category.name"
@@ -172,7 +239,7 @@ const handleEditProduct = (product) => {
                 </div>
                 <div class="w-full flex items-center gap-2 flex-wrap">
                     <p class="text-xl font-bold text-stone-700">IVA actual:</p>
-                    <el-select v-model="selectedProduct.currentIva" value-key="id" class="w-full h-fit"
+                    <el-select v-model="newProduct.currentIva" value-key="id" class="w-full h-fit"
                         placeholder="Seleccionar IVA Actual" :loading="fetchingIVA" filterable remote
                         :remote-method="handleIvaSearch">
                         <el-option v-for="iva in IVAs" :key="iva.id" :label="`${iva.name} (${iva.iva})%`"
@@ -181,7 +248,7 @@ const handleEditProduct = (product) => {
                 </div>
                 <div class="w-full flex items-center gap-2 flex-wrap">
                     <p class="text-xl font-bold text-stone-700">Almacenes Compatibles:</p>
-                    <el-select v-model="selectedProduct.compatibleWarehouses" value-key="id" class="w-full h-fit"
+                    <el-select v-model="newProduct.compatibleWarehouses" value-key="id" class="w-full h-fit"
                         placeholder="Seleccionar Almacenes Compatibles" multiple :loading="fetchingWarehouses"
                         filterable remote :remote-method="handleWarehouseSearch">
                         <el-option v-for="warehouse in warehouses" :key="warehouse.id" :label="warehouse.name"
@@ -194,14 +261,11 @@ const handleEditProduct = (product) => {
         <!-- Modal Buttons -->
         <template #footer>
             <div class="dialog-footer flex justify-end flex-wrap gap-4 gap-y-2">
-                <el-button class="!ml-0" type="info" :disabled="fetchingModal" @click="() => { $emit('closeModal') }">
+                <el-button class="!ml-0" type="info" :disabled="fetchingModal" @click="closeModal">
                     Cerrar
                 </el-button>
-                <el-button class="!ml-0" type="danger" :disabled="fetchingModal" @click="handleDeleteProduct">
-                    Eliminar Producto
-                </el-button>
-                <el-button class="!ml-0" type="success" :disabled="fetchingModal" @click="handleEditProduct">
-                    Guardar Cambios
+                <el-button class="!ml-0" type="success" :disabled="fetchingModal" @click="handleAddProduct">
+                    Añadir Producto
                 </el-button>
             </div>
         </template>

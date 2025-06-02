@@ -4,7 +4,7 @@ import Line from '@/components/Line.vue';
 import ThemeButton from '../ThemeButton.vue';
 import { ref } from 'vue';
 import ProductDetailsModal from './ProductDetailsModal.vue';
-import NewProductModal from './NewProductModal.vue';
+import ProductAddModal from './ProductAddModal.vue';
 
 const fetchingProducts = ref(false);
 

@@ -2,12 +2,18 @@
 import { ref } from 'vue';
 import { Apple, Shapes, Users } from 'lucide-vue-next';
 import ProductsComponent from '@/components/Products/ProductsComponent.vue';
+import CategoriesComponent from '@/components/Products/CategoriesComponent.vue';
 
 const productsButtons = [
     {
         name: 'Productos',
         icon: Apple,
         component: ProductsComponent
+    },
+    {
+        name: 'Categorías',
+        icon: Shapes,
+        component: CategoriesComponent
     },
 ]
 
