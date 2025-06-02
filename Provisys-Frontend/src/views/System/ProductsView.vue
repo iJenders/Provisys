@@ -17,6 +17,10 @@ const activeSection = ref(0);
 
 <template>
     <div class="grow min-w-0 flex flex-col gap-6">
+        <!-- Ensure tailwind class to load the light red color -->
+        <!-- bg-red-100  -->
+
+
         <!-- Product Menu Links -->
         <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
             <div v-for="(productButton, index) in productsButtons" @click="activeSection = index" :key="index"

@@ -56,8 +56,6 @@ const handleBillOrder = () => {
 </script>
 
 <template>
-    <!-- bg-red-100  -->
-
     <div class="w-full gap-4 flex flex-col text-xl">
         <!-- Waiting Orders Content -->
         <h1 class="text-stone-700 font-medium">Pedidos en Espera</h1>
@@ -290,7 +288,7 @@ const handleBillOrder = () => {
     z-index: 10000 !important;
 }
 
-.el-date-table td.disabled .el-date-table-cell{
+.el-date-table td.disabled .el-date-table-cell {
     background-color: var(--color-red-100) !important;
 }
 </style>
