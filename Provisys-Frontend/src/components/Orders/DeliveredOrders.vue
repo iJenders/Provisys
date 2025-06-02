@@ -138,7 +138,7 @@ const handleConfirmPayment = () => {
                 </div>
 
                 <!-- Table -->
-                <el-table class="pointer-rows" :data="computedOrders" stripe border style="width:100%"
+                <el-table class="pointer-rows" :data="computedOrders" stripe border style="width:100%" max-height="500"
                     @row-click="(e) => { handleOrderClick(e) }">
                     <el-table-column prop="id" label="Id" min-width="60" />
                     <el-table-column prop="date" label="Fecha" width="120" />
@@ -209,7 +209,7 @@ const handleConfirmPayment = () => {
                 <!-- Order Products -->
                 <div class="w-full flex flex-col gap-4">
                     <h3 class="text-stone-700 text-lg font-medium">Productos:</h3>
-                    <el-table :data="selectedOrder.products" stripe border style="width:100%">
+                    <el-table :data="selectedOrder.products" stripe border style="width:100%" max-height="500">
                         <el-table-column prop="productDetails.id" label="Id" min-width="60" />
                         <el-table-column prop="productDetails.name" label="Nombre" width="120" />
                         <el-table-column prop="productDetails.provider.name" label="Proveedor" width="120" />
