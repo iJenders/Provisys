@@ -75,7 +75,6 @@ class UsersModel
         return CredentialsModel::getCredential($this->username);
     }
 
-    // Setters
     // Métodos estáticos
     public static function getUser($username)
     {
@@ -102,6 +101,28 @@ class UsersModel
         } else {
             return null; // No se encontró el usuario
         }
+    }
+
+    public static function userExists($username)
+    {
+        $db = DBConnection::getInstance()->getConnection();
+
+        $query = "SELECT * FROM usuario WHERE nombre_usuario = '$username'";
+
+        $result = $db->query($query);
+
+        return $result->num_rows > 0; // Devuelve true si el usuario existe, false en caso contrario
+    }
+
+    public static function emailExists($email)
+    {
+        $db = DBConnection::getInstance()->getConnection();
+
+        $query = "SELECT * FROM usuario WHERE correo_electrónico = '$email'";
+
+        $result = $db->query($query);
+
+        return $result->num_rows > 0; // Devuelve true si el correo electrónico ya está en uso, false en caso contrario
     }
 
     public static function createUser($username, $password, $names, $lastNames, $email, $phone, $secondaryPhone = null, $address, $roleId = 2)

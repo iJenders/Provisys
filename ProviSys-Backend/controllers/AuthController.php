@@ -128,9 +128,15 @@ class AuthController
         }
 
         // Verificar si el usuario ya existe en la base de datos
-        $existingUser = UsersModel::getUser($username);
+        $existingUser = UsersModel::userExists($username);
         if ($existingUser) {
-            Responses::json(['errors' => ['El usuario "' . $username . '" ya existe']], 409);
+            Responses::json(['errors' => ['El usuario "' . $username . '" ya existe']], 400);
+        }
+
+        // Verificar si el correo electrónico ya está en uso
+        $existingEmail = UsersModel::emailExists($email);
+        if ($existingEmail) {
+            Responses::json(['errors' => ['El correo electrónico "' . $email . '" ya está en uso']], 400);
         }
 
         // Crear un nuevo usuario

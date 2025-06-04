@@ -17,13 +17,18 @@ class DBConnection
             Responses::json(['errors' => ['Error al conectar a la base de datos: ' . 'Faltan variables de entorno']], 500);
         }
 
-        $this->connection = new mysqli(
-            $ENV['DB_HOST'],
-            $ENV['DB_USER'],
-            $ENV['DB_PASSWORD'],
-            $ENV['DB_NAME'],
-            $ENV['DB_PORT']
-        );
+        try {
+            $this->connection = new mysqli(
+                $ENV['DB_HOST'],
+                $ENV['DB_USER'],
+                $ENV['DB_PASSWORD'],
+                $ENV['DB_NAME'],
+                $ENV['DB_PORT']
+            );
+        } catch (Exception $e) {
+            // Si hay un error al crear la conexión, devolver un error 500
+            Responses::json(['errors' => ['Error al conectar a la base de datos: ' . $e->getMessage()]], 500);
+        }
 
         if ($this->connection->connect_error) {
             Responses::json(['errors' => ['Error al conectar a la base de datos: ' . $this->connection->connect_error]], 500);
