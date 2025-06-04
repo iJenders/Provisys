@@ -62,8 +62,16 @@ class Validator
 
     public function alpha(): Validator
     {
-        if (!preg_match('/^[a-zA-Z]+$/', $this->text)) {
+        if (!preg_match('/^\p{L}+$/', $this->text)) {
             $this->errors[] = 'El campo de ' . $this->getAlias() . '  solo puede contener letras.';
+        }
+        return $this;
+    }
+
+    public function alphaWithSpaces(): Validator
+    {
+        if (!preg_match('/^[\p{L}\s]+$/u', $this->text)) {
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  solo puede contener letras y espacios.';
         }
         return $this;
     }
@@ -78,16 +86,48 @@ class Validator
 
     public function alphaNumeric(): Validator
     {
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $this->text)) {
+        if (!preg_match('/^[\p{L}\d]+$/u', $this->text)) {
             $this->errors[] = 'El campo de ' . $this->getAlias() . '  solo puede contener letras y números.';
+        }
+        return $this;
+    }
+
+    public function alphaNumericWithSpaces(): Validator
+    {
+        if (!preg_match('/^[\p{L}\d\s]+$/u', $this->text)) {
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  solo puede contener letras, números y espacios.';
+        }
+        return $this;
+    }
+
+    public function alphaNumericWithSecureSpecialChars(): Validator
+    {
+        if (!preg_match('/^[\p{L}\d\s\-_@.]+$/u', $this->text)) {
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  solo puede contener letras, números, espacios y caracteres especiales seguros (-, _, @, .).';
+        }
+        return $this;
+    }
+
+    public function spaces(int $spaces): Validator
+    {
+        if (substr_count($this->text, ' ') !== $spaces) {
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  debe contener exactamente ' . $spaces . ' espacios.';
+        }
+        return $this;
+    }
+
+    public function maxSpaces(int $maxSpaces): Validator
+    {
+        if (substr_count($this->text, ' ') > $maxSpaces) {
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  no puede contener más de ' . $maxSpaces . ' espacios.';
         }
         return $this;
     }
 
     public function password(): Validator
     {
-        if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/', $this->text)) {
-            $this->errors[] = 'La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula y un número.';
+        if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,64}$/', $this->text)) {
+            $this->errors[] = 'La contraseña debe tener al menos 8 caracteres, máximo 64, una letra mayúscula, una letra minúscula y un número.';
         }
         return $this;
     }
@@ -146,6 +186,23 @@ class Validator
             $this->errors[] = 'El campo de ' . $this->getAlias() . '  solo puede contener letras, números, guiones y guiones bajos.';
         }
         return $this;
+    }
+
+    // Métodos estáticos
+
+    public static function ensureFields(array $data, array $requiredFields): void
+    {
+        $missingFields = [];
+
+        foreach ($requiredFields as $field) {
+            if (!isset($data[$field])) {
+                $missingFields[] = $field;
+            }
+        }
+
+        if (!empty($missingFields)) {
+            Responses::json(['errors' => ['Faltan los siguientes campos: ' . implode(', ', $missingFields)]], 400);
+        }
     }
 }
 

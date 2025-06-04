@@ -77,6 +77,8 @@ const shoppingCartStore = useShoppingCartStore()
 
 const showShoppingCart = ref(false)
 const showUserMenu = ref(false)
+
+// For responsive design, we will toggle the links menu
 const showLinksMenu = ref(true)
 
 const getSubTotal = computed(() => {
@@ -132,6 +134,7 @@ onMounted(() => {
         showLinksMenu.value = false
     }
 })
+
 </script>
 
 <template>
@@ -174,7 +177,7 @@ onMounted(() => {
                 @click="(e) => { e.preventDefault(); toggleUserMenu() }">
                 <User size="32" />
             </a>
-            <a v-if="!authStore.isAuthenticated || authStore.user.roleId === 2" href=""
+            <a v-if="!authStore.isAuthenticated || authStore.user.roleId == 2" href=""
                 class="text-white font-semibold hover:text-green-500 transition"
                 @click="(e) => { e.preventDefault(); toggleShoppingCart() }">
                 <ShoppingCart size="32" />
