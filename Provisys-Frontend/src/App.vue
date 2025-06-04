@@ -7,7 +7,8 @@ import { useAuthStore } from './stores/authStore';
 const authStore = useAuthStore();
 
 onMounted(() => {
-  // Check if the user is authenticated
+  // Verificar la autenticación al cargar la aplicación
+  // y cargar el token desde localStorage si está disponible
   const token = localStorage.getItem('token');
   authStore.token = token;
   if (!!token) {

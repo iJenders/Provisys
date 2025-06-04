@@ -1,13 +1,13 @@
 <template>
     <div class="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-            <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-                <div class="w-max flex items-center justify-center mx-auto mb-6">
-                    <h2 class="mt-6 text-center text-3xl font-extrabold text-stone-800">
-                        Crear una cuenta
-                    </h2>
-                </div>
-                <el-form ref="formRef" :model="form" label-position="top" v-loading="fetching">
+            <div class="flex flex-col items-center bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 gap-4">
+                <UserRoundPlus class="top-4 left-4 text-blue-500 font-bold" size="64" />
+                <h2 class="text-stone-700 text-2xl font-bold">
+                    Crear una cuenta
+                </h2>
+                <Line class="bg-stone-200" orientation="horizontal" />
+                <el-form ref="formRef" :model="form" label-position="top" v-loading="fetching" class="w-full">
                     <el-form-item label="Nombres" prop="names">
                         <el-input v-model="form.names" placeholder="Ej: Juan Antonio" />
                     </el-form-item>
@@ -48,8 +48,8 @@
                         Registrarse
                     </el-button>
                 </el-form>
-
-                <div class="mt-6">
+                <Line class="bg-stone-200" orientation="horizontal" />
+                <div>
                     <div class="relative">
                         <div class="absolute inset-0 flex items-center">
                             <div class="w-full border-t border-gray-300"></div>
@@ -60,8 +60,7 @@
                             </span>
                         </div>
                     </div>
-
-                    <div class="mt-6">
+                    <div class="mt-2">
                         <router-link to="/login"
                             class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                             Inicia Sesión
@@ -75,10 +74,14 @@
 
 <script setup>
 import Line from '@/components/Line.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import { ElNotification } from 'element-plus';
 import { handleRequestError } from '@/utils/fetchNotificationsHandlers';
+import { UserRoundPlus } from 'lucide-vue-next';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const formRef = ref(null);
 
@@ -120,4 +123,12 @@ const handleRegister = () => {
             fetching.value = false;
         });
 };
+
+onMounted(() => {
+    // Si el usuario ya está autenticado, redirigir a la página principal
+    const token = localStorage.getItem('token');
+    if (token) {
+        router.push('/');
+    }
+})
 </script>

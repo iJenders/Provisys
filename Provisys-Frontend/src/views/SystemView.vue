@@ -1,7 +1,10 @@
 <script setup>
 import { LayoutDashboard, Truck, Apple, Package, User, ShieldUser, ScrollText } from 'lucide-vue-next';
-import { onMounted, onUpdated } from 'vue';
+import { onBeforeMount, onMounted, onUpdated } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/authStore';
+
+const authStore = useAuthStore();
 
 const router = useRouter();
 
@@ -43,14 +46,26 @@ const systemLinks = [
     }
 ]
 
+onBeforeMount(() => {
+    // Si no se tiene sesión iniciada, redirigir al login
+
+    if (router.currentRoute.value.path.includes('/system')) {
+        if (authStore.token === '' || authStore.token === null || authStore.user.roleId == 2) {
+            router.push('/login');
+        }
+    }
+})
+
 onMounted(() => {
-    if (router.currentRoute.value.path === '/system') {
+    if (router.currentRoute.value.path === '/system' || router.currentRoute.value.path === '/system/') {
+        // Redirigir a la ruta de resumen si se accede a /system directamente
         router.push('/system/summary')
     }
 })
 
 onUpdated(() => {
-    if (router.currentRoute.value.path === '/system') {
+    if (router.currentRoute.value.path === '/system' || router.currentRoute.value.path === '/system/') {
+        // Redirigir a la ruta de resumen si se accede a /system directamente
         router.push('/system/summary')
     }
 })

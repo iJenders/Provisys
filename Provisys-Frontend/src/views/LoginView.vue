@@ -2,6 +2,7 @@
     <div class="w-full p-6 h-screen flex items-center justify-center">
         <div
             class="w-full md:w-[400px] flex flex-col items-center justify-center gap-4 bg-white border border-stone-200 rounded-lg p-6 shadow-md relative">
+            <LogIn class="top-4 left-4 text-blue-500 font-bold" size="64" />
             <h2 class="text-stone-700 text-2xl font-bold">Iniciar Sesión</h2>
             <Line class="bg-stone-200" orientation="horizontal" />
             <el-form label-position="top" class="w-full" label-width="100px" v-loading="loading">
@@ -33,9 +34,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import Line from '@/components/Line.vue';
-import { User, KeyRound } from 'lucide-vue-next'
+import { User, KeyRound, LogIn } from 'lucide-vue-next'
 import { ElNotification } from 'element-plus';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
@@ -80,4 +81,12 @@ const handleLogin = () => {
             loading.value = false;
         });
 }
+
+onMounted(() => {
+    // Si el usuario ya está autenticado, redirigir a la página principal
+    const token = localStorage.getItem('token');
+    if (token) {
+        router.push('/');
+    }
+})
 </script>
