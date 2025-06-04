@@ -76,7 +76,6 @@ class UsersModel
     }
 
     // Setters
-
     // Métodos estáticos
     public static function getUser($username)
     {
@@ -102,6 +101,30 @@ class UsersModel
             );
         } else {
             return null; // No se encontró el usuario
+        }
+    }
+
+    public static function createUser($username, $password, $names, $lastNames, $email, $phone, $secondaryPhone = null, $address, $roleId = 2)
+    {
+        $db = DBConnection::getInstance()->getConnection();
+
+        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+        $registerDate = date('Y-m-d H:i:s');
+
+        $startTransactionQuery = "START TRANSACTION";
+        $commitTransactionQuery = "COMMIT";
+        $rollbackTransactionQuery = "ROLLBACK";
+        $insertCredentialQuery = "INSERT INTO credencial (nombre_usuario, password) VALUES ('$username', '$hashedPassword')";
+        $insertUserQuery = "INSERT INTO usuario (nombre_usuario, fecha_registro, nombres, apellidos, correo_electrónico, telefono, telefono_secundario, direccion, id_rol) VALUES ('$username', '$registerDate', '$names', '$lastNames', '$email', '$phone', '$secondaryPhone', '$address', '$roleId')";
+
+        $db->query($startTransactionQuery);
+        $db->query($insertCredentialQuery);
+        if ($db->query($insertUserQuery)) {
+            $db->query($commitTransactionQuery);
+            return new UsersModel($username, $registerDate, $names, $lastNames, $email, $phone, $secondaryPhone, $address, $roleId);
+        } else {
+            $db->query($rollbackTransactionQuery);
+            throw new Exception("Error al crear el usuario: " . $db->error);
         }
     }
 }

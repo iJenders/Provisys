@@ -8,11 +8,11 @@
                     </h2>
                 </div>
                 <el-form ref="formRef" :model="form" label-position="top" v-loading="fetching">
-                    <el-form-item label="Nombres" prop="name">
-                        <el-input v-model="form.name" placeholder="Ej: Juan Antonio" />
+                    <el-form-item label="Nombres" prop="names">
+                        <el-input v-model="form.names" placeholder="Ej: Juan Antonio" />
                     </el-form-item>
-                    <el-form-item label="Apellidos" prop="surname">
-                        <el-input v-model="form.surname" placeholder="Ej: Pérez Gómez" />
+                    <el-form-item label="Apellidos" prop="lastNames">
+                        <el-input v-model="form.lastNames" placeholder="Ej: Pérez Gómez" />
                     </el-form-item>
                     <el-form-item label="Correo Electrónico" prop="email">
                         <el-input v-model="form.email" type="email" placeholder="Ej: juanperez@ejemplo.com" />
@@ -37,8 +37,8 @@
                         <el-input v-model="form.password" :type="form.showPassword ? 'text' : 'password'"
                             placeholder="Ingresa tu contraseña" />
                     </el-form-item>
-                    <el-form-item label="Confirmar Contraseña" prop="confirmPassword">
-                        <el-input v-model="form.confirmPassword" :type="form.showPassword ? 'text' : 'password'"
+                    <el-form-item label="Confirmar Contraseña" prop="passwordConfirmation">
+                        <el-input v-model="form.passwordConfirmation" :type="form.showPassword ? 'text' : 'password'"
                             placeholder="Confirma tu contraseña" />
                     </el-form-item>
                     <el-checkbox v-model="form.showPassword">
@@ -76,29 +76,48 @@
 <script setup>
 import Line from '@/components/Line.vue';
 import { ref } from 'vue';
+import axios from 'axios';
+import { ElNotification } from 'element-plus';
+import { handleRequestError } from '@/utils/fetchNotificationsHandlers';
 
 const formRef = ref(null);
 
 const fetching = ref(false);
 
 const form = ref({
-    name: '',
-    surname: '',
+    names: '',
+    lastNames: '',
     email: '',
     phone: '',
     secondaryPhone: '',
     address: '',
+    username: '',
     password: '',
-    confirmPassword: '',
+    passwordConfirmation: '',
     showPassword: false
 });
 
 const handleRegister = () => {
     fetching.value = true;
 
-    // Simular solicitud
-    setTimeout(() => {
-        fetching.value = false;
-    }, 1000);
+    const dataToSend = { ...form.value };
+    delete dataToSend.showPassword;
+
+    axios.post(import.meta.env.VITE_API_URL + '/register', form.value)
+        .then(response => {
+            ElNotification({
+                title: 'Éxito',
+                message: 'Registro exitoso. Por favor, inicia sesión.',
+                type: 'success',
+                duration: 3000,
+                offset: 80,
+                zIndex: 10000,
+            });
+            formRef.value.resetFields();
+            router.push('/login');
+        })
+        .catch(error => handleRequestError(error)).finally(() => {
+            fetching.value = false;
+        });
 };
 </script>
