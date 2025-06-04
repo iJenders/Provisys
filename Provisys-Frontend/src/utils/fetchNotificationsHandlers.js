@@ -17,7 +17,7 @@ const handleRequestError = (error) => {
 
   if (error.status !== 500) {
     message +=
-      '<div class="max-h-[240px] p-2 border-s-6 bg-red-100 border-red-300 overflow-y-scroll">';
+      '<div class="max-h-[240px] p-2 border-s-6 bg-stone-100 border-red-300 overflow-y-scroll">';
     message += error.response.data.response.errors
       .map((e) => {
         return `<li class="pl-4">${e}</li>`;

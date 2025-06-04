@@ -19,8 +19,8 @@ onMounted(() => {
 
 <template>
   <HeaderComponent />
-  <main class="w-full min-h-[calc(100vh-80px)] p-0 pt-[80px]">
-    <router-view />
-  </main>
+    <main class="w-full min-h-[calc(100vh-80px)] p-0 pt-[80px]">
+      <router-view />
+    </main>
   <FooterComponent />
 </template>

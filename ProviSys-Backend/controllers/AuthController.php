@@ -18,7 +18,7 @@ class AuthController
         $username = $data['username'];
         $password = $data['password'];
 
-        $usernameValidator = new Validator($username, 'usuario');
+        $usernameValidator = new Validator($username, 'username');
         $passwordValidator = new Validator($password, 'contraseña');
 
         $usernameValidator->required()->minLength(3)->maxLength(255)->alphaNumeric();
