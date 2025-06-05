@@ -1,8 +1,10 @@
 <script setup>
 import { useFullScreenModals } from '@/composables/fullScreenModals';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import Line from '@/components/Line.vue';
 import { ElMessageBox, ElNotification } from 'element-plus';
+import axios from 'axios';
+import { handleRequestError } from '@/utils/fetchNotificationsHandlers';
 
 const props = defineProps([
     'selectedCategory',
@@ -14,6 +16,11 @@ const emit = defineEmits([
 ]);
 
 const fetchingModal = ref(false);
+const category = ref({
+    id: null,
+    name: '',
+    description: ''
+})
 
 const handleEditCategory = () => {
     ElMessageBox.confirm('¿Estás seguro de que deseas guardar los cambios?', 'Confirmación', {
@@ -23,19 +30,26 @@ const handleEditCategory = () => {
     }).then(() => {
         fetchingModal.value = true;
 
-        // Simular petición
-        setTimeout(() => {
-            fetchingModal.value = false;
-
-            ElNotification.warning({
-                title: 'Advertencia',
-                message: 'La funcionalidad de eliminar categorías aún no está disponible.',
-                duration: 3000,
-                zIndex: 10000,
-                offset: 80
+        axios.post(import.meta.env.VITE_API_URL + '/categories/edit', {
+            id: category.value.id,
+            name: category.value.name,
+            description: category.value.description
+        }, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+        }).then(response => {
+            ElNotification({
+                title: 'Categoría guardada',
+                message: 'La categoría se ha guardado correctamente',
+                type: 'success',
+                offsetset: 80,
+                zIndex: 10000
             });
-
-        }, 1000);
+            emit('closeModal');
+        }).catch(error => { handleRequestError(error) }).finally(() => {
+            fetchingModal.value = false;
+        })
     })
 };
 
@@ -47,19 +61,24 @@ const handleDeleteCategory = () => {
     }).then(() => {
         fetchingModal.value = true;
 
-        // Simular petición
-        setTimeout(() => {
-            fetchingModal.value = false;
-
-            ElNotification.warning({
-                title: 'Advertencia',
-                message: 'La funcionalidad de eliminar categorías aún no está disponible.',
-                duration: 3000,
-                zIndex: 10000,
-                offset: 80
+        axios.post(import.meta.env.VITE_API_URL + '/categories/delete', {
+            id: category.value.id
+        }, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+        }).then(response => {
+            ElNotification({
+                title: 'Categoría eliminada',
+                message: 'La categoría se ha eliminado correctamente',
+                type: 'success',
+                offsetset: 80,
+                zIndex: 10000
             });
-
-        }, 1000);
+            emit('closeModal');
+        }).catch(error => { handleRequestError(error) }).finally(() => {
+            fetchingModal.value = false;
+        })
     })
 };
 
@@ -74,6 +93,12 @@ const closeModal = () => {
     })
 };
 
+watch(props, () => {
+    if (props.isSelectedCategory) {
+        category.value = { ...props.selectedCategory };
+    }
+})
+
 const { fullScreenModals } = useFullScreenModals();
 </script>
 
@@ -83,16 +108,16 @@ const { fullScreenModals } = useFullScreenModals();
         <!-- Modal Content -->
         <Line orientation="horizontal" class="bg-stone-200" />
         <Transition name="modal-out">
-            <div v-if="selectedCategory" class="w-full flex flex-col md:flex-row gap-4 mt-4" v-loading="fetchingModal">
+            <div v-if="category" class="w-full flex flex-col md:flex-row gap-4 mt-4" v-loading="fetchingModal">
                 <el-form label-position="top" class="w-full">
                     <el-form-item label="Id">
-                        <el-input v-model="selectedCategory.id" disabled />
+                        <el-input v-model="category.id" disabled />
                     </el-form-item>
                     <el-form-item label="Nombre">
-                        <el-input v-model="selectedCategory.name" />
+                        <el-input v-model="category.name" />
                     </el-form-item>
                     <el-form-item label="Descripción">
-                        <el-input v-model="selectedCategory.description" type="textarea" />
+                        <el-input v-model="category.description" type="textarea" />
                     </el-form-item>
                 </el-form>
             </div>

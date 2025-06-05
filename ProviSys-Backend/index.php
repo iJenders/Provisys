@@ -112,7 +112,7 @@ if (isset($ROUTES[$REQUEST_ROUTE])) {
 
     call_user_func($ROUTE['action']);
 } else {
-    Responses::json(['error' => 'Ruta no encontrada: ' . $REQUEST_ROUTE], 404);
+    Responses::json(['errors' => ['Ruta no encontrada: "' . $REQUEST_ROUTE . '"']], 404);
     exit;
 }
 ?>

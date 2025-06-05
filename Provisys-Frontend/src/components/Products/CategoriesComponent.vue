@@ -1,21 +1,21 @@
 <script setup>
 import { Search } from 'lucide-vue-next';
 import Line from '@/components/Line.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import CategoryDetailsModal from './CategoryDetailsModal.vue';
 import CategoryAddModal from './CategoryAddModal.vue';
+import axios from 'axios';
+import { handleRequestError } from '@/utils/fetchNotificationsHandlers';
 
-const categories = ref([
-    { id: 1, name: 'Electrónica', description: 'Dispositivos electrónicos y accesorios', currentPrice: 299.99, category: { name: 'Tecnología' }, provider: { name: 'Proveedor A' } },
-    { id: 2, name: 'Ropa', description: 'Vestimenta y accesorios de moda', currentPrice: 49.99, category: { name: 'Moda' }, provider: { name: 'Proveedor B' } },
-    { id: 3, name: 'Hogar', description: 'Artículos para el hogar y decoración', currentPrice: 89.99, category: { name: 'Hogar' }, provider: { name: 'Proveedor C' } },
-]);
+const categories = ref([]);
 
 const fetchingCategories = ref(false);
 const addingCategory = ref(false);
 
 const selectedCategory = ref(null);
 const isSelectedCategory = ref(false);
+
+const searchInput = ref('');
 
 const paginationConfig = ref({
     page: 1,
@@ -38,11 +38,42 @@ const handleCategoryClick = (category) => {
 const handleCloseDetailsModal = () => {
     isSelectedCategory.value = false;
     selectedCategory.value = null;
+    fetchCategories();
 }
 
 const handleCloseAddModal = () => {
     addingCategory.value = false;
+    fetchCategories();
 }
+
+const fetchCategories = () => {
+    fetchingCategories.value = true;
+
+    let data = {}
+
+    if (searchInput.value) {
+        data = {
+            search: searchInput.value
+        }
+    }
+
+    axios.post(import.meta.env.VITE_API_URL + '/categories', data, {
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+        }
+    }).then(response => {
+        categories.value = response.data.response;
+        paginationConfig.value.totalRows = categories.value.length;
+    }).catch(error => {
+        handleRequestError(error);
+    }).finally(() => {
+        fetchingCategories.value = false;
+    });
+}
+
+onMounted(() => {
+    fetchCategories();
+})
 </script>
 
 <template>
@@ -55,9 +86,15 @@ const handleCloseAddModal = () => {
             <div class="w-full flex flex-col gap-4 overflow-x-hidden">
                 <!-- Searcher -->
                 <div class="w-full flex items-center gap-4">
-                    <el-input style="width: 100%;" placeholder="Buscar Categoría..." :prefix-icon="Search" />
+                    <el-input style="width: 100%;" placeholder="Buscar Categoría..." :prefix-icon="Search"
+                        v-model="searchInput" />
+                    <!-- Apply search button -->
+                    <el-button class="!rounded-full !py-1 !px-2" type="primary" @click="fetchCategories">
+                        <Search size="16" class="mr-1" />
+                        Buscar
+                    </el-button>
                     <!--Add category button-->
-                    <el-button class="!rounded-full !py-1 !px-2" type="success" @click="addingCategory = true">
+                    <el-button class="!rounded-full !py-1 !px-2 !m-0" type="success" @click="addingCategory = true">
                         Añadir Categoría
                     </el-button>
                 </div>

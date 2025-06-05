@@ -102,8 +102,8 @@ class Validator
 
     public function alphaNumericWithSecureSpecialChars(): Validator
     {
-        if (!preg_match('/^[\p{L}\d\s\-_@.]+$/u', $this->text)) {
-            $this->errors[] = 'El campo de ' . $this->getAlias() . '  solo puede contener letras, números, espacios y caracteres especiales seguros (-, _, @, .).';
+        if (!preg_match('/^[\p{L}\d\s\-_@.,]+$/u', $this->text)) {
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  solo puede contener letras, números, espacios y caracteres especiales seguros (- _ @ . ,).';
         }
         return $this;
     }
