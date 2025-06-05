@@ -74,5 +74,37 @@ $POST_ROUTES = [
             ['AuthMiddleware']
         ]
     ],
+    '/categories' => [
+        'action' => ['CategoriesController', 'getCategories'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_category']]
+        ]
+    ],
+    '/categories/edit' => [
+        'action' => ['CategoriesController', 'editCategory'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['edit_category']]
+        ]
+    ],
+    '/categories/delete' => [
+        'action' => ['CategoriesController', 'deleteCategory'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['delete_category']]
+        ]
+    ],
+    '/categories/create' => [
+        'action' => ['CategoriesController', 'createCategory'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['create_category']]
+        ]
+    ],
 ];
 ?>

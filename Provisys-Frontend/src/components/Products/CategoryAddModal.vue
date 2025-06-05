@@ -3,6 +3,8 @@ import { useFullScreenModals } from '@/composables/fullScreenModals';
 import { ref } from 'vue';
 import Line from '@/components/Line.vue';
 import { ElMessageBox, ElNotification } from 'element-plus';
+import axios from 'axios';
+import { handleRequestError } from '@/utils/fetchNotificationsHandlers';
 
 const props = defineProps([
     'addingCategory',
@@ -14,6 +16,12 @@ const emit = defineEmits([
 
 const fetchingModal = ref(false);
 
+const category = ref({
+    id: null,
+    name: '',
+    description: ''
+});
+
 const handleSaveCategory = () => {
     ElMessageBox.confirm('¿Estás seguro de que deseas guardar la categoría?', 'Confirmación', {
         confirmButtonText: 'Sí',
@@ -22,19 +30,27 @@ const handleSaveCategory = () => {
     }).then(() => {
         fetchingModal.value = true;
 
-        // Simular petición
-        setTimeout(() => {
-            fetchingModal.value = false;
-
-            ElNotification.warning({
-                title: 'Advertencia',
-                message: 'La funcionalidad de guardar categorías aún no está disponible.',
-                duration: 3000,
-                zIndex: 10000,
-                offset: 80
+        axios.post(import.meta.env.VITE_API_URL + '/categories/create', {
+            name: category.value.name,
+            description: category.value.description
+        }, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+        }).then(response => {
+            ElNotification({
+                title: 'Categoría guardada',
+                message: 'La categoría se ha guardado correctamente',
+                type: 'success',
+                offsetset: 80,
+                zIndex: 10000
             });
-
-        }, 1000);
+            emit('closeModal');
+        }).catch(error => {
+            handleRequestError(error);
+        }).finally(() => {
+            fetchingModal.value = false;
+        });
     })
 };
 
@@ -48,12 +64,6 @@ const closeModal = () => {
         emit('closeModal');
     })
 };
-
-const category = ref({
-    id: null,
-    name: '',
-    description: ''
-});
 
 const { fullScreenModals } = useFullScreenModals();
 </script>

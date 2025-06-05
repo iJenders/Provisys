@@ -50,7 +50,7 @@ onBeforeMount(() => {
     // Si no se tiene sesión iniciada, redirigir al login
 
     if (router.currentRoute.value.path.includes('/system')) {
-        if (authStore.token === '' || authStore.token === null || authStore.user.roleId == 2) {
+        if (authStore.token === '' || authStore.token === null || !authStore.user || authStore.user.roleId == 2) {
             router.push('/login');
         }
     }

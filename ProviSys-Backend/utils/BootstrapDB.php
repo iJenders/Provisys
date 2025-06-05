@@ -1,3 +1,0 @@
-<?php
-
-// Check database connection

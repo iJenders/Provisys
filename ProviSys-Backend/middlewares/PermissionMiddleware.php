@@ -10,12 +10,6 @@ class PermissionMiddleware
         // La verificación de permisos se hace mediante la tabla "permisos" y "roles" en la base de datos.
         // El rol y permiso del usuario actual se obtienen a través del JWT.
 
-        echo Responses::json([
-            'message' => [
-                'permisos requeridos' => $params,
-            ]
-        ], 200);
-
-        exit;
+        
     }
 }

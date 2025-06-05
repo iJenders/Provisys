@@ -399,9 +399,11 @@ SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
+ALTER TABLE `provisys`.`categoria_producto` ADD COLUMN `deleted` TINYINT DEFAULT 0;
+
 
 -- -----------------------------------------------------
--- Data for table `provisys`.`rol`
+-- Data for table `provisys`
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `provisys`;
