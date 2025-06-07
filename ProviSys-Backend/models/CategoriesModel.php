@@ -58,7 +58,7 @@ class CategoriesModel
     {
         $db = DBConnection::getInstance()->getConnection();
 
-        $query = "SELECT * FROM categoria_producto WHERE deleted = 0";
+        $query = "SELECT * FROM categoria_producto WHERE eliminado = 0";
         $result = $db->query($query);
 
         if ($result) {
@@ -80,7 +80,7 @@ class CategoriesModel
     {
         $db = DBConnection::getInstance()->getConnection();
 
-        $query = "SELECT * FROM categoria_producto WHERE deleted = 0 AND (id_categoria LIKE '%$search%' OR nombre LIKE '%$search%' OR descripcion LIKE '%$search%')";
+        $query = "SELECT * FROM categoria_producto WHERE eliminado = 0 AND (id_categoria LIKE '%$search%' OR nombre LIKE '%$search%' OR descripcion LIKE '%$search%')";
         $result = $db->query($query);
 
         if ($result) {
@@ -131,7 +131,7 @@ class CategoriesModel
     {
         $db = DBConnection::getInstance()->getConnection();
 
-        $query = "UPDATE categoria_producto SET deleted = 1 WHERE id_categoria = $id";
+        $query = "UPDATE categoria_producto SET eliminado = 1 WHERE id_categoria = $id";
         $result = $db->query($query);
         if ($result) {
             return true;

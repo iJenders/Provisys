@@ -130,7 +130,7 @@ const { fullScreenModals } = useFullScreenModals();
                     Cerrar
                 </el-button>
                 <el-button class="!ml-0" type="danger" :disabled="fetchingModal" @click="handleDeleteCategory">
-                    Eliminar Producto
+                    Eliminar Categoría
                 </el-button>
                 <el-button class="!ml-0" type="success" :disabled="fetchingModal" @click="handleEditCategory">
                     Guardar Cambios

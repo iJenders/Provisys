@@ -92,7 +92,7 @@ class UsersModel
                 $user['fecha_registro'],
                 $user['nombres'],
                 $user['apellidos'],
-                $user['correo_electrónico'],
+                $user['correo'],
                 $user['telefono'],
                 $user['telefono_secundario'],
                 $user['direccion'],
@@ -118,14 +118,14 @@ class UsersModel
     {
         $db = DBConnection::getInstance()->getConnection();
 
-        $query = "SELECT * FROM usuario WHERE correo_electrónico = '$email'";
+        $query = "SELECT * FROM usuario WHERE correo = '$email'";
 
         $result = $db->query($query);
 
         return $result->num_rows > 0; // Devuelve true si el correo electrónico ya está en uso, false en caso contrario
     }
 
-    public static function createUser($username, $password, $names, $lastNames, $email, $phone, $secondaryPhone = null, $address, $roleId = 2)
+    public static function createUser($username, $password, $names, $lastNames, $email, $phone, $address, $roleId = 2, $secondaryPhone = null)
     {
         $db = DBConnection::getInstance()->getConnection();
 
@@ -136,7 +136,7 @@ class UsersModel
         $commitTransactionQuery = "COMMIT";
         $rollbackTransactionQuery = "ROLLBACK";
         $insertCredentialQuery = "INSERT INTO credencial (nombre_usuario, password) VALUES ('$username', '$hashedPassword')";
-        $insertUserQuery = "INSERT INTO usuario (nombre_usuario, fecha_registro, nombres, apellidos, correo_electrónico, telefono, telefono_secundario, direccion, id_rol) VALUES ('$username', '$registerDate', '$names', '$lastNames', '$email', '$phone', '$secondaryPhone', '$address', '$roleId')";
+        $insertUserQuery = "INSERT INTO usuario (nombre_usuario, fecha_registro, nombres, apellidos, correo, telefono, telefono_secundario, direccion, id_rol) VALUES ('$username', '$registerDate', '$names', '$lastNames', '$email', '$phone', '$secondaryPhone', '$address', '$roleId')";
 
         $db->query($startTransactionQuery);
         $db->query($insertCredentialQuery);
