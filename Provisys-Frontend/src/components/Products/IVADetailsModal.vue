@@ -7,8 +7,8 @@ import axios from 'axios';
 import { handleRequestError } from '@/utils/fetchNotificationsHandlers';
 
 const props = defineProps([
-    'selectedProvider',
-    'isSelectedProvider',
+    'selectedIVA',
+    'isSelectedIVA',
 ]);
 
 const emit = defineEmits([
@@ -17,7 +17,7 @@ const emit = defineEmits([
 
 const fetchingModal = ref(false);
 
-const handleEditProvider = () => {
+const handleEditIVA = () => {
     ElMessageBox.confirm('¿Estás seguro de que deseas guardar los cambios?', 'Confirmación', {
         confirmButtonText: 'Sí',
         cancelButtonText: 'No',
@@ -26,15 +26,12 @@ const handleEditProvider = () => {
         fetchingModal.value = true;
 
         let data = {
-            id: props.selectedProvider.id,
-            name: props.selectedProvider.name,
-            phone: props.selectedProvider.phone,
-            secondaryPhone: props.selectedProvider.secondaryPhone,
-            email: props.selectedProvider.email,
-            address: props.selectedProvider.address,
+            id: props.selectedIVA.id,
+            name: props.selectedIVA.name,
+            value: props.selectedIVA.value,
         }
 
-        axios.post(import.meta.env.VITE_API_URL + '/manufacturers/update', data, {
+        axios.post(import.meta.env.VITE_API_URL + '/ivas/update', data, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -42,7 +39,7 @@ const handleEditProvider = () => {
         }).then((response) => {
             ElNotification({
                 title: 'Éxito',
-                message: 'Fabricante actualizado exitosamente',
+                message: 'IVA actualizado exitosamente',
                 type: 'success',
                 offset: 80,
                 zIndex: 10000,
@@ -56,8 +53,8 @@ const handleEditProvider = () => {
     })
 };
 
-const handleDeleteProvider = () => {
-    ElMessageBox.confirm('¿Estás seguro de que deseas eliminar este fabricante?', 'Confirmación', {
+const handleDeleteIVA = () => {
+    ElMessageBox.confirm('¿Estás seguro de que deseas eliminar este IVA?', 'Confirmación', {
         confirmButtonText: 'Sí',
         cancelButtonText: 'No',
         type: 'warning',
@@ -65,10 +62,10 @@ const handleDeleteProvider = () => {
         fetchingModal.value = true;
 
         let $data = {
-            id: props.selectedProvider.id,
+            id: props.selectedIVA.id,
         }
 
-        axios.post(import.meta.env.VITE_API_URL + '/manufacturers/delete', $data, {
+        axios.post(import.meta.env.VITE_API_URL + '/ivas/delete', $data, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -76,22 +73,21 @@ const handleDeleteProvider = () => {
         }).then((response) => {
             ElNotification.success({
                 title: 'Éxito',
-                message: 'Fabricante eliminado correctamente.',
+                message: 'IVA eliminado correctamente.',
                 duration: 3000,
                 zIndex: 10000,
                 offset: 80
             });
+            emit('closeModal');
         }).catch((error) => {
             handleRequestError(error);
         }).finally(() => {
             fetchingModal.value = false;
-            emit('closeModal');
         });
     })
 };
 
 const closeModal = () => {
-    // Confirmation
     ElMessageBox.confirm('¿Estás seguro de que deseas cerrar sin guardar los cambios?', 'Confirmación', {
         confirmButtonText: 'Sí',
         cancelButtonText: 'No',
@@ -105,30 +101,21 @@ const { fullScreenModals } = useFullScreenModals();
 </script>
 
 <template>
-    <el-dialog title="Detalles del Fabricante" width="80%" :before-close="closeModal" :fullscreen="fullScreenModals"
+    <el-dialog title="Detalles del IVA" width="80%" :before-close="closeModal" :fullscreen="fullScreenModals"
         class="!p-6">
         <!-- Modal Content -->
         <Line orientation="horizontal" class="bg-stone-200" />
         <Transition name="modal-out">
-            <div v-if="selectedProvider" class="w-full flex flex-col md:flex-row gap-4 mt-4" v-loading="fetchingModal">
+            <div v-if="selectedIVA" class="w-full flex flex-col md:flex-row gap-4 mt-4" v-loading="fetchingModal">
                 <el-form label-position="top" class="w-full">
-                    <el-form-item label="Cédula o RIF">
-                        <el-input v-model="selectedProvider.id" disabled />
+                    <el-form-item label="ID">
+                        <el-input v-model="selectedIVA.id" disabled />
                     </el-form-item>
                     <el-form-item label="Nombre">
-                        <el-input v-model="selectedProvider.name" />
+                        <el-input v-model="selectedIVA.name" />
                     </el-form-item>
-                    <el-form-item label="Teléfono">
-                        <el-input v-model="selectedProvider.phone" />
-                    </el-form-item>
-                    <el-form-item label="Teléfono Secundario">
-                        <el-input v-model="selectedProvider.secondaryPhone" />
-                    </el-form-item>
-                    <el-form-item label="Correo Electrónico">
-                        <el-input v-model="selectedProvider.email" />
-                    </el-form-item>
-                    <el-form-item label="Dirección">
-                        <el-input v-model="selectedProvider.address" />
+                    <el-form-item label="Porcentaje">
+                        <el-input v-model="selectedIVA.value" type="number" />
                     </el-form-item>
                 </el-form>
             </div>
@@ -140,11 +127,11 @@ const { fullScreenModals } = useFullScreenModals();
                 <el-button class="!ml-0" type="info" :disabled="fetchingModal" @click="closeModal">
                     Cerrar
                 </el-button>
-                <el-button class="!ml-0" :type="selectedProvider.deleted ? 'primary' : 'danger'"
-                    :disabled="fetchingModal" @click="handleDeleteProvider">
-                    {{ selectedProvider.deleted ? 'Restaurar' : 'Eliminar' }} Fabricante
+                <el-button class="!ml-0" :type="selectedIVA.deleted ? 'primary' : 'danger'" :disabled="fetchingModal"
+                    @click="handleDeleteIVA">
+                    {{ selectedIVA.deleted ? 'Restaurar' : 'Eliminar' }} IVA
                 </el-button>
-                <el-button class="!ml-0" type="success" :disabled="fetchingModal" @click="handleEditProvider">
+                <el-button class="!ml-0" type="success" :disabled="fetchingModal" @click="handleEditIVA">
                     Guardar Cambios
                 </el-button>
             </div>

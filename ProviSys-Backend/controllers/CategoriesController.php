@@ -46,6 +46,9 @@ class categoriesController
         $data = json_decode(file_get_contents('php://input'), true);
 
         $search = null;
+        $page = 1;
+        $onlyDisabled = false;
+
         if (isset($data['search'])) {
             $search = $data['search'];
             $searchValidator = new Validator($search, 'search');
@@ -57,15 +60,37 @@ class categoriesController
             }
         }
 
+        if (isset($data['page'])) {
+            $page = $data['page'];
+        }
+
+        if (isset($data['onlyDisabled'])) {
+            $onlyDisabled = $data['onlyDisabled'] == true;
+        }
+
+        $pageValidator = new Validator($page, 'page');
+        $pageValidator->required()->numeric()->minValue(1);
+
+        $errors = $pageValidator->getErrors();
+        if (!empty($errors)) {
+            Responses::json(['errors' => $errors], 400);
+        }
+
         // Obtener todas las categorías de la base de datos
+        $categories = null;
+        $count = null;
         try {
             if ($search) {
-                $categories = CategoriesModel::search($search);
+                $categories = CategoriesModel::getAll($page, $onlyDisabled, $search);
             } else {
-                $categories = CategoriesModel::getAll();
+                $categories = CategoriesModel::getAll($page, $onlyDisabled);
             }
+
+            $count = CategoriesModel::getCount($onlyDisabled, $search);
         } catch (Exception $e) {
-            Responses::json(['errors' => 'Error al obtener las categorías.'], 500);
+            Responses::json([
+                'errors' => 'Error al obtener las categorías.' . $e->getMessage()
+            ], 500);
         }
 
         $categoriesArray = [];
@@ -74,11 +99,15 @@ class categoriesController
                 'id' => $category->getId(),
                 'name' => $category->getName(),
                 'description' => $category->getDescription(),
+                'disabled' => $category->getDisabled()
             ];
         }
 
         // Devolver las categorías en formato JSON
-        Responses::json($categoriesArray, 200);
+        Responses::json([
+            'categories' => $categoriesArray,
+            'count' => $count
+        ], 200);
     }
 
     public static function editCategory()
@@ -105,7 +134,14 @@ class categoriesController
         $nameValidator->required()->minLength(3)->maxLength(45)->alphaNumericWithSpaces();
         $descriptionValidator->required()->minLength(3)->maxLength(255)->alphaNumericWithSecureSpecialChars();
 
-        $errors = array_merge($idValidator->getErrors(), $nameValidator->getErrors(), $descriptionValidator->getErrors());
+        if (isset($data['disabled'])) {
+            $disabled = $data['disabled'];
+            $disabledValidator = new Validator($disabled, 'disabled');
+            $disabledValidator->required()->isTinyInt();
+            $errors = array_merge($idValidator->getErrors(), $nameValidator->getErrors(), $descriptionValidator->getErrors(), $disabledValidator->getErrors());
+        } else {
+            $errors = array_merge($idValidator->getErrors(), $nameValidator->getErrors(), $descriptionValidator->getErrors());
+        }
 
         if (!empty($errors)) {
             Responses::json(['errors' => $errors], 400);
@@ -121,7 +157,11 @@ class categoriesController
 
         // Actualizar la categoría en la base de datos
         try {
-            CategoriesModel::edit($id, $name, $description);
+            if (isset($data['disabled'])) {
+                CategoriesModel::edit($id, $name, $description, $disabled);
+            } else {
+                CategoriesModel::edit($id, $name, $description);
+            }
         } catch (Exception $e) {
             Responses::json(['errors' => ['Error al editar la categoría.']], 500);
         }

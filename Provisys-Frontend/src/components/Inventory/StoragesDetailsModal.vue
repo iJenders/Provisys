@@ -1,15 +1,17 @@
 <script setup>
 import { useFullScreenModals } from '@/composables/fullScreenModals';
-import { onMounted, ref } from 'vue';
+import { ref, watch } from 'vue';
 import Line from '@/components/Line.vue';
 import { ElMessageBox, ElNotification } from 'element-plus';
 import axios from 'axios';
 import { handleRequestError } from '@/utils/fetchNotificationsHandlers';
 
 const props = defineProps([
-    'selectedProvider',
-    'isSelectedProvider',
+    'selectedStorage',
+    'isSelectedStorage',
 ]);
+
+const show = ref(false);
 
 const emit = defineEmits([
     'closeModal',
@@ -17,7 +19,7 @@ const emit = defineEmits([
 
 const fetchingModal = ref(false);
 
-const handleEditProvider = () => {
+const handleEditStorage = () => {
     ElMessageBox.confirm('¿Estás seguro de que deseas guardar los cambios?', 'Confirmación', {
         confirmButtonText: 'Sí',
         cancelButtonText: 'No',
@@ -26,23 +28,21 @@ const handleEditProvider = () => {
         fetchingModal.value = true;
 
         let data = {
-            id: props.selectedProvider.id,
-            name: props.selectedProvider.name,
-            phone: props.selectedProvider.phone,
-            secondaryPhone: props.selectedProvider.secondaryPhone,
-            email: props.selectedProvider.email,
-            address: props.selectedProvider.address,
+            id: props.selectedStorage.id,
+            name: props.selectedStorage.name,
+            description: props.selectedStorage.description,
+            vehicle: props.selectedStorage.vehicle ? 1 : 0,
         }
 
-        axios.post(import.meta.env.VITE_API_URL + '/manufacturers/update', data, {
+        axios.post(import.meta.env.VITE_API_URL + '/storages/update', data, {
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('token')
+                'Authorization': localStorage.getItem('token')
             }
         }).then((response) => {
             ElNotification({
                 title: 'Éxito',
-                message: 'Fabricante actualizado exitosamente',
+                message: 'Almacén actualizado exitosamente',
                 type: 'success',
                 offset: 80,
                 zIndex: 10000,
@@ -56,79 +56,77 @@ const handleEditProvider = () => {
     })
 };
 
-const handleDeleteProvider = () => {
-    ElMessageBox.confirm('¿Estás seguro de que deseas eliminar este fabricante?', 'Confirmación', {
+const handleDeleteStorage = () => {
+    ElMessageBox.confirm('¿Estás seguro de que deseas eliminar este almacén?', 'Confirmación', {
         confirmButtonText: 'Sí',
         cancelButtonText: 'No',
         type: 'warning',
     }).then(() => {
         fetchingModal.value = true;
 
-        let $data = {
-            id: props.selectedProvider.id,
+        let data = {
+            id: props.selectedStorage.id,
         }
 
-        axios.post(import.meta.env.VITE_API_URL + '/manufacturers/delete', $data, {
+        axios.post(import.meta.env.VITE_API_URL + '/storages/delete', data, {
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('token')
+                'Authorization': localStorage.getItem('token')
             }
         }).then((response) => {
             ElNotification.success({
                 title: 'Éxito',
-                message: 'Fabricante eliminado correctamente.',
+                message: 'Almacén eliminado correctamente.',
                 duration: 3000,
                 zIndex: 10000,
                 offset: 80
             });
+            emit('closeModal');
         }).catch((error) => {
             handleRequestError(error);
         }).finally(() => {
             fetchingModal.value = false;
-            emit('closeModal');
         });
     })
 };
 
 const closeModal = () => {
-    // Confirmation
     ElMessageBox.confirm('¿Estás seguro de que deseas cerrar sin guardar los cambios?', 'Confirmación', {
         confirmButtonText: 'Sí',
         cancelButtonText: 'No',
         type: 'warning',
     }).then(() => {
+        show.value = false;
         emit('closeModal');
     })
 };
+
+watch(props, () => {
+    show.value = props.isSelectedStorage;
+})
 
 const { fullScreenModals } = useFullScreenModals();
 </script>
 
 <template>
-    <el-dialog title="Detalles del Fabricante" width="80%" :before-close="closeModal" :fullscreen="fullScreenModals"
-        class="!p-6">
+    <el-dialog v-model="show" title="Detalles del Almacén" width="80%" :before-close="closeModal"
+        :fullscreen="fullScreenModals" class="!p-6">
         <!-- Modal Content -->
         <Line orientation="horizontal" class="bg-stone-200" />
         <Transition name="modal-out">
-            <div v-if="selectedProvider" class="w-full flex flex-col md:flex-row gap-4 mt-4" v-loading="fetchingModal">
+            <div v-if="selectedStorage" class="w-full flex flex-col md:flex-row gap-4 mt-4" v-loading="fetchingModal">
                 <el-form label-position="top" class="w-full">
-                    <el-form-item label="Cédula o RIF">
-                        <el-input v-model="selectedProvider.id" disabled />
+                    <el-form-item label="ID">
+                        <el-input v-model="selectedStorage.id" disabled />
                     </el-form-item>
                     <el-form-item label="Nombre">
-                        <el-input v-model="selectedProvider.name" />
+                        <el-input v-model="selectedStorage.name" />
                     </el-form-item>
-                    <el-form-item label="Teléfono">
-                        <el-input v-model="selectedProvider.phone" />
+                    <el-form-item label="Descripción">
+                        <el-input v-model="selectedStorage.description" type="textarea" />
                     </el-form-item>
-                    <el-form-item label="Teléfono Secundario">
-                        <el-input v-model="selectedProvider.secondaryPhone" />
-                    </el-form-item>
-                    <el-form-item label="Correo Electrónico">
-                        <el-input v-model="selectedProvider.email" />
-                    </el-form-item>
-                    <el-form-item label="Dirección">
-                        <el-input v-model="selectedProvider.address" />
+                    <el-form-item label="Vehicular">
+                        <el-switch v-model="selectedStorage.vehicle" />
                     </el-form-item>
                 </el-form>
             </div>
@@ -140,11 +138,11 @@ const { fullScreenModals } = useFullScreenModals();
                 <el-button class="!ml-0" type="info" :disabled="fetchingModal" @click="closeModal">
                     Cerrar
                 </el-button>
-                <el-button class="!ml-0" :type="selectedProvider.deleted ? 'primary' : 'danger'"
-                    :disabled="fetchingModal" @click="handleDeleteProvider">
-                    {{ selectedProvider.deleted ? 'Restaurar' : 'Eliminar' }} Fabricante
+                <el-button class="!ml-0" :type="selectedStorage.deleted ? 'primary' : 'danger'"
+                    :disabled="fetchingModal" @click="handleDeleteStorage">
+                    {{ selectedStorage.deleted ? 'Restaurar' : 'Eliminar' }} Almacén
                 </el-button>
-                <el-button class="!ml-0" type="success" :disabled="fetchingModal" @click="handleEditProvider">
+                <el-button class="!ml-0" type="success" :disabled="fetchingModal" @click="handleEditStorage">
                     Guardar Cambios
                 </el-button>
             </div>

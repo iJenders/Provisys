@@ -106,5 +106,101 @@ $POST_ROUTES = [
             ['PermissionMiddleware', ['create_category']]
         ]
     ],
+    '/manufacturers' => [
+        'action' => ['ManufacturersController', 'getManufacturers'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_manufacturer']]
+        ]
+    ],
+    '/manufacturers/create' => [
+        'action' => ['ManufacturersController', 'createManufacturer'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['create_manufacturer']]
+        ]
+    ],
+    '/manufacturers/update' => [
+        'action' => ['ManufacturersController', 'updateManufacturer'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['update_manufacturer']]
+        ]
+    ],
+    '/manufacturers/delete' => [
+        'action' => ['ManufacturersController', 'deleteManufacturer'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['delete_manufacturer']]
+        ]
+    ],
+    '/ivas' => [
+        'action' => ['IVAsController', 'getAll'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_iva']]
+        ]
+    ],
+    '/ivas/create' => [
+        'action' => ['IVAsController', 'createIVA'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['create_iva']]
+        ]
+    ],
+    '/ivas/update' => [
+        'action' => ['IVAsController', 'updateIVA'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['update_iva']]
+        ]
+    ],
+    '/ivas/delete' => [
+        'action' => ['IVAsController', 'deleteIVA'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['delete_iva']]
+        ]
+    ],
+    '/storages' => [
+        'action' => ['StoragesController', 'getAll'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_storage']]
+        ]
+    ],
+    '/storages/create' => [
+        'action' => ['StoragesController', 'createStorage'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['create_storage']]
+        ]
+    ],
+    '/storages/update' => [
+        'action' => ['StoragesController', 'updateStorage'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['update_storage']]
+        ]
+    ],
+    '/storages/delete' => [
+        'action' => ['StoragesController', 'deleteStorage'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['delete_storage']]
+        ]
+    ]
 ];
 ?>

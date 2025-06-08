@@ -28,7 +28,7 @@ class AuthMiddleware
             Responses::json(['errors' => ['Token inválido o expirado']], 401);
         }
 
-        // Si el token es válido, se guarda el usuario en una variable global
+        // Si el token es válido, se guarda el nombre de usuario en una variable global
         global $USER;
         $USER = $decoded['sub']; // El 'sub' del payload es el username del usuario
     }

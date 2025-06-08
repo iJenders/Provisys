@@ -84,6 +84,22 @@ class Validator
         return $this;
     }
 
+    public function minValue(int $min): Validator
+    {
+        if ($this->text < $min) {
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  debe ser mayor o igual a ' . $min . '.';
+        }
+        return $this;
+    }
+
+    public function maxValue(int $max): Validator
+    {
+        if ($this->text > $max) {
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  debe ser menor o igual a ' . $max . '.';
+        }
+        return $this;
+    }
+
     public function alphaNumeric(): Validator
     {
         if (!preg_match('/^[\p{L}\d]+$/u', $this->text)) {
@@ -184,6 +200,32 @@ class Validator
     {
         if (!preg_match('/^[a-zA-Z0-9-_]+$/', $this->text)) {
             $this->errors[] = 'El campo de ' . $this->getAlias() . '  solo puede contener letras, números, guiones y guiones bajos.';
+        }
+        return $this;
+    }
+
+    public function isTinyInt(): Validator
+    {
+        $intValue = intval($this->text);
+        if ($intValue < 0 || $intValue > 1) {
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  debe ser 0 o 1.';
+        }
+        return $this;
+    }
+
+    public function CiOrRif(): Validator
+    {
+        if (!preg_match('/^[VEJG]{1}[-]{1}[0-9]{7,12}$/', $this->text)) {
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  no es un RIF o CI válido.';
+        }
+        return $this;
+    }
+
+    public function boolean(): Validator
+    {
+        // Sea booleano, ya sea false, true, 0 o 1, o sus equivalentes strings
+        if (!is_bool($this->text) && !is_numeric($this->text) && !in_array($this->text, ['false', 'true', '0', '1'])) {
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  debe ser un valor booleano.';
         }
         return $this;
     }

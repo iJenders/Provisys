@@ -16,18 +16,24 @@ const selectedCategory = ref(null);
 const isSelectedCategory = ref(false);
 
 const searchInput = ref('');
+const onlyDisabled = ref(false);
 
 const paginationConfig = ref({
     page: 1,
-    rowsPerPage: 1,
+    rowsPerPage: 10,
     totalRows: categories.value.length,
 });
 
+const tableRowClassName = ({ row }) => {
+    if (row.disabled) {
+        return '!bg-red-100';
+    }
+}
+
 const handlePageChange = (page) => {
-    fetchingCategories.value = true;
-    setTimeout(() => {
-        fetchingCategories.value = false;
-    }, 1000);
+    paginationConfig.value.page = page;
+    fetchCategories();
+    console.log(page);
 }
 
 const handleCategoryClick = (category) => {
@@ -57,13 +63,16 @@ const fetchCategories = () => {
         }
     }
 
+    data.page = paginationConfig.value.page;
+    data.onlyDisabled = onlyDisabled.value;
+
     axios.post(import.meta.env.VITE_API_URL + '/categories', data, {
         headers: {
             'Authorization': 'Bearer ' + localStorage.getItem('token')
         }
     }).then(response => {
-        categories.value = response.data.response;
-        paginationConfig.value.totalRows = categories.value.length;
+        categories.value = response.data.response.categories;
+        paginationConfig.value.totalRows = parseInt(response.data.response.count);
     }).catch(error => {
         handleRequestError(error);
     }).finally(() => {
@@ -82,16 +91,20 @@ onMounted(() => {
         <h1 class="text-stone-700 font-medium">Categorías de Productos</h1>
         <Line class="bg-stone-200" orientation="horizontal" />
         <div class="w-full flex flex-col gap-4" v-loading="fetchingCategories">
-            <!-- Products -->
+            <!-- Categories -->
             <div class="w-full flex flex-col gap-4 overflow-x-hidden">
                 <!-- Searcher -->
-                <div class="w-full flex items-center gap-4">
+                <div class="w-full flex justify-end items-center gap-4 flex-wrap">
                     <el-input style="width: 100%;" placeholder="Buscar Categoría..." :prefix-icon="Search"
                         v-model="searchInput" />
+                    <!-- See disabled check -->
+                    <div>
+                        <el-checkbox v-model="onlyDisabled" label="Solo deshabilitados" />
+                    </div>
                     <!-- Apply search button -->
                     <el-button class="!rounded-full !py-1 !px-2" type="primary" @click="fetchCategories">
                         <Search size="16" class="mr-1" />
-                        Buscar
+                        Aplicar
                     </el-button>
                     <!--Add category button-->
                     <el-button class="!rounded-full !py-1 !px-2 !m-0" type="success" @click="addingCategory = true">
@@ -100,9 +113,16 @@ onMounted(() => {
                 </div>
 
                 <!-- Table -->
-                <el-table class="pointer-rows" :data="categories" stripe border style="width:100%" max-height="500"
-                    @row-click="(e) => { handleCategoryClick(e) }">
+                <el-table class="pointer-rows" :data="categories" :row-class-name="tableRowClassName" border
+                    style="width:100%" max-height="500" @row-click="(e) => { handleCategoryClick(e) }">
                     <el-table-column prop="id" label="Id" min-width="60" />
+                    <el-table-column prop="disabled" label="Habilitado" min-width="100">
+                        <template #default="scope">
+                            <el-text :type="scope.row.disabled ? 'danger' : 'success'">
+                                {{ scope.row.disabled ? 'No' : 'Si' }}
+                            </el-text>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="name" label="Nombre" min-width="120" />
                     <el-table-column prop="description" label="Descripción" min-width="240" />
                 </el-table>
