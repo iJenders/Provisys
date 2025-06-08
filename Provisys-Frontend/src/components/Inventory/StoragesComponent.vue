@@ -146,8 +146,7 @@ onMounted(() => {
         </div>
 
         <!-- Add Storage Modal -->
-        <StoragesAddModal v-model="addingStorage" @storage-added="fetchStorages"
-            @closeModal="addingStorage = false" />
+        <StoragesAddModal v-model="addingStorage" @storage-added="fetchStorages" @closeModal="addingStorage = false" />
 
         <!-- Edit Storage Modal -->
         <StoragesDetailsModal :selected-storage="selectedStorage" :is-selected-storage="isSelectedStorage"
