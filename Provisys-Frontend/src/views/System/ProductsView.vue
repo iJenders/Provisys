@@ -1,9 +1,10 @@
 <script setup>
 import { ref } from 'vue';
-import { Apple, Shapes, Factory } from 'lucide-vue-next';
+import { Apple, Shapes, Factory, Banknote } from 'lucide-vue-next';
 import ProductsComponent from '@/components/Products/ProductsComponent.vue';
 import CategoriesComponent from '@/components/Products/CategoriesComponent.vue';
 import ProvidersComponent from '@/components/Products/ProvidersComponent.vue';
+import IVAsComponent from '@/components/Products/IVAsComponent.vue';
 
 const productsButtons = [
     {
@@ -15,6 +16,11 @@ const productsButtons = [
         name: 'Categorías',
         icon: Shapes,
         component: CategoriesComponent
+    },
+    {
+        name: 'IVAs',
+        icon: Banknote,
+        component: IVAsComponent
     },
     {
         name: 'Fabricantes',
@@ -39,7 +45,7 @@ const activeSection = ref(0);
                 class="min-w-[160px] flex flex-col justify-center items-center rounded-lg p-4 shadow-md cursor-pointer transition"
                 :class="index == activeSection ? `bg-emerald-700 text-white` : 'bg-white text-stone-700'">
                 <component :is="productButton.icon" class="w-10 h-10" />
-                <p class="font-medium">{{ productButton.name }}</p>
+                <p class="font-medium text-center">{{ productButton.name }}</p>
             </div>
         </div>
 

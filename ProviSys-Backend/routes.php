@@ -137,6 +137,38 @@ $POST_ROUTES = [
             ['AuthMiddleware'],
             ['PermissionMiddleware', ['delete_manufacturer']]
         ]
+    ],
+    '/ivas' => [
+        'action' => ['IVAsController', 'getAll'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_iva']]
+        ]
+    ],
+    '/ivas/create' => [
+        'action' => ['IVAsController', 'createIVA'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['create_iva']]
+        ]
+    ],
+    '/ivas/update' => [
+        'action' => ['IVAsController', 'updateIVA'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['update_iva']]
+        ]
+    ],
+    '/ivas/delete' => [
+        'action' => ['IVAsController', 'deleteIVA'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['delete_iva']]
+        ]
     ]
 ];
 ?>

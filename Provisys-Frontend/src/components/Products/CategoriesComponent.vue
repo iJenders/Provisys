@@ -91,7 +91,7 @@ onMounted(() => {
         <h1 class="text-stone-700 font-medium">Categorías de Productos</h1>
         <Line class="bg-stone-200" orientation="horizontal" />
         <div class="w-full flex flex-col gap-4" v-loading="fetchingCategories">
-            <!-- Products -->
+            <!-- Categories -->
             <div class="w-full flex flex-col gap-4 overflow-x-hidden">
                 <!-- Searcher -->
                 <div class="w-full flex justify-end items-center gap-4 flex-wrap">
@@ -157,9 +157,5 @@ onMounted(() => {
 
 .el-select__popper {
     z-index: 10000 !important;
-}
-
-.el-table__row:nth-child(odd) {
-    background: #0000000f;
 }
 </style>
