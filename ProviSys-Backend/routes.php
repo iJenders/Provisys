@@ -169,6 +169,38 @@ $POST_ROUTES = [
             ['AuthMiddleware'],
             ['PermissionMiddleware', ['delete_iva']]
         ]
+    ],
+    '/storages' => [
+        'action' => ['StoragesController', 'getAll'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_storage']]
+        ]
+    ],
+    '/storages/create' => [
+        'action' => ['StoragesController', 'createStorage'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['create_storage']]
+        ]
+    ],
+    '/storages/update' => [
+        'action' => ['StoragesController', 'updateStorage'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['update_storage']]
+        ]
+    ],
+    '/storages/delete' => [
+        'action' => ['StoragesController', 'deleteStorage'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['delete_storage']]
+        ]
     ]
 ];
 ?>

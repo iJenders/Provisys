@@ -39,4 +39,15 @@ const handleRequestError = (error) => {
   });
 };
 
-export { handleRequestError };
+const handleRequestSuccess = (response) => {
+  ElNotification({
+    title: "Éxito",
+    message: response,
+    type: "success",
+    duration: 3000,
+    offset: 80,
+    zIndex: 10000,
+  });
+};
+
+export { handleRequestError, handleRequestSuccess };

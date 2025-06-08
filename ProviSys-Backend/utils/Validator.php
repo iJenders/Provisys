@@ -221,6 +221,15 @@ class Validator
         return $this;
     }
 
+    public function boolean(): Validator
+    {
+        // Sea booleano, ya sea false, true, 0 o 1, o sus equivalentes strings
+        if (!is_bool($this->text) && !is_numeric($this->text) && !in_array($this->text, ['false', 'true', '0', '1'])) {
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  debe ser un valor booleano.';
+        }
+        return $this;
+    }
+
     // Métodos estáticos
 
     public static function ensureFields(array $data, array $requiredFields): void
