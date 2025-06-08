@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { Apple, Shapes, Users } from 'lucide-vue-next';
+import { Apple, Shapes, Factory } from 'lucide-vue-next';
 import ProductsComponent from '@/components/Products/ProductsComponent.vue';
 import CategoriesComponent from '@/components/Products/CategoriesComponent.vue';
 import ProvidersComponent from '@/components/Products/ProvidersComponent.vue';
@@ -17,8 +17,8 @@ const productsButtons = [
         component: CategoriesComponent
     },
     {
-        name: 'Proveedores',
-        icon: Users,
+        name: 'Fabricantes',
+        icon: Factory,
         component: ProvidersComponent
     }
 ]

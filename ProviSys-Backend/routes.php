@@ -106,5 +106,37 @@ $POST_ROUTES = [
             ['PermissionMiddleware', ['create_category']]
         ]
     ],
+    '/manufacturers' => [
+        'action' => ['ManufacturersController', 'getManufacturers'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_manufacturer']]
+        ]
+    ],
+    '/manufacturers/create' => [
+        'action' => ['ManufacturersController', 'createManufacturer'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['create_manufacturer']]
+        ]
+    ],
+    '/manufacturers/update' => [
+        'action' => ['ManufacturersController', 'updateManufacturer'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['update_manufacturer']]
+        ]
+    ],
+    '/manufacturers/delete' => [
+        'action' => ['ManufacturersController', 'deleteManufacturer'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['delete_manufacturer']]
+        ]
+    ]
 ];
 ?>

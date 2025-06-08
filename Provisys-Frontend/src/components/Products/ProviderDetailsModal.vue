@@ -3,6 +3,8 @@ import { useFullScreenModals } from '@/composables/fullScreenModals';
 import { onMounted, ref } from 'vue';
 import Line from '@/components/Line.vue';
 import { ElMessageBox, ElNotification } from 'element-plus';
+import axios from 'axios';
+import { handleRequestError } from '@/utils/fetchNotificationsHandlers';
 
 const props = defineProps([
     'selectedProvider',
@@ -23,43 +25,68 @@ const handleEditProvider = () => {
     }).then(() => {
         fetchingModal.value = true;
 
-        // Simular petición
-        setTimeout(() => {
-            fetchingModal.value = false;
+        let data = {
+            id: props.selectedProvider.id,
+            name: props.selectedProvider.name,
+            phone: props.selectedProvider.phone,
+            secondaryPhone: props.selectedProvider.secondaryPhone,
+            email: props.selectedProvider.email,
+            address: props.selectedProvider.address,
+        }
 
-            ElNotification.warning({
-                title: 'Advertencia',
-                message: 'La funcionalidad de eliminar proveedores aún no está disponible.',
-                duration: 3000,
+        axios.post(import.meta.env.VITE_API_URL + '/manufacturers/update', data, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+        }).then((response) => {
+            ElNotification({
+                title: 'Éxito',
+                message: 'Fabricante actualizado exitosamente',
+                type: 'success',
+                offset: 80,
                 zIndex: 10000,
-                offset: 80
             });
-
-        }, 1000);
+            emit('closeModal');
+        }).catch((error) => {
+            handleRequestError(error);
+        }).finally(() => {
+            fetchingModal.value = false;
+        });
     })
 };
 
 const handleDeleteProvider = () => {
-    ElMessageBox.confirm('¿Estás seguro de que deseas eliminar este proveedo?', 'Confirmación', {
+    ElMessageBox.confirm('¿Estás seguro de que deseas eliminar este fabricante?', 'Confirmación', {
         confirmButtonText: 'Sí',
         cancelButtonText: 'No',
         type: 'warning',
     }).then(() => {
         fetchingModal.value = true;
 
-        // Simular petición
-        setTimeout(() => {
-            fetchingModal.value = false;
+        let $data = {
+            id: props.selectedProvider.id,
+        }
 
-            ElNotification.warning({
-                title: 'Advertencia',
-                message: 'La funcionalidad de eliminar proveedores aún no está disponible.',
+        axios.post(import.meta.env.VITE_API_URL + '/manufacturers/delete', $data, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+        }).then((response) => {
+            ElNotification.success({
+                title: 'Éxito',
+                message: 'Fabricante eliminado correctamente.',
                 duration: 3000,
                 zIndex: 10000,
                 offset: 80
             });
-
-        }, 1000);
+        }).catch((error) => {
+            handleRequestError(error);
+        }).finally(() => {
+            fetchingModal.value = false;
+            emit('closeModal');
+        });
     })
 };
 
@@ -78,8 +105,8 @@ const { fullScreenModals } = useFullScreenModals();
 </script>
 
 <template>
-    <el-dialog title="Detalles del Proveedor" width="80%" @close="() => { $emit('closeModal') }"
-        :fullscreen="fullScreenModals" class="!p-6">
+    <el-dialog title="Detalles del Fabricante" width="80%" :before-close="closeModal" :fullscreen="fullScreenModals"
+        class="!p-6">
         <!-- Modal Content -->
         <Line orientation="horizontal" class="bg-stone-200" />
         <Transition name="modal-out">
@@ -93,6 +120,9 @@ const { fullScreenModals } = useFullScreenModals();
                     </el-form-item>
                     <el-form-item label="Teléfono">
                         <el-input v-model="selectedProvider.phone" />
+                    </el-form-item>
+                    <el-form-item label="Teléfono Secundario">
+                        <el-input v-model="selectedProvider.secondaryPhone" />
                     </el-form-item>
                     <el-form-item label="Correo Electrónico">
                         <el-input v-model="selectedProvider.email" />
@@ -110,8 +140,9 @@ const { fullScreenModals } = useFullScreenModals();
                 <el-button class="!ml-0" type="info" :disabled="fetchingModal" @click="closeModal">
                     Cerrar
                 </el-button>
-                <el-button class="!ml-0" type="danger" :disabled="fetchingModal" @click="handleDeleteProvider">
-                    Eliminar Proveedor
+                <el-button class="!ml-0" :type="selectedProvider.deleted ? 'primary' : 'danger'"
+                    :disabled="fetchingModal" @click="handleDeleteProvider">
+                    {{ selectedProvider.deleted ? 'Restaurar' : 'Eliminar' }} Fabricante
                 </el-button>
                 <el-button class="!ml-0" type="success" :disabled="fetchingModal" @click="handleEditProvider">
                     Guardar Cambios

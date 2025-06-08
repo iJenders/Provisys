@@ -8,11 +8,13 @@ const handleRequestError = (error) => {
   } else if (error.status === 401) {
     message =
       "No autorizado. Por favor, inicie sesión de nuevo o verifique sus credenciales.";
+  } else if (error.status === 404) {
+    message = "No se encontró el recurso solicitado.";
   } else if (error.status === 500) {
     message =
       "Error interno del servidor. Por favor, inténtelo de nuevo más tarde.</br>Si el problema persiste, contacte con el administrador del sistema.";
   } else {
-    message = "Error no clasificadodo:";
+    message = "Error no clasificado:";
   }
 
   if (error.status !== 500) {

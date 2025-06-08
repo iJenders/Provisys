@@ -6,7 +6,7 @@ class DBConnection
 
     private $connection;
 
-    private function __construct()
+    public function __construct()
     {
         include_once 'env.php';
 

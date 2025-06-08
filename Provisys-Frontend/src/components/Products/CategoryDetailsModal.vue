@@ -19,7 +19,8 @@ const fetchingModal = ref(false);
 const category = ref({
     id: null,
     name: '',
-    description: ''
+    description: '',
+    disabled: false
 })
 
 const handleEditCategory = () => {
@@ -54,7 +55,8 @@ const handleEditCategory = () => {
 };
 
 const handleDeleteCategory = () => {
-    ElMessageBox.confirm('¿Estás seguro de que deseas eliminar esta categoría?', 'Confirmación', {
+    ElMessageBox.confirm(
+        '¿Estás seguro de que deseas ' + (!category.value.disabled ? 'eliminar' : 'restaurar') + ' esta categoría?', 'Confirmación', {
         confirmButtonText: 'Sí',
         cancelButtonText: 'No',
         type: 'warning',
@@ -68,13 +70,23 @@ const handleDeleteCategory = () => {
                 'Authorization': 'Bearer ' + localStorage.getItem('token')
             }
         }).then(response => {
-            ElNotification({
-                title: 'Categoría eliminada',
-                message: 'La categoría se ha eliminado correctamente',
-                type: 'success',
-                offsetset: 80,
-                zIndex: 10000
-            });
+            if (!category.value.disabled) {
+                ElNotification({
+                    title: 'Categoría eliminada',
+                    message: 'La categoría se ha eliminado correctamente',
+                    type: 'success',
+                    offset: 80,
+                    zIndex: 10000
+                });
+            } else {
+                ElNotification({
+                    title: 'Categoría restaurada',
+                    message: 'La categoría se ha restaurado correctamente',
+                    type: 'success',
+                    offset: 80,
+                    zIndex: 10000
+                });
+            }
             emit('closeModal');
         }).catch(error => { handleRequestError(error) }).finally(() => {
             fetchingModal.value = false;
@@ -129,8 +141,9 @@ const { fullScreenModals } = useFullScreenModals();
                 <el-button class="!ml-0" type="info" :disabled="fetchingModal" @click="closeModal">
                     Cerrar
                 </el-button>
-                <el-button class="!ml-0" type="danger" :disabled="fetchingModal" @click="handleDeleteCategory">
-                    Eliminar Categoría
+                <el-button class="!ml-0" :type="!category.disabled ? 'danger' : 'primary'" :disabled="fetchingModal"
+                    @click="handleDeleteCategory">
+                    {{ !category.disabled ? 'Eliminar Categoría' : 'Restaurar Categoría' }}
                 </el-button>
                 <el-button class="!ml-0" type="success" :disabled="fetchingModal" @click="handleEditCategory">
                     Guardar Cambios

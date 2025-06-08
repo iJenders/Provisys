@@ -42,7 +42,7 @@ const handleSaveCategory = () => {
                 title: 'Categoría guardada',
                 message: 'La categoría se ha guardado correctamente',
                 type: 'success',
-                offsetset: 80,
+                offset: 80,
                 zIndex: 10000
             });
             emit('closeModal');
