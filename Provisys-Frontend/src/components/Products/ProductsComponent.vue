@@ -2,9 +2,11 @@
 import { Search } from 'lucide-vue-next';
 import Line from '@/components/Line.vue';
 import ThemeButton from '../ThemeButton.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import ProductDetailsModal from './ProductDetailsModal.vue';
 import ProductAddModal from './ProductAddModal.vue';
+import axios from 'axios';
+import { handleRequestError } from '@/utils/fetchNotificationsHandlers';
 
 const fetchingProducts = ref(false);
 
@@ -15,109 +17,43 @@ const productsFilter = ref({
     price: {
         min: null,
         max: null
-    }
+    },
+    showDeleted: false
 });
 
-const products = ref([
-    {
-        id: 101,
-        name: "Laptop HP Pavilion",
-        description: "Laptop ideal para trabajo y estudio, con procesador Intel Core i7 y 16GB de RAM.",
-        currentPrice: 850.00,
-        category: { id: 1, name: "Electrónica", description: "Dispositivos electrónicos de consumo y profesionales." },
-        currentIva: { id: 1, name: "IVA General", iva: 16 },
-        provider: { id: 1, name: "Tech Solutions C.A.", phone: "4121234567", email: "info@techsolutions.com", address: "Av. Principal, Torre B, Piso 3, Ofic. 10" }
-    },
-    {
-        id: 201,
-        name: "Teclado Mecánico RGB",
-        description: "Teclado gaming con switches Cherry MX, retroiluminación RGB personalizable y diseño ergonómico.",
-        currentPrice: 75.00,
-        category: { id: 1, name: "Electrónica", description: "Dispositivos electrónicos de consumo y profesionales." },
-        currentIva: { id: 1, name: "IVA General", iva: 16 },
-        provider: { id: 2, name: "Gamer Zone Corp.", phone: "4249876543", email: "contacto@gamerzone.com", address: "Centro Comercial Millennium, Nivel Feria" }
-    },
-    {
-        id: 202,
-        name: "Mouse Ergonómico Inalámbrico",
-        description: "Mouse inalámbrico con diseño ergonómico para reducir la fatiga en largas jornadas de uso, sensor de alta precisión.",
-        currentPrice: 30.00,
-        category: { id: 1, name: "Electrónica", description: "Dispositivos electrónicos de consumo y profesionales." },
-        currentIva: { id: 1, name: "IVA General", iva: 16 },
-        provider: { id: 2, name: "Gamer Zone Corp.", phone: "4249876543", email: "contacto@gamerzone.com", address: "Centro Comercial Millennium, Nivel Feria" }
-    },
-    {
-        id: 301,
-        name: "Audífonos Bluetooth Noise Cancelling",
-        description: "Audífonos con tecnología de cancelación de ruido activa, sonido de alta fidelidad y batería de larga duración.",
-        currentPrice: 60.00,
-        category: { id: 1, name: "Electrónica", description: "Dispositivos electrónicos de consumo y profesionales." },
-        currentIva: { id: 1, name: "IVA General", iva: 16 },
-        provider: { id: 3, name: "Sound Masters S.A.", phone: "4165551122", email: "ventas@soundmasters.com", address: "Calle El Sol, Edif. Armonía, PB" }
-    },
-    {
-        id: 302,
-        name: "Cable USB-C a USB-C",
-        description: "Cable de carga rápida (hasta 100W) y transferencia de datos (USB 3.1 Gen 2) de 1.5 metros de longitud.",
-        currentPrice: 15.00,
-        category: { id: 1, name: "Electrónica", description: "Dispositivos electrónicos de consumo y profesionales." },
-        currentIva: { id: 1, name: "IVA General", iva: 16 },
-        provider: { id: 3, name: "Sound Masters S.A.", phone: "4165551122", email: "ventas@soundmasters.com", address: "Calle El Sol, Edif. Armonía, PB" }
-    },
-    {
-        id: 401,
-        name: "Monitor Curvo 27 pulgadas",
-        description: "Monitor curvo Full HD de 27 pulgadas, tasa de refresco de 144Hz y tiempo de respuesta de 1ms, ideal para gaming.",
-        currentPrice: 250.00,
-        category: { id: 1, name: "Electrónica", description: "Dispositivos electrónicos de consumo y profesionales." },
-        currentIva: { id: 1, name: "IVA General", iva: 16 },
-        provider: { id: 1, name: "Tech Solutions C.A.", phone: "4121234567", email: "info@techsolutions.com", address: "Av. Principal, Torre B, Piso 3, Ofic. 10" }
-    },
-    {
-        id: 402,
-        name: "Webcam Full HD",
-        description: "Webcam con resolución Full HD (1080p) a 30fps, micrófono integrado con reducción de ruido y clip universal.",
-        currentPrice: 40.00,
-        category: { id: 1, name: "Electrónica", description: "Dispositivos electrónicos de consumo y profesionales." },
-        currentIva: { id: 1, name: "IVA General", iva: 16 },
-        provider: { id: 1, name: "Tech Solutions C.A.", phone: "4121234567", email: "info@techsolutions.com", address: "Av. Principal, Torre B, Piso 3, Ofic. 10" }
-    },
-    {
-        id: 501,
-        name: "Router Wi-Fi 6 Doble Banda",
-        description: "Router de última generación con tecnología Wi-Fi 6, doble banda (2.4GHz y 5GHz) para velocidades ultra rápidas.",
-        currentPrice: 90.00,
-        category: { id: 1, name: "Electrónica", description: "Dispositivos electrónicos de consumo y profesionales." },
-        currentIva: { id: 1, name: "IVA General", iva: 16 },
-        provider: { id: 4, name: "NetConnect S.A.", phone: "4147778899", email: "support@netconnect.com", address: "Calle Los Robles, Local 7" }
-    },
-    {
-        id: 601,
-        name: "Cafetera Expresso Automática",
-        description: "Cafetera automática para preparar espressos, cappuccinos y lattes con solo tocar un botón.",
-        currentPrice: 300.00,
-        category: { id: 2, name: "Electrodomésticos", description: "Aparatos eléctricos para el hogar." },
-        currentIva: { id: 1, name: "IVA General", iva: 16 },
-        provider: { id: 5, name: "Home Comfort C.A.", phone: "4161112233", email: "ventas@homecomfort.com", address: "Av. Francisco de Miranda, Centro Plaza" }
-    },
-    {
-        id: 602,
-        name: "Licuadora de Alta Potencia",
-        description: "Licuadora con motor de 1200W, cuchillas de acero inoxidable y jarra de vidrio de 1.5 litros.",
-        currentPrice: 80.00,
-        category: { id: 2, name: "Electrodomésticos", description: "Aparatos eléctricos para el hogar." },
-        currentIva: { id: 1, name: "IVA General", iva: 16 },
-        provider: { id: 5, name: "Home Comfort C.A.", phone: "4161112233", email: "ventas@homecomfort.com", address: "Av. Francisco de Miranda, Centro Plaza" }
-    }
-]);
+const products = ref([]);
+/*
+A product looks like:
+            {
+                "id": "0000001",
+                "name": "Juguito de mila",
+                "description": "Juguito sabor a mila",
+                "actualPrice": "55.00",
+                "actualIva": {
+                    "id": 3,
+                    "name": "Excento",
+                    "value": "0.00",
+                    "deleted": 0
+                },
+                "categoria": {
+                    "id": "4",
+                    "name": "wompwompwompwomp",
+                    "description": "wompwompwompwompwomp",
+                    "disabled": true
+                },
+                "fabricante": {
+                    "id": "V-31271802",
+                    "name": "Coca-Cola Femsa",
+                    "phone": "+584125372035",
+                    "secondaryPhone": "02518861200",
+                    "email": "jenders2906@gmail.com",
+                    "address": "qwe",
+                    "deleted": 0
+                },
+                "eliminado": 0
+            }
 
-const warehouses = ref([
-    { id: 1, name: "Almacén 1", description: "Almacén principal de la empresa." },
-    { id: 2, name: "Refrigeración", description: "Almacén de productos de refrigeración." },
-    { id: 3, name: "Electrónica", description: "Almacén de productos electrónicos." },
-    { id: 4, name: "Electrodomésticos", description: "Almacén de electrodomésticos." },
-    { id: 5, name: "Gaming", description: "Almacén de productos gaming." }
-]);
+*/
 
 const paginationConfig = ref({
     page: 1,
@@ -132,7 +68,6 @@ const addingProduct = ref(false);
 const handleProductClick = (product) => {
     selectedProduct.value = { ...product }
     selectedProduct.value.image = 'https://picsum.photos/512/512?random=' + product.id; // Simulate image URL
-    selectedProduct.value.compatibleWarehouses = warehouses.value.filter(warehouse => Math.random() > 0.5); // Simulate compatible warehouses
 
     isSelectedProduct.value = true;
 }
@@ -140,10 +75,45 @@ const handleProductClick = (product) => {
 const handleCloseDetailsModal = () => {
     selectedProduct.value = null;
     isSelectedProduct.value = false;
+    fetchProducts();
 }
 
 const handleCloseAddingModal = () => {
     addingProduct.value = false;
+    fetchProducts();
+}
+
+const fetchProducts = () => {
+    fetchingProducts.value = true;
+
+    let data = {
+        search: productsFilter.value.searcher || '',
+        filters: {
+            deleted: 0
+        }
+    }
+
+    if (productsFilter.value.showDeleted) {
+        delete data.filters.deleted;
+    }
+
+    axios.post(import.meta.env.VITE_API_URL + '/products', data, {
+        headers: {
+            'Authorization': localStorage.getItem('token')
+        }
+    }).then(response => {
+        let fetched = response.data.response;
+
+        fetched.products.forEach(product => {
+            product.actualPrice = parseFloat(product.actualPrice);
+        });
+
+        products.value = fetched.products;
+    }).catch(error => {
+        handleRequestError(error);
+    }).finally(() => {
+        fetchingProducts.value = false;
+    })
 }
 
 const handlePageChange = (page) => {
@@ -153,6 +123,16 @@ const handlePageChange = (page) => {
         fetchingProducts.value = false;
     }, 1000);
 }
+
+const tableRowClassName = (row) => {
+    if (row.row.deleted == 1) {
+        return '!bg-red-100';
+    }
+}
+
+onMounted(() => {
+    fetchProducts();
+})
 </script>
 
 <template>
@@ -232,28 +212,44 @@ const handlePageChange = (page) => {
             <!-- Products -->
             <div class="w-full flex flex-col gap-4 overflow-x-hidden">
                 <!-- Searcher -->
-                <div class="w-full flex items-center gap-4">
+                <div class="w-full flex justify-end items-center gap-2 flex-wrap">
                     <el-input style="width: 100%;" v-model="productsFilter.searcher" placeholder="Buscar Producto..."
                         :prefix-icon="Search" />
+
+                    <!-- Show Deleted Check -->
+                    <el-checkbox v-model="productsFilter.showDeleted" label="Mostrar eliminados" />
+
+                    <!-- Apply search button -->
+                    <el-button class="!rounded-full !py-1 !px-2" type="primary" @click="fetchProducts">
+                        <Search :size="18" class="mr-2" />
+                        Buscar
+                    </el-button>
                     <!--Add product button-->
-                    <el-button class="!rounded-full !py-1 !px-2" type="success" @click="addingProduct = true">
+                    <el-button class="!rounded-full !py-1 !px-2 !m-0" type="success" @click="addingProduct = true">
                         Añadir Producto
                     </el-button>
                 </div>
 
                 <!-- Table -->
-                <el-table class="pointer-rows" :data="products" stripe border style="width:100%" max-height="500"
-                    @row-click="(e) => { handleProductClick(e) }">
-                    <el-table-column prop="id" label="Id" min-width="60" />
+                <el-table class="pointer-rows" :data="products" border style="width:100%" max-height="500"
+                    @row-click="(e) => { handleProductClick(e) }" :row-class-name="tableRowClassName">
+                    <el-table-column prop="id" label="Id" min-width="200" />
                     <el-table-column prop="name" label="Nombre" width="120" fixed />
-                    <el-table-column prop="description" label="Descripción" min-width="240" />
-                    <el-table-column prop="currentPrice" label="Precio Actual" min-width="100">
+                    <el-table-column prop="deleted" label="Habilitado" min-width="140">
                         <template #default="scope">
-                            ${{ scope.row.currentPrice.toFixed(2) }}
+                            <el-text :type="scope.row.deleted ? 'danger' : 'success'">
+                                {{ scope.row.deleted ? 'No' : 'Si' }}
+                            </el-text>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="category.name" label="Categoría" min-width="160" />
-                    <el-table-column prop="provider.name" label="Proveedor" min-width="180" />
+                    <el-table-column prop="description" label="Descripción" min-width="240" />
+                    <el-table-column prop="actualPrice" label="Precio Actual" min-width="100">
+                        <template #default="scope">
+                            ${{ parseInt(scope.row.actualPrice).toFixed(2) }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="categoria.name" label="Categoría" min-width="160" />
+                    <el-table-column prop="fabricante.name" label="Proveedor" min-width="180" />
                 </el-table>
 
                 <!-- Pagination -->

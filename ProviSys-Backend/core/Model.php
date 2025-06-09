@@ -115,7 +115,7 @@ class Model
 
         // Aplicar LIMIT y OFFSET para paginación
         $sql .= " LIMIT 10 OFFSET ?";
-        $args[] = $offset;
+        $args[] = ($offset < 0) ? 0 : $offset;
 
         // Preparar y ejecutar la consulta
         $stmt = $this->db->prepare($sql);
@@ -333,58 +333,58 @@ class Model
     }
 
     public function corePoweredUpdate($id, $data)
-        {
-            if (empty($this->table) || empty($this->attributes)) {
-                throw new \Exception("La tabla y los atributos deben ser definidos en la clase hija.");
-            }
-    
-            // Obtener los atributos llenables
-            $fillableAttributes = $this->getFillableAttributes();
-    
-            // Preparar las columnas y valores para la consulta SQL
-            $updateParts = [];
-            $values = [];
-    
-            foreach ($data as $modelProperty => $value) {
-                // Verificar si el atributo es llenable
-                if (in_array($modelProperty, $fillableAttributes)) {
-                    // Obtener el nombre de la columna en la base de datos
-                    $dbColumn = $this->attributes[$modelProperty] ?? null;
-    
-                    if ($dbColumn !== null) {
-                        $updateParts[] = "$dbColumn = ?";
-                        $values[] = $value;
-                    }
+    {
+        if (empty($this->table) || empty($this->attributes)) {
+            throw new \Exception("La tabla y los atributos deben ser definidos en la clase hija.");
+        }
+
+        // Obtener los atributos llenables
+        $fillableAttributes = $this->getFillableAttributes();
+
+        // Preparar las columnas y valores para la consulta SQL
+        $updateParts = [];
+        $values = [];
+
+        foreach ($data as $modelProperty => $value) {
+            // Verificar si el atributo es llenable
+            if (in_array($modelProperty, $fillableAttributes)) {
+                // Obtener el nombre de la columna en la base de datos
+                $dbColumn = $this->attributes[$modelProperty] ?? null;
+
+                if ($dbColumn !== null) {
+                    $updateParts[] = "$dbColumn = ?";
+                    $values[] = $value;
                 }
             }
-    
-            // Si no hay columnas para actualizar, lanzar una excepción
-            if (empty($updateParts)) {
-                throw new \Exception("No hay datos válidos para actualizar.");
-            }
-    
-            // Construir la consulta SQL
-            $sql = "UPDATE " . $this->table . " SET " . implode(", ", $updateParts) . " WHERE " . $this->attributes[$this->primaryKey] . " = ?";
-    
-            // Agregar el ID al final del array de valores
-            $values[] = $id;
-    
-            // Preparar y ejecutar la consulta
-            $stmt = $this->db->prepare($sql);
-    
-            if (!$stmt) {
-                throw new \Exception("Error al preparar la consulta: " . $this->db->error);
-            }
-    
-            // Ejecutar la consulta
-            $result = $stmt->execute($values);
-    
-            if (!$result) {
-                throw new \Exception("Error al ejecutar la consulta: " . $stmt->error);
-            }
-    
-            // Retornar el número de filas afectadas
-            return $stmt->affected_rows;
         }
-    
+
+        // Si no hay columnas para actualizar, lanzar una excepción
+        if (empty($updateParts)) {
+            throw new \Exception("No hay datos válidos para actualizar.");
+        }
+
+        // Construir la consulta SQL
+        $sql = "UPDATE " . $this->table . " SET " . implode(", ", $updateParts) . " WHERE " . $this->attributes[$this->primaryKey] . " = ?";
+
+        // Agregar el ID al final del array de valores
+        $values[] = $id;
+
+        // Preparar y ejecutar la consulta
+        $stmt = $this->db->prepare($sql);
+
+        if (!$stmt) {
+            throw new \Exception("Error al preparar la consulta: " . $this->db->error);
+        }
+
+        // Ejecutar la consulta
+        $result = $stmt->execute($values);
+
+        if (!$result) {
+            throw new \Exception("Error al ejecutar la consulta: " . $stmt->error);
+        }
+
+        // Retornar el número de filas afectadas
+        return $stmt->affected_rows;
+    }
+
 }

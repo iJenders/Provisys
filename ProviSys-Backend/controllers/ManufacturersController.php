@@ -9,7 +9,7 @@ class ManufacturersController
         // Obtener los datos de la consulta
         $data = json_decode(file_get_contents('php://input'), true);
         $filters = $data['filters'] ?? [];
-        $offset = $data['offset'] ?? 0;
+        $offset = $data['offset'] ?? 1;
         $search = $data['search'] ?? '';
 
         // Validar offset si se envió

@@ -201,6 +201,29 @@ $POST_ROUTES = [
             ['AuthMiddleware'],
             ['PermissionMiddleware', ['delete_storage']]
         ]
+    ],
+    '/products' => [
+        'action' => ['ProductsController', 'getAll'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_product']]
+        ]
+    ],
+    '/products/create' => [
+        'action' => ['ProductsController', 'createProduct'],
+        'middlewares' => [
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['create_product']]
+        ]
+    ],
+    '/products/delete' => [
+        'action' => ['ProductsController', 'deleteProduct'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['delete_product']]
+        ]
     ]
 ];
 ?>
