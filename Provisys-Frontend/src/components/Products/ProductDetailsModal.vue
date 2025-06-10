@@ -22,12 +22,12 @@ const fetchingIVA = ref(false);
 const fetchingWarehouses = ref(false);
 
 const providers = ref([])
-
 const categories = ref([]);
-
 const IVAs = ref([]);
-
 const warehouses = ref([]);
+
+const imageInput = ref(null);
+const uploadingImageUrl = ref(null);
 
 const handleProviderSearch = (value) => {
     // Implementar lógica para obtener proveedores basados en la búsqueda
@@ -121,7 +121,7 @@ const handleDeleteProduct = () => {
             }
         }).then(response => {
             successNotification("Producto eliminado correctamente.");
-            emit('closeModal');
+            handleCloseModal();
         }).catch(error => {
             handleRequestError(error);
         }).finally(() => {
@@ -131,20 +131,57 @@ const handleDeleteProduct = () => {
 }
 
 const handleEditProduct = (product) => {
-    confirmation("Alerta", "¿Estás seguro de que deseas guardar los cambios de este producto?",
-        () => {
-            // Simular eliminación del producto
-            fetchingModal.value = true;
-            setTimeout(() => {
-                fetchingModal.value = false;
-                if (Math.random() > 0.5) {
-                    successNotification("Producto actualizado correctamente.");
-                } else {
-                    errorNotification("No se pudo actualizar el producto. Inténtalo de nuevo más tarde.");
-                }
-            }, 1000);
-        },
-    )
+    ElMessageBox.confirm('¿Estás seguro de que deseas editar este producto?', 'Editar Producto', {
+        confirmButtonText: 'Sí',
+        cancelButtonText: 'No',
+        type: 'warning',
+    }).then(() => {
+        let formData = new FormData();
+        // Eliminar la propiedad "image" del objeto newProduct, ya que no se enviará en el JSON
+        // (Se enviará como archivo separado)
+
+        let productData = {
+            id: props.selectedProduct.id,
+            name: props.selectedProduct.name,
+            description: props.selectedProduct.description,
+            actualPrice: props.selectedProduct.actualPrice,
+            actualIva: props.selectedProduct.actualIva.id,
+            categoria: props.selectedProduct.categoria.id,
+            fabricante: props.selectedProduct.fabricante.id,
+        };
+
+        formData.append('product', JSON.stringify(productData));
+        formData.append('image', imageInput.value.files[0]);
+
+        axios.post(import.meta.env.VITE_API_URL + '/products/update', formData, {
+            headers: {
+                'Authorization': localStorage.getItem('token')
+            }
+        }).then(response => {
+            successNotification("Producto editado correctamente.");
+            handleCloseModal();
+        }).catch(error => {
+            handleRequestError(error);
+        }).finally(() => {
+            fetchingModal.value = false;
+        });
+    })
+}
+
+const handleSetImage = () => {
+    imageInput.value.click();
+}
+
+const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        uploadingImageUrl.value = URL.createObjectURL(file);
+    }
+}
+
+const handleCloseModal = () => {
+    uploadingImageUrl.value = null;
+    emit('closeModal');
 }
 
 onMounted(() => {
@@ -157,16 +194,19 @@ onMounted(() => {
 </script>
 
 <template>
-    <el-dialog title="Detalles del Producto" width="80%" @close="() => { $emit('closeModal') }"
-        :fullscreen="fullScreenModals" class="!p-6">
+    <el-dialog title="Detalles del Producto" width="80%" @close="handleCloseModal" :fullscreen="fullScreenModals"
+        class="!p-6">
         <!-- Modal Content -->
         <Line orientation="horizontal" class="bg-stone-200" />
         <div v-if="selectedProduct" class="w-full flex flex-col md:flex-row gap-4 mt-4" v-loading="fetchingModal">
             <!-- Product Image -->
             <div
                 class="w-full md:w-fit justify-center items-center   shrink-0 justify-center flex relative md:border-stone-200 md:border-r-[2px] md:pr-4">
-                <img :src="selectedProduct.image" alt="Product Image"
-                    class="object-cover w-[300px] h-[300px] object-cover rounded-lg shadow-lg shadow-stone-300" />
+                <img :src="uploadingImageUrl ? uploadingImageUrl : selectedProduct.image" alt="Product Image"
+                    class="object-cover w-[300px] h-[300px] object-cover rounded-lg shadow-lg shadow-stone-300 cursor-pointer"
+                    @click="handleSetImage" />
+                <!-- Edit img input-->
+                <input type="file" ref="imageInput" class="hidden" @change="handleFileChange" />
             </div>
 
             <Line orientation="horizontal" class="bg-stone-200 md:hidden" />
@@ -238,7 +278,7 @@ onMounted(() => {
         <!-- Modal Buttons -->
         <template #footer>
             <div class="dialog-footer flex justify-end flex-wrap gap-4 gap-y-2">
-                <el-button class="!ml-0" type="info" :disabled="fetchingModal" @click="() => { $emit('closeModal') }">
+                <el-button class="!ml-0" type="info" :disabled="fetchingModal" @click="handleCloseModal">
                     Cerrar
                 </el-button>
                 <el-button class="!ml-0" type="danger" :disabled="fetchingModal" @click="handleDeleteProduct">

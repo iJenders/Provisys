@@ -67,7 +67,7 @@ class Model
         return array_diff(array_keys($this->attributes), $this->guarded);
     }
 
-    public function corePoweredGetAll($filters, $search, $offset)
+    public function corePoweredGetAll($filters, $search, $offset, $range = [])
     {
         if (empty($this->table) || empty($this->attributes)) {
             throw new \Exception("La tabla y los atributos deben ser definidos en la clase hija.");
@@ -78,7 +78,7 @@ class Model
         $whereClauses = [];
         $args = [];
 
-        // Recorrer los filtros y convertirlos a nombres de columnas de DB
+        // Filtros (col = value)
         foreach ($filters as $modelProperty => $value) {
             // Buscar la columna de la DB correspondiente al nombre de la propiedad del modelo
             $dbColumn = $this->attributes[$modelProperty] ?? false;
@@ -89,7 +89,7 @@ class Model
             }
         }
 
-        // Búsqueda (LIKE)
+        // Búsqueda (col LIKE %value%)
         if ($search !== null && !empty($search)) {
             $searchPattern = "%$search%";
             $searchSqlParts = [];
@@ -105,6 +105,31 @@ class Model
             }
             if (!empty($searchSqlParts)) {
                 $whereClauses[] = "(" . implode(' OR ', $searchSqlParts) . ")";
+            }
+        }
+
+        // Range (col >= value1 AND col <= value2)
+        if ($range !== null && !empty($range)) {
+            foreach ($range as $modelProperty => $rangeValue) {
+                // Buscar la columna de la DB correspondiente al nombre de la propiedad del modelo
+                $dbColumn = $this->attributes[$modelProperty] ?? false;
+
+                if ($dbColumn !== false) {
+                    if (isset($rangeValue['min'])) {
+                        $whereClauses[] = "$dbColumn >= ?";
+                        $args[] = $rangeValue['min'];
+                    }
+                    if (isset($rangeValue['max'])) {
+                        $whereClauses[] = "$dbColumn <= ?";
+                        $args[] = $rangeValue['max'];
+                    }
+                }
+                // Verificar si el rango es válido
+                if (isset($rangeValue['min']) && isset($rangeValue['max'])) {
+                    if ($rangeValue['min'] > $rangeValue['max']) {
+                        throw new \Exception("El rango de valores no es válido.");
+                    }
+                }
             }
         }
 

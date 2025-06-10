@@ -19,4 +19,7 @@ $ENV = [
     // Configuración de encriptación de contraseñas
     'PASSWORD_HASH_SECRET' => 'WWw5zKYv0Ykwu8UYCcPiwR2KGNjXCkCmErf0iGV9M9oLyJJ3P2D6WTGC05liact06HIVCZVx1pbY30Z',
     'PASSWORD_HASH_ALGO' => 'sha256',
+
+    // Carpeta para almacenar los archivos
+    'UPLOAD_FOLDER' => 'C:\\productImages\\',
 ];

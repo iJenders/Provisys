@@ -48,6 +48,9 @@ $GET_ROUTES = [
     '/' => [
         'action' => ['HomeController', 'index'],
     ],
+    '/products/image' => [
+        'action' => ['ProductsController', 'getImage'],
+    ]
 ];
 
 // RUTAS POST
@@ -215,6 +218,13 @@ $POST_ROUTES = [
         'middlewares' => [
             ['AuthMiddleware'],
             ['PermissionMiddleware', ['create_product']]
+        ]
+    ],
+    '/products/update' => [
+        'action' => ['ProductsController', 'updateProduct'],
+        'middlewares' => [
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['update_product']]
         ]
     ],
     '/products/delete' => [

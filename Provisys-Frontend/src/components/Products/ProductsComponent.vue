@@ -22,38 +22,6 @@ const productsFilter = ref({
 });
 
 const products = ref([]);
-/*
-A product looks like:
-            {
-                "id": "0000001",
-                "name": "Juguito de mila",
-                "description": "Juguito sabor a mila",
-                "actualPrice": "55.00",
-                "actualIva": {
-                    "id": 3,
-                    "name": "Excento",
-                    "value": "0.00",
-                    "deleted": 0
-                },
-                "categoria": {
-                    "id": "4",
-                    "name": "wompwompwompwomp",
-                    "description": "wompwompwompwompwomp",
-                    "disabled": true
-                },
-                "fabricante": {
-                    "id": "V-31271802",
-                    "name": "Coca-Cola Femsa",
-                    "phone": "+584125372035",
-                    "secondaryPhone": "02518861200",
-                    "email": "jenders2906@gmail.com",
-                    "address": "qwe",
-                    "deleted": 0
-                },
-                "eliminado": 0
-            }
-
-*/
 
 const paginationConfig = ref({
     page: 1,
@@ -65,10 +33,16 @@ const selectedProduct = ref(null);
 const isSelectedProduct = ref(selectedProduct.value !== null)
 const addingProduct = ref(false);
 
+const fetchingProviders = ref(false);
+const fetchingCategories = ref(false);
+
+const providers = ref([]);
+const categories = ref([]);
+
 const handleProductClick = (product) => {
     selectedProduct.value = { ...product }
-    selectedProduct.value.image = 'https://picsum.photos/512/512?random=' + product.id; // Simulate image URL
-
+    selectedProduct.value.image =
+        import.meta.env.VITE_API_URL + '/products/image/?id=' + product.id;
     isSelectedProduct.value = true;
 }
 
@@ -90,11 +64,43 @@ const fetchProducts = () => {
         search: productsFilter.value.searcher || '',
         filters: {
             deleted: 0
-        }
+        },
+        range: {}
     }
 
+    // Mostrar eliminados
     if (productsFilter.value.showDeleted) {
         delete data.filters.deleted;
+    }
+
+    // Filtrar por categoría
+    if (productsFilter.value.category != '') {
+        data.filters.categoria = productsFilter.value.category.id;
+    }
+
+    // Filtrar por proveedor
+    if (productsFilter.value.provider != '') {
+        data.filters.fabricante = productsFilter.value.provider.id;
+    }
+
+    // Filtrar por precio mínimo
+    if (productsFilter.value.price.min != null) {
+        data.range.actualPrice = Object.assign(
+            data.range.actualPrice || {},
+            {
+                min: productsFilter.value.price.min
+            }
+        );
+    }
+
+    // Filtrar por precio máximo
+    if (productsFilter.value.price.max != null) {
+        data.range.actualPrice = Object.assign(
+            data.range.actualPrice || {},
+            {
+                max: productsFilter.value.price.max
+            }
+        );
     }
 
     axios.post(import.meta.env.VITE_API_URL + '/products', data, {
@@ -130,6 +136,59 @@ const tableRowClassName = (row) => {
     }
 }
 
+const handleProviderSearch = (value) => {
+    // Implementar lógica para obtener proveedores basados en la búsqueda
+    fetchingProviders.value = true;
+
+    axios.post(import.meta.env.VITE_API_URL + '/manufacturers', {
+        search: value == '' ? null : value,
+    }, {
+        headers: {
+            'Authorization': localStorage.getItem('token')
+        }
+    }).then(response => {
+        providers.value = response.data.response.manufacturers;
+    }).catch(error => {
+        handleRequestError(error);
+    }).finally(() => {
+        fetchingProviders.value = false;
+    });
+}
+
+const handleCategorySearch = (value) => {
+    // Implementar lógica para obtener categorías basadas en la búsqueda
+    fetchingCategories.value = true;
+
+    axios.post(import.meta.env.VITE_API_URL + '/categories', {
+        search: value == '' ? null : value
+    }, {
+        headers: {
+            'Authorization': localStorage.getItem('token')
+        }
+    }).then(response => {
+        categories.value = response.data.response.categories;
+    }).catch(error => {
+
+    }).finally(() => {
+        fetchingCategories.value = false;
+    });
+
+}
+
+const resetFilters = () => {
+    productsFilter.value = {
+        searcher: '',
+        category: '',
+        provider: '',
+        price: {
+            min: null,
+            max: null
+        },
+        showDeleted: false
+    }
+    fetchProducts();
+}
+
 onMounted(() => {
     fetchProducts();
 })
@@ -150,8 +209,12 @@ onMounted(() => {
                         <p class="text-stone-700 text-sm font-medium">Categoría:</p>
                         <div class="w-full flex flex-col pl-6 gap-1">
                             <div class="w-full flex items-center gap-1">
-                                <el-input style="width: 100%;" v-model="productsFilter.category"
-                                    placeholder="Buscar Categoría..." :prefix-icon="Search" />
+                                <el-select v-model="productsFilter.category" value-key="id" class="w-full"
+                                    placeholder="Seleccionar Categoría" :loading="fetchingProviders" filterable remote
+                                    :remote-method="handleCategorySearch">
+                                    <el-option v-for="category in categories" :key="category.id" :label="category.name"
+                                        :value="category" />
+                                </el-select>
                             </div>
                         </div>
                     </div>
@@ -161,8 +224,12 @@ onMounted(() => {
                         <p class="text-stone-700 text-sm font-medium">Proveedor:</p>
                         <div class="w-full flex flex-col pl-6 gap-1">
                             <div class="w-full flex items-center gap-1">
-                                <el-input style="width: 100%;" v-model="productsFilter.category"
-                                    placeholder="Buscar Proveedor..." :prefix-icon="Search" />
+                                <el-select v-model="productsFilter.provider" value-key="id" class="w-full"
+                                    placeholder="Seleccionar Proveedor" :loading="fetchingProviders" filterable remote
+                                    :remote-method="handleProviderSearch">
+                                    <el-option v-for="provider in providers" :key="provider.id" :label="provider.name"
+                                        :value="provider" />
+                                </el-select>
                             </div>
                         </div>
                     </div>
@@ -173,7 +240,7 @@ onMounted(() => {
                         <div class="w-full flex flex-col pl-6 gap-1">
                             <div class="w-full flex items-center gap-1">
                                 <p class="w-[34px] shrink-0 text-stone-700 text-sm font-medium">Min:</p>
-                                <el-input-number v-model="productsFilter.price.from" controls-position="right"
+                                <el-input-number v-model="productsFilter.price.min" controls-position="right"
                                     style="width: 100%;" :precision="2" :min="0.01" :max="9999999999.99">
                                     <template #prefix>
                                         <span>$</span>
@@ -182,7 +249,7 @@ onMounted(() => {
                             </div>
                             <div class="w-full flex items-center gap-1">
                                 <p class="w-[34px] shrink-0 text-stone-700 text-sm font-medium">Max:</p>
-                                <el-input-number v-model="productsFilter.price.to" controls-position="right"
+                                <el-input-number v-model="productsFilter.price.max" controls-position="right"
                                     style="width: 100%;" :precision="2" :min="0.01" :max="9999999999.99">
                                     <template #prefix>
                                         <span>$</span>
@@ -196,11 +263,13 @@ onMounted(() => {
                 <div class=" w-full flex flex-col gap-1">
                     <div class="w-full flex flex-col justify-center gap-2">
                         <ThemeButton
-                            class="w-full rounded-full text-sm !py-1 border-green-600 text-green-600 hover:bg-green-600 hover:text-white">
+                            class="w-full rounded-full text-sm !py-1 border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
+                            @click="fetchProducts">
                             Aplicar Filtros
                         </ThemeButton>
                         <ThemeButton
-                            class="w-full rounded-full text-sm !py-1 border-stone-700 text-stone-700 hover:bg-stone-700 hover:text-white">
+                            class="w-full rounded-full text-sm !py-1 border-stone-700 text-stone-700 hover:bg-stone-700 hover:text-white"
+                            @click="resetFilters">
                             Limpiar
                         </ThemeButton>
                     </div>

@@ -28,10 +28,10 @@ class ProductsModel extends Model
     protected string $primaryKey = 'id';
 
     // Método para obtener todos los productos
-    public function getAllProducts($filters, $search, $offset)
+    public function getAllProducts($filters, $search, $offset, $range)
     {
         // Obtener los productos crudos
-        $products = $this->corePoweredGetAll($filters, $search, $offset);
+        $products = $this->corePoweredGetAll($filters, $search, $offset, $range);
 
         // Instanciar modelos
         $ivasModel = new IVAsModel();
