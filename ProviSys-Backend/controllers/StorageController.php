@@ -8,7 +8,7 @@ class StoragesController
         // Obtener campos de la solicitud
         $data = json_decode(file_get_contents('php://input'), true);
 
-        $filters = $data['filters'];
+        $filters = $data['filters'] ?? [];
         $search = $data['search'] ?? '';
         $offset = $data['offset'] ?? 1;
 

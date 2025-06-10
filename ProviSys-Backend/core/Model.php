@@ -67,7 +67,7 @@ class Model
         return array_diff(array_keys($this->attributes), $this->guarded);
     }
 
-    public function corePoweredGetAll($filters, $search, $offset)
+    public function corePoweredGetAll($filters, $search, $offset, $range = [])
     {
         if (empty($this->table) || empty($this->attributes)) {
             throw new \Exception("La tabla y los atributos deben ser definidos en la clase hija.");
@@ -78,7 +78,7 @@ class Model
         $whereClauses = [];
         $args = [];
 
-        // Recorrer los filtros y convertirlos a nombres de columnas de DB
+        // Filtros (col = value)
         foreach ($filters as $modelProperty => $value) {
             // Buscar la columna de la DB correspondiente al nombre de la propiedad del modelo
             $dbColumn = $this->attributes[$modelProperty] ?? false;
@@ -89,7 +89,7 @@ class Model
             }
         }
 
-        // Búsqueda (LIKE)
+        // Búsqueda (col LIKE %value%)
         if ($search !== null && !empty($search)) {
             $searchPattern = "%$search%";
             $searchSqlParts = [];
@@ -108,6 +108,31 @@ class Model
             }
         }
 
+        // Range (col >= value1 AND col <= value2)
+        if ($range !== null && !empty($range)) {
+            foreach ($range as $modelProperty => $rangeValue) {
+                // Buscar la columna de la DB correspondiente al nombre de la propiedad del modelo
+                $dbColumn = $this->attributes[$modelProperty] ?? false;
+
+                if ($dbColumn !== false) {
+                    if (isset($rangeValue['min'])) {
+                        $whereClauses[] = "$dbColumn >= ?";
+                        $args[] = $rangeValue['min'];
+                    }
+                    if (isset($rangeValue['max'])) {
+                        $whereClauses[] = "$dbColumn <= ?";
+                        $args[] = $rangeValue['max'];
+                    }
+                }
+                // Verificar si el rango es válido
+                if (isset($rangeValue['min']) && isset($rangeValue['max'])) {
+                    if ($rangeValue['min'] > $rangeValue['max']) {
+                        throw new \Exception("El rango de valores no es válido.");
+                    }
+                }
+            }
+        }
+
         // Combinar cláusulas WHERE
         if (!empty($whereClauses)) {
             $sql .= " WHERE " . implode(' AND ', $whereClauses);
@@ -115,7 +140,7 @@ class Model
 
         // Aplicar LIMIT y OFFSET para paginación
         $sql .= " LIMIT 10 OFFSET ?";
-        $args[] = $offset;
+        $args[] = ($offset < 0) ? 0 : $offset;
 
         // Preparar y ejecutar la consulta
         $stmt = $this->db->prepare($sql);
@@ -333,58 +358,58 @@ class Model
     }
 
     public function corePoweredUpdate($id, $data)
-        {
-            if (empty($this->table) || empty($this->attributes)) {
-                throw new \Exception("La tabla y los atributos deben ser definidos en la clase hija.");
-            }
-    
-            // Obtener los atributos llenables
-            $fillableAttributes = $this->getFillableAttributes();
-    
-            // Preparar las columnas y valores para la consulta SQL
-            $updateParts = [];
-            $values = [];
-    
-            foreach ($data as $modelProperty => $value) {
-                // Verificar si el atributo es llenable
-                if (in_array($modelProperty, $fillableAttributes)) {
-                    // Obtener el nombre de la columna en la base de datos
-                    $dbColumn = $this->attributes[$modelProperty] ?? null;
-    
-                    if ($dbColumn !== null) {
-                        $updateParts[] = "$dbColumn = ?";
-                        $values[] = $value;
-                    }
+    {
+        if (empty($this->table) || empty($this->attributes)) {
+            throw new \Exception("La tabla y los atributos deben ser definidos en la clase hija.");
+        }
+
+        // Obtener los atributos llenables
+        $fillableAttributes = $this->getFillableAttributes();
+
+        // Preparar las columnas y valores para la consulta SQL
+        $updateParts = [];
+        $values = [];
+
+        foreach ($data as $modelProperty => $value) {
+            // Verificar si el atributo es llenable
+            if (in_array($modelProperty, $fillableAttributes)) {
+                // Obtener el nombre de la columna en la base de datos
+                $dbColumn = $this->attributes[$modelProperty] ?? null;
+
+                if ($dbColumn !== null) {
+                    $updateParts[] = "$dbColumn = ?";
+                    $values[] = $value;
                 }
             }
-    
-            // Si no hay columnas para actualizar, lanzar una excepción
-            if (empty($updateParts)) {
-                throw new \Exception("No hay datos válidos para actualizar.");
-            }
-    
-            // Construir la consulta SQL
-            $sql = "UPDATE " . $this->table . " SET " . implode(", ", $updateParts) . " WHERE " . $this->attributes[$this->primaryKey] . " = ?";
-    
-            // Agregar el ID al final del array de valores
-            $values[] = $id;
-    
-            // Preparar y ejecutar la consulta
-            $stmt = $this->db->prepare($sql);
-    
-            if (!$stmt) {
-                throw new \Exception("Error al preparar la consulta: " . $this->db->error);
-            }
-    
-            // Ejecutar la consulta
-            $result = $stmt->execute($values);
-    
-            if (!$result) {
-                throw new \Exception("Error al ejecutar la consulta: " . $stmt->error);
-            }
-    
-            // Retornar el número de filas afectadas
-            return $stmt->affected_rows;
         }
-    
+
+        // Si no hay columnas para actualizar, lanzar una excepción
+        if (empty($updateParts)) {
+            throw new \Exception("No hay datos válidos para actualizar.");
+        }
+
+        // Construir la consulta SQL
+        $sql = "UPDATE " . $this->table . " SET " . implode(", ", $updateParts) . " WHERE " . $this->attributes[$this->primaryKey] . " = ?";
+
+        // Agregar el ID al final del array de valores
+        $values[] = $id;
+
+        // Preparar y ejecutar la consulta
+        $stmt = $this->db->prepare($sql);
+
+        if (!$stmt) {
+            throw new \Exception("Error al preparar la consulta: " . $this->db->error);
+        }
+
+        // Ejecutar la consulta
+        $result = $stmt->execute($values);
+
+        if (!$result) {
+            throw new \Exception("Error al ejecutar la consulta: " . $stmt->error);
+        }
+
+        // Retornar el número de filas afectadas
+        return $stmt->affected_rows;
+    }
+
 }

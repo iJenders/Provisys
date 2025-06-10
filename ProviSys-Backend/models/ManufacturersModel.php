@@ -3,6 +3,7 @@ include_once 'core/Model.php';
 
 class ManufacturersModel extends Model
 {
+    protected string $table = 'fabricante';
     protected array $attributes = [
         'id' => 'id_fabricante',
         'name' => 'nombre',
@@ -11,6 +12,13 @@ class ManufacturersModel extends Model
         'email' => 'correo',
         'address' => 'direccion',
         'deleted' => 'eliminado'
+    ];
+    protected array $searchableAttributes = [
+        'name',
+        'phone',
+        'secondaryPhone',
+        'email',
+        'address'
     ];
     protected array $guarded = [];
     protected string $primaryKey = 'id';

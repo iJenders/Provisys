@@ -92,6 +92,29 @@ class CategoriesModel
         }
     }
 
+    public static function getById($id)
+    {
+        $db = DBConnection::getInstance()->getConnection();
+
+        $query = "SELECT * FROM categoria_producto WHERE id_categoria = $id";
+
+        $result = $db->query($query);
+
+        if ($result) {
+            $row = $result->fetch_assoc();
+            $category = [
+                'id' => intval($row['id_categoria']),
+                'name' => $row['nombre'],
+                'description' => $row['descripcion'],
+                'disabled' => $row['eliminado'] == 1 ? true : false
+            ];
+
+            return $category;
+        } else {
+            throw new Exception("Error al obtener las categorías: " . $db->error);
+        }
+    }
+
     public static function getCount($search, $onlyDisabled)
     {
         $db = DBConnection::getInstance()->getConnection();

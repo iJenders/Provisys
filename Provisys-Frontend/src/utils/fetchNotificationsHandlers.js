@@ -17,15 +17,19 @@ const handleRequestError = (error) => {
     message = "Error no clasificado:";
   }
 
-  if (error.status !== 500) {
-    message +=
-      '<div class="max-h-[240px] p-2 border-s-6 bg-stone-100 border-red-300 overflow-y-scroll">';
-    message += error.response.data.response.errors
-      .map((e) => {
-        return `<li class="pl-4">${e}</li>`;
-      })
-      .join("");
-    message += "</div>";
+  try {
+    if (error.status !== 500) {
+      message +=
+        '<div class="max-h-[240px] p-2 border-s-6 bg-stone-100 border-red-300 overflow-y-scroll">';
+      message += error.response.data.response.errors
+        .map((e) => {
+          return `<li class="pl-4">${e}</li>`;
+        })
+        .join("");
+      message += "</div>";
+    }
+  } catch (error) {
+    message = "Error no clasificado";
   }
 
   ElNotification({
