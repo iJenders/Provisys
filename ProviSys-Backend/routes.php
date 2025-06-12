@@ -234,6 +234,102 @@ $POST_ROUTES = [
             ['AuthMiddleware'],
             ['PermissionMiddleware', ['delete_product']]
         ]
+    ],
+    '/products/getCompatibleStorages' => [
+        'action' => ['ProductsController', 'getCompatibleStorages'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_product']]
+        ]
+    ],
+    '/products/setCompatibleStorages' => [
+        'action' => ['ProductsController', 'setCompatibleStorages'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['update_product']]
+        ]
+    ],
+    '/products/disableCompatibleStorage' => [
+        'action' => ['ProductsController', 'disableCompatibleStorage'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['update_product']]
+        ]
+    ],
+    '/paymentMethods' => [
+        'action' => ['PaymentMethodsController', 'getAll'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_payment_method']]
+        ]
+    ],
+    '/paymentMethods/create' => [
+        'action' => ['PaymentMethodsController', 'createPaymentMethod'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['create_payment_method']]
+        ]
+    ],
+    '/paymentMethods/update' => [
+        'action' => ['PaymentMethodsController', 'updatePaymentMethod'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['update_payment_method']]
+        ]
+    ],
+    '/paymentMethods/delete' => [
+        'action' => ['PaymentMethodsController', 'deletePaymentMethod'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['delete_payment_method']]
+        ]
+    ],
+    '/payments' => [
+        'action' => ['PaymentsController', 'getAll'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_payment']]
+        ]
+    ],
+    '/providers' => [
+        'action' => ['ProvidersController', 'getAll'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_provider']]
+        ]
+    ],
+    '/providers/create' => [
+        'action' => ['ProvidersController', 'createProvider'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['create_provider']]
+        ]
+    ],
+    '/providers/update' => [
+        'action' => ['ProvidersController', 'updateProvider'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['update_provider']]
+        ]
+    ],
+    '/providers/delete' => [
+        'action' => ['ProvidersController', 'deleteProvider'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['delete_provider']]
+        ]
     ]
 ];
 ?>

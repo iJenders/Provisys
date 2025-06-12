@@ -3,6 +3,7 @@ include_once 'models/ProductsModel.php';
 include_once 'models/CategoriesModel.php';
 include_once 'models/ManufacturersModel.php';
 include_once 'models/IVAsModel.php';
+include_once 'models/StoragesModel.php';
 
 class ProductsController
 {
@@ -421,6 +422,208 @@ class ProductsController
         try {
             $model->corePoweredDelete($data['id']);
             Responses::json(['message' => 'Producto eliminado exitosamente'], 200);
+        } catch (Exception $e) {
+            Responses::json(['errors' => [$e->getMessage()]], 500);
+        }
+    }
+
+    public static function getCompatibleStorages()
+    {
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        Validator::ensureFields($data, ['id']);
+
+        // Validar id
+        $idValidator = new Validator($data['id'], 'id');
+        $idValidation = $idValidator->required()->numeric()->minValue(1);
+        if ($idValidation->getErrors()) {
+            Responses::json(['errors' => $idValidation->getErrors()], 400);
+        }
+
+        $model = new ProductsModel();
+
+        // Validar si el producto existe
+        try {
+            if (!$model->exists($data['id'])) {
+                Responses::json(['errors' => ['El producto especificado no existe']], 400);
+            }
+        } catch (Exception $e) {
+            Responses::json(['errors' => [$e->getMessage()]], 500);
+        }
+
+        // Obtener los almacenes compatibles
+        try {
+            $compatibleStorages = $model->getCompatibleStorages($data['id']);
+        } catch (Exception $e) {
+            Responses::json(['errors' => [$e->getMessage()]], 500);
+        }
+
+        // Devolver los almacenes compatibles
+        Responses::json(['storages' => $compatibleStorages], 200);
+    }
+
+    public static function setCompatibleStorages()
+    {
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        Validator::ensureFields($data, ['id']);
+
+        // Validar id
+        $idValidator = new Validator($data['id'], 'id');
+        $idValidation = $idValidator->required()->numeric()->minValue(1);
+        if ($idValidation->getErrors()) {
+            Responses::json(['errors' => $idValidation->getErrors()], 400);
+        }
+
+        // Validar compatibleStorages
+        if (!isset($data['compatibleStorages'])) {
+            Responses::json(['errors' => ['compatibleStorages es requerido']], 400);
+        }
+        if (!is_array($data['compatibleStorages'])) {
+            Responses::json(['errors' => ['compatibleStorages debe ser un array']], 400);
+        }
+        if (count($data['compatibleStorages']) == 0) {
+            Responses::json(['errors' => ['compatibleStorages debe tener al menos un elemento']], 400);
+        }
+        foreach ($data['compatibleStorages'] as $compatibleStorage) {
+            $compatibleStorageValidator = new Validator($compatibleStorage, 'compatibleStorage');
+            $compatibleStorageValidation = $compatibleStorageValidator->required()->numeric()->minValue(1);
+            if ($compatibleStorageValidation->getErrors()) {
+                Responses::json(['errors' => $compatibleStorageValidation->getErrors()], 400);
+            }
+        }
+
+        $model = new ProductsModel();
+
+        // Validar si el producto existe
+        try {
+            if (!$model->exists($data['id'])) {
+                Responses::json(['errors' => ['El producto especificado no existe']], 400);
+            }
+        } catch (Exception $e) {
+            Responses::json(['errors' => [$e->getMessage()]], 500);
+        }
+
+        // Validar si los almacenes especificados existen
+        $storageModel = new StoragesModel();
+        try {
+            foreach ($data['compatibleStorages'] as $compatibleStorage) {
+                $storage = $storageModel->corePoweredGetById($compatibleStorage);
+                if (!$storage) {
+                    Responses::json(['errors' => ['El almacén especificado no existe']], 400);
+                }
+                if ($storage['deleted'] == 1) {
+                    Responses::json(['errors' => ['El almacén especificado está eliminado']], 400);
+                }
+                if ($storage['vehicle'] == 1) {
+                    Responses::json(['errors' => ['El almacén especificado es un vehículo']], 400);
+                }
+            }
+        } catch (Exception $e) {
+            Responses::json(['errors' => [$e->getMessage()]], 500);
+        }
+
+        // Validar que no se estén agregando almacenes que ya son compatibles
+        try {
+            $compatibleStorages = $model->getCompatibleStorages($data['id']);
+            foreach ($compatibleStorages as $compatibleStorage) {
+                if (in_array($compatibleStorage['id'], $data['compatibleStorages'])) {
+                    Responses::json(['errors' => ['El almacén especificado ya es compatible']], 400);
+                }
+            }
+        } catch (Exception $e) {
+            Responses::json(['errors' => [$e->getMessage()]], 500);
+        }
+
+        // Actualizar los almacenes compatibles
+        try {
+            $model->setStorageCompatibility($data['id'], $data['compatibleStorages']);
+            Responses::json(['message' => 'Almacenes compatibles actualizados exitosamente'], 200);
+        } catch (Exception $e) {
+            Responses::json(['errors' => [$e->getMessage()]], 500);
+        }
+    }
+
+    public static function disableCompatibleStorage()
+    {
+        // Obtener datos de la solicitud
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        // Validar campos
+        Validator::ensureFields($data, ['id', 'storageId']);
+
+        // Validar id
+        $idValidator = new Validator($data['id'], 'id');
+        $idValidation = $idValidator->required()->numeric()->minValue(1);
+        if ($idValidation->getErrors()) {
+            Responses::json(['errors' => $idValidation->getErrors()], 400);
+        }
+
+        // Validar storageId
+        $storageIdValidator = new Validator($data['storageId'], 'storageId');
+        $storageIdValidation = $storageIdValidator->required()->numeric()->minValue(1);
+        if ($storageIdValidation->getErrors()) {
+            Responses::json(['errors' => $storageIdValidation->getErrors()], 400);
+        }
+
+        // Validar si el producto existe
+        $model = new ProductsModel();
+        try {
+            if (!$model->exists($data['id'])) {
+                Responses::json(['errors' => ['El producto especificado no existe']], 400);
+            }
+        } catch (Exception $e) {
+            Responses::json(['errors' => [$e->getMessage()]], 500);
+        }
+
+        // Validar si el almacén especificado existe
+        $storageModel = new StoragesModel();
+        try {
+            $storage = $storageModel->corePoweredGetById($data['storageId']);
+            if (!$storage) {
+                Responses::json(['errors' => ['El almacén especificado no existe']], 400);
+            }
+            if ($storage['deleted'] == 1) {
+                Responses::json(['errors' => ['El almacén especificado está eliminado']], 400);
+            }
+            if ($storage['vehicle'] == 1) {
+                Responses::json(['errors' => ['El almacén especificado es un vehículo']], 400);
+            }
+        } catch (Exception $e) {
+            Responses::json(['errors' => [$e->getMessage()]], 500);
+        }
+
+        // Validar si el almacén especificado es compatible y no tiene existencia
+        try {
+            $compatibleStorages = $model->getCompatibleStorages($data['id']);
+            if (
+                !in_array($data['storageId'], array_map(
+                    function ($compatibleStorage) {
+                        return $compatibleStorage['id'];
+                    },
+                    $compatibleStorages
+                ))
+            ) {
+                Responses::json(['errors' => ['El almacén especificado no es compatible']], 400);
+            }
+        } catch (Exception $e) {
+            Responses::json(['errors' => [$e->getMessage()], 500]);
+        }
+
+        // Validar que el almacén especificado no tenga existencias del producto
+        try {
+            $model = new ProductsModel();
+            if ($model->hasExistences($data['id'], $data['storageId'])) {
+                Responses::json(['errors' => ['El almacén especificado tiene existencias del producto. Pruebe vaciar el almacén e intente de nuevo']], 400);
+            }
+        } catch (Exception $e) {
+            Responses::json(['errors' => [$e->getMessage()]], 500);
+        }
+
+        // Deshabilitar el almacén compatible
+        try {
+            $model->disableCompatibleStorage($data['id'], $data['storageId']);
+            Responses::json(['message' => 'Almacén compatible deshabilitado exitosamente'], 200);
         } catch (Exception $e) {
             Responses::json(['errors' => [$e->getMessage()]], 500);
         }

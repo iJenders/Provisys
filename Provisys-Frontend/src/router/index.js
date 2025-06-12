@@ -50,6 +50,16 @@ const router = createRouter({
           component: () => import("../views/System/OrdersView.vue"),
         },
         {
+          path: "purchases",
+          name: "system-purchases",
+          component: () => import("../views/System/PurchasesView.vue"),
+        },
+        {
+          path: "payments",
+          name: "system-payments",
+          component: () => import("../views/System/PaymentsView.vue"),
+        },
+        {
           path: "products",
           name: "system-products",
           component: () => import("../views/System/ProductsView.vue"),

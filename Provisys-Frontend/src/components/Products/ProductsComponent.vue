@@ -25,7 +25,7 @@ const products = ref([]);
 
 const paginationConfig = ref({
     page: 1,
-    rowsPerPage: 1,
+    rowsPerPage: 10,
     totalRows: products.value.length,
 });
 
@@ -65,7 +65,8 @@ const fetchProducts = () => {
         filters: {
             deleted: 0
         },
-        range: {}
+        range: {},
+        offset: paginationConfig.value.page,
     }
 
     // Mostrar eliminados
@@ -114,6 +115,8 @@ const fetchProducts = () => {
             product.actualPrice = parseFloat(product.actualPrice);
         });
 
+        paginationConfig.value.totalRows = fetched.count;
+
         products.value = fetched.products;
     }).catch(error => {
         handleRequestError(error);
@@ -123,11 +126,8 @@ const fetchProducts = () => {
 }
 
 const handlePageChange = (page) => {
-    console.log(page)
-    fetchingProducts.value = true;
-    setTimeout(() => {
-        fetchingProducts.value = false;
-    }, 1000);
+    paginationConfig.value.page = page;
+    fetchProducts();
 }
 
 const tableRowClassName = (row) => {
@@ -317,6 +317,12 @@ onMounted(() => {
                             ${{ parseInt(scope.row.actualPrice).toFixed(2) }}
                         </template>
                     </el-table-column>
+                    <el-table-column prop="actualIva" label="IVA actual" min-width="100">
+                        <template #default="scope">
+                            {{ parseInt(scope.row.actualIva.value).toFixed(0) }}%
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="description" label="Descripción" min-width="240" />
                     <el-table-column prop="categoria.name" label="Categoría" min-width="160" />
                     <el-table-column prop="fabricante.name" label="Proveedor" min-width="180" />
                 </el-table>

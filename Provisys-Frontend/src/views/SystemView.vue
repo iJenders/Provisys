@@ -1,5 +1,5 @@
 <script setup>
-import { LayoutDashboard, Truck, Apple, Package, User, ShieldUser, ScrollText } from 'lucide-vue-next';
+import { LayoutDashboard, Truck, Apple, Package, User, ShieldUser, ScrollText, Receipt, PackagePlus } from 'lucide-vue-next';
 import { onBeforeMount, onMounted, onUpdated } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
@@ -18,6 +18,16 @@ const systemLinks = [
         name: 'Pedidos',
         icon: Truck,
         link: '/system/orders'
+    },
+    {
+        name: 'Compras',
+        icon: PackagePlus,
+        link: '/system/purchases'
+    },
+    {
+        name: 'Pagos',
+        icon: Receipt,
+        link: '/system/payments'
     },
     {
         name: 'Productos',
@@ -43,7 +53,7 @@ const systemLinks = [
         name: 'Reportes',
         icon: ScrollText,
         link: '/system/reports'
-    }
+    },
 ]
 
 onBeforeMount(() => {
