@@ -34,6 +34,7 @@
                 </div>
                 <TransitionGroup name="list">
                     <div v-for="(product, index) in purchase.products" :key="index" class="w-full flex gap-2 items-end">
+                        <!-- Product -->
                         <div class="flex-grow">
                             <el-select v-model="product.id" placeholder="Seleccionar Producto" style="width: 100%;"
                                 filterable remote :remote-method="getProducts"
@@ -42,11 +43,25 @@
                                     :value="item.id" />
                             </el-select>
                         </div>
+
+                        <!-- Warehouse -->
+                        <div class="w-[200px]">
+                            <p class="text-stone-700 text-xs font-medium">Almacén</p>
+                            <el-select v-model="product.warehouseId" placeholder="Seleccionar Almacén"
+                                style="width: 100%;" filterable remote :remote-method="getWarehouses(product)">
+                                <el-option v-for="warehouse in warehouses" :key="warehouse.id" :label="warehouse.name"
+                                    :value="warehouse.id" :loading="fetchingWarehouses" />
+                            </el-select>
+                        </div>
+
+                        <!-- Quantity -->
                         <div class="w-[150px]">
                             <p class="text-stone-700 text-xs font-medium">Cantidad</p>
                             <el-input-number v-model="product.quantity" :min="1" controls-position="right"
                                 style="width: 100%;" />
                         </div>
+
+                        <!-- Unit Price -->
                         <div class="w-[150px]">
                             <p class="text-stone-700 text-xs font-medium">Precio Unitario</p>
                             <el-input-number v-model="product.unitPrice" :min="0.01" :precision="2"
@@ -54,6 +69,8 @@
                                 <template #prefix>$</template>
                             </el-input-number>
                         </div>
+
+                        <!-- IVA -->
                         <div class="w-[150px]">
                             <p class="text-stone-700 text-xs font-medium">IVA</p>
                             <el-input-number v-model="product.iva" :min="0" :precision="2" controls-position="right"
@@ -65,6 +82,8 @@
                                 </el-button>
                             </el-input-number>
                         </div>
+
+                        <!-- Subtotal -->
                         <div class="w-[150px]">
                             <p class="text-stone-700 text-xs font-medium">Subtotal</p>
                             <p class="text-stone-700 text-lg font-medium">
@@ -118,11 +137,13 @@ const providers = ref([]);
 const fetchingProviders = ref(false);
 const products = ref([]);
 const fetchingProducts = ref(false);
+const warehouses = ref([]);
+const fetchingWarehouses = ref(false);
 
 const purchase = ref({
     providerId: null,
     products: [],
-    date: null
+    date: null,
 });
 
 const total = computed(() => {
@@ -136,7 +157,8 @@ const addProduct = () => {
         id: null,
         quantity: 1,
         unitPrice: 0.01,
-        iva: 0
+        iva: 0,
+        warehouseId: null,
     });
 };
 
@@ -225,6 +247,33 @@ const getProducts = (str) => {
     });
 }
 
+const getWarehouses = (product) => {
+    if (product.id === null) {
+        warehouses.value = [];
+        return;
+    }
+
+    fetchingWarehouses.value = true;
+
+    let data = {
+        // Id del producto
+        id: product.id,
+        filters: {}
+    }
+
+    axios.post(import.meta.env.VITE_API_URL + '/products/getCompatibleStorages', data, {
+        headers: {
+            'Authorization': localStorage.getItem('token')
+        }
+    }).then(response => {
+        warehouses.value = response.data.response.storages
+    }).catch(error => {
+        handleRequestError(error);
+    }).finally(() => {
+        fetchingWarehouses.value = false;
+    });
+}
+
 const savePurchase = async () => {
     // Validar que todos los campos estén llenos
     if (!purchase.value.providerId) {
@@ -247,6 +296,16 @@ const savePurchase = async () => {
         return;
     }
 
+    if (purchase.value.products.some(p => p.quantity <= 0)) {
+        errorNotification('La cantidad de unidades en cada producto debe ser mayor a 0');
+        return;
+    }
+
+    if (purchase.value.products.some(p => p.warehouseId == null)) {
+        errorNotification('Debe seleccionar un almacen para cada producto. Si algún producto no tiene almacen, dirijase a la sección de productos para configurar uno.');
+        return;
+    }
+
     ElMessageBox.confirm(
         '¿Estás seguro de que quieres guardar la compra?',
         'Guardar Compra',
@@ -264,7 +323,8 @@ const savePurchase = async () => {
                         id: p.id,
                         quantity: p.quantity,
                         unitPrice: p.unitPrice,
-                        iva: p.iva
+                        iva: p.iva,
+                        warehouseId: p.warehouseId
                     }
                 }),
                 // Date in YYYY-MM-DD format
@@ -295,6 +355,9 @@ const savePurchase = async () => {
 };
 
 const onProductChange = (product, index) => {
+    // Vaciar el valor de wareouseId
+    product.warehouseId = null;
+
     // Buscar repetidos y mostrar notificación
 
     if (allowRepeatedProducts.value) return;

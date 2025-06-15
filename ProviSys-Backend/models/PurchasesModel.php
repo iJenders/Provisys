@@ -93,11 +93,32 @@ class PurchasesModel extends Model
 
                 // Verificar exito
                 if ($stmt1->affected_rows > 0) {
+                    // Añadir pago pendiente
                     $totalAmount = 0;
                     foreach ($data['products'] as $product) {
                         $totalAmount += $product['quantity'] * $product['unitPrice'] + ($product['quantity'] * $product['unitPrice'] * $product['iva'] / 100);
                     }
                     $this->createPurchasePayment($compraID, $data['date'], $totalAmount);
+
+                    // Añadir los productos de la compra a la tabla de productos
+                    foreach ($data['products'] as $product) {
+                        $sql3 = "UPDATE productos_en_almacen SET stock_disponible = stock_disponible + ? WHERE id_producto = ? AND id_almacen = ?";
+                        $args3 = [];
+                        $args3[] = $product['quantity'];
+                        $args3[] = $product['id'];
+                        $args3[] = $product['warehouseId'];
+
+                        // Preparar consulta
+                        $stmt3 = $this->db->prepare($sql3);
+                        $stmt3->execute($args3);
+
+                        // Validar exito
+                        if ($stmt3->affected_rows <= 0) {
+                            // Revertir transacción
+                            $this->db->rollback();
+                            throw new Exception('Error al añadir productos a la tabla de productos');
+                        }
+                    }
 
                     // Confirmar transacción
                     $this->db->commit();
@@ -106,6 +127,7 @@ class PurchasesModel extends Model
                 } else {
                     // Revertir transacción
                     $this->db->rollback();
+                    throw new Exception('Error al añadir productos a la tabla de productos');
                 }
             }
         } catch (Exception $e) {

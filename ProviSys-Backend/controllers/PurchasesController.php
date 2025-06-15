@@ -3,6 +3,7 @@
 include_once 'models/PurchasesModel.php';
 include_once 'models/ProductsModel.php';
 include_once 'models/ProvidersModel.php';
+include_once 'models/StoragesModel.php';
 
 class PurchasesController
 {
@@ -112,6 +113,13 @@ class PurchasesController
                 Responses::json(['errors' => $ivaValidation->getErrors()], 400);
             }
 
+            // Validar warehouseId
+            $warehouseIdValidator = new Validator($product['warehouseId'], "products[$index].warehouseId");
+            $warehouseIdValidation = $warehouseIdValidator->required()->numeric()->minValue(1);
+            if ($warehouseIdValidation->getErrors()) {
+                Responses::json(['errors' => $warehouseIdValidation->getErrors()], 400);
+            }
+
             // Validar que el producto exista
             $productModel = new ProductsModel();
             $productExists = $productModel->exists($product['id']);
@@ -124,6 +132,13 @@ class PurchasesController
             $providerExists = $providerModel->exists($data['providerId']);
             if (!$providerExists) {
                 Responses::json(['errors' => ['providerId' => 'El proveedor no existe']], 400);
+            }
+
+            // Validar que el almacen exista
+            $warehouseModel = new StoragesModel();
+            $warehouseExists = $warehouseModel->exists($product['warehouseId']);
+            if (!$warehouseExists) {
+                Responses::json(['errors' => ['warehouseId' => 'El almacen no existe']], 400);
             }
         }
 
