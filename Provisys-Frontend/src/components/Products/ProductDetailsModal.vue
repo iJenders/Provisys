@@ -294,13 +294,13 @@ onMounted(() => {
         <!-- Product Details Content -->
         <div v-if="selectedProduct" class="w-full flex items-center justify-between py-4 gap-x-6 gap-y-2 flex-wrap">
             <h2 class="text-2xl font-bold text-stone-700">
-                {{ showWarehouses ? 'Gestionar existencias' : 'Detalles del Producto' }}
+                {{ showWarehouses ? 'Gestionar almacenes' : 'Detalles del Producto' }}
                 <span class="font-normal">
                     ({{ selectedProduct.name }})
                 </span>
             </h2>
             <el-button type="primary" @click="toggleShowWarehouses">
-                {{ showWarehouses ? 'Detalles del producto' : 'Gestionar existencias' }}
+                {{ showWarehouses ? 'Detalles del producto' : 'Gestionar almacenes' }}
             </el-button>
         </div>
         <TransitionGroup name="fade">

@@ -4,6 +4,7 @@ import { onMounted, ref } from 'vue';
 import { DollarSign, Search } from 'lucide-vue-next';
 import axios from 'axios';
 import { handleRequestError } from '@/utils/fetchNotificationsHandlers';
+import ThemeButton from '../ThemeButton.vue';
 
 const payments = ref([]);
 
@@ -31,6 +32,10 @@ const getPayments = () => {
     });
 }
 
+const openDetailsModal = (payment) => {
+    console.log(payment);
+}
+
 onMounted(() => {
     getPayments();
 })
@@ -55,21 +60,28 @@ onMounted(() => {
         <!-- Payments List -->
         <div class="grid gap-4" v-loading="gettingPayments">
             <div v-for="payment in payments" :key="payment.id"
-                class="flex flex-col sm:flex-row items-center justify-between p-4 border rounded-lg"
+                class="flex flex-col sm:flex-row items-center justify-between p-4 border rounded-lg gap-4"
                 :class="payment.deleted ? 'border-red-200 bg-red-100' : 'border-green-200 bg-green-100'">
 
                 <!-- Payment Details -->
-                <div class="flex items-center gap-4">
+                <div class="flex items-center justify-between gap-4 flex-wrap">
                     <DollarSign class="w-8 h-8 text-emerald-600" />
                     <div>
-                        <h3 class="font-semibold text-gray-800">Monto: {{ payment.amount }}</h3>
-                        <p class="text-sm text-gray-600">Fecha: {{ payment.date }}</p>
+                        <h3 class="font-semibold text-gray-800">Monto: ${{ payment.amount }}</h3>
+                        <p class="text-sm text-gray-600">Fecha: {{ payment.date.split(' ')[0] }}</p>
                         <p class="text-sm text-gray-600">
-                            {{ payment.orderId ? 'Orden #' + payment.orderId :
-                                payment.purchaseId ? 'Compra #' + payment.purchaseId :
-                                    'Nota #' + payment.noteId }}
+                            {{ payment.orderId ? 'Pedido #' + payment.orderId :
+                                'Compra #' + payment.purchaseId }}
                         </p>
                     </div>
+                </div>
+
+                <!-- Payment Buttons -->
+                <div class="flex items-center gap-2">
+                    <ThemeButton @click="openDetailsModal(payment)"
+                        class="bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-800 rounded-xl">
+                        Ver Detalles
+                    </ThemeButton>
                 </div>
             </div>
             <div v-if="payments.length === 0" class="border-l-4 border-red-400 bg-red-100 rounded-lg p-4">

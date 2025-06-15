@@ -19,7 +19,7 @@
                 <div class="w-full flex flex-col gap-2 min-w-[250px] flex-1">
                     <p class="text-stone-700 text-sm font-medium">Fecha</p>
                     <el-date-picker v-model="purchase.date" type="date" placeholder="Seleccionar Fecha"
-                        style="width: 100%;" />
+                        style="width: 100%;" :disabled-date="(date) => { return date >= Date.now() }" />
                 </div>
             </div>
 

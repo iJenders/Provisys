@@ -40,14 +40,48 @@ class PurchasesController
 
         $model = new PurchasesModel();
         try {
-            Responses::json([
-                'purchases' => $model->getAll($filters, $search, $offset),
-                'count' => $model->corePoweredCount($filters, $search),
-            ]);
+            Responses::json(
+                $model->getAll($filters, $search, $offset)
+            );
         } catch (Exception $e) {
             Responses::json($e->getMessage(), 500);
         }
     }
+
+    public static function getPurchaseDetails()
+    {
+        // Obtener datos de la solicitud
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        // Validar id
+        if (!isset($data['id'])) {
+            Responses::json(['errors' => ['id' => 'El campo id es requerido']], 400);
+        }
+        $id = $data['id'];
+        $idValidator = new Validator($id, 'id');
+        $idValidation = $idValidator->required()->numeric()->minValue(1);
+
+        if ($idValidation->getErrors()) {
+            Responses::json(['errors' => $idValidation->getErrors()], 400);
+        }
+
+        $model = new PurchasesModel();
+        if (!$model->exists($id)) {
+            Responses::json(['errors' => ['id' => 'La compra no existe']], 400);
+        }
+
+        // Obtener los detalles de la compra
+        $purchaseDetails = $model->getPurchaseDetails($id);
+        if (!$purchaseDetails) {
+            Responses::json(['errors' => ['id' => 'La compra no existe']], 400);
+        }
+
+        Responses::json(
+            ['purchase' => $purchaseDetails],
+            200
+        );
+    }
+
     public static function createPurchase()
     {
         // Obtener datos de la solicitud
@@ -182,8 +216,7 @@ class PurchasesController
         }
 
         try {
-            $affectedRows = $model->corePoweredDelete($id, forced: true);
-            if ($affectedRows > 0) {
+            if ($model->delete($id)) {
                 Responses::json(['message' => 'Compra eliminada exitosamente'], 200);
             } else {
                 Responses::json(['errors' => ['No se pudo eliminar la compra']], 500);

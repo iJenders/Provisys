@@ -339,6 +339,14 @@ $POST_ROUTES = [
             ['PermissionMiddleware', ['get_purchase']]
         ]
     ],
+    '/purchases/details' => [
+        'action' => ['PurchasesController', 'getPurchaseDetails'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_purchase']]
+        ]
+    ],
     '/purchases/create' => [
         'action' => ['PurchasesController', 'createPurchase'],
         'middlewares' => [
@@ -354,14 +362,14 @@ $POST_ROUTES = [
             ['AuthMiddleware'],
             ['PermissionMiddleware', ['delete_purchase']]
         ]
-        ],
-        '/purchases/add-payment' => [
-            'action' => ['PurchasesController', 'addPayment'],
-            'middlewares' => [
-                ['JsonMiddleware'],
-                ['AuthMiddleware'],
-                ['PermissionMiddleware', ['update_purchase']]
-            ]
+    ],
+    '/purchases/add-payment' => [
+        'action' => ['PurchasesController', 'addPayment'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['update_purchase']]
         ]
+    ]
 ];
 ?>

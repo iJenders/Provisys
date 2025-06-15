@@ -20,40 +20,132 @@ class PurchasesModel extends Model
     // Métodos
     public function getAll($filters, $search, $offset)
     {
-        // Obtener las compras en crudo
-        $purchases = $this->corePoweredGetAll($filters, $search, $offset);
+        // Armar consulta
+        $sql = "SELECT * FROM vista_obtener_compras";
+        $sql2 = "SELECT COUNT(*) as count FROM vista_obtener_compras";
 
-        // Hidratar las compras con detalles de los proveedores y productos
-        $hydratedPurchases = $purchases;
-        $providersModel = new ProvidersModel();
-        $paymentsModel = new PaymentsModel();
-        foreach ($hydratedPurchases as $key => $purchase) {
-            // Proveedor
-            $purchase['provider'] = $providersModel->corePoweredGetById($purchase['provider_id']);
-            unset($purchase['provider_id']);
+        $whereClauses = [];
+        $params = [];
 
-            // Productos
-            $purchase['products'] = $this->getPurchaseProducts($purchase['id']);
-
-            // Pago pendiente
-            $purchase['pendingPayment'] = $paymentsModel->corePoweredGetAll(['purchaseId' => $purchase['id']], [], 0);
-            if (count($purchase['pendingPayment']) <= 0) {
-                $totalMount = 0;
-                foreach ($purchase['products'] as $product) {
-                    $totalMount += $product['quantity'] * $product['price'] + ($product['quantity'] * $product['price'] * $product['iva'] / 100);
-                }
-                $insertId = $this->createPurchasePayment($purchase['id'], $purchase['date'], $totalMount);
-                $purchase['pendingPayment'] = $insertId;
-            } else {
-                $purchase['pendingPayment'] = $paymentsModel->corePoweredGetAll(['purchaseId' => $purchase['id']], [], 0)[0]['id'];
-            }
-
-            $purchase['pendingPayment'] = $paymentsModel->isVerified($purchase['pendingPayment']);
-
-            $hydratedPurchases[$key] = $purchase;
+        if (isset($filters['date']['from'])) {
+            $whereClauses[] = "fecha_compra >= ?";
+            $params[] = $filters['date']['from'];
         }
 
-        return $hydratedPurchases;
+        if (isset($filters['date']['to'])) {
+            $whereClauses[] = "fecha_compra <= ?";
+            $params[] = $filters['date']['to'];
+        }
+
+        if (isset($filters['provider'])) {
+            $whereClauses[] = "nombre = ?";
+            $params[] = $filters['provider'];
+        }
+
+        if (isset($filters['value']['from'])) {
+            $whereClauses[] = "total >= ?";
+            $params[] = $filters['value']['from'];
+        }
+
+        if (isset($filters['value']['to'])) {
+            $whereClauses[] = "total <= ?";
+            $params[] = $filters['value']['to'];
+        }
+
+        if (!empty($whereClauses)) {
+            $sql .= " WHERE " . implode(" AND ", $whereClauses);
+            $sql2 .= " WHERE " . implode(" AND ", $whereClauses);
+        }
+
+        $sql .= " ORDER BY fecha_compra DESC";
+
+        $sql .= " LIMIT 10 OFFSET ?";
+        $params[] = $offset;
+
+        // Preparar consulta
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        // Obtener resultados
+        $results = $stmt->get_result();
+
+        $purchases = [];
+        while ($row = $results->fetch_assoc()) {
+            $purchases[] = $row;
+        }
+
+        // Obtener el conteo de resultados totales
+        array_pop($params); // Eliminar el último parámetro, que es el offset (no es necesario para el conteo)
+
+        $stmt2 = $this->db->prepare($sql2);
+        $stmt2->execute($params);
+        $result2 = $stmt2->get_result();
+        $row2 = $result2->fetch_assoc();
+        $totalCount = $row2['count'];
+
+
+        return ['purchases' => $purchases, 'count' => $totalCount];
+    }
+
+    public function getPurchaseDetails($purchaseId)
+    {
+
+        // Obtener detalles de la compra
+        $sql1 = "SELECT * FROM vista_obtener_compras WHERE id_compra = ?";
+        $stmt1 = $this->db->prepare($sql1);
+        $stmt1->execute([$purchaseId]);
+        $result = $stmt1->get_result()->fetch_assoc();
+
+        $purchase = [];
+
+        $purchase['id'] = $result['id_compra'];
+        $purchase['date'] = $result['fecha_compra'];
+
+        // Obtener el proveedor de la compra
+        $sql2 = "SELECT * FROM vista_obtener_proveedor_compra WHERE id_compra = ?";
+        $stmt2 = $this->db->prepare($sql2);
+        $stmt2->execute([$purchaseId]);
+        $result2 = $stmt2->get_result()->fetch_assoc();
+
+        $provider = [];
+        $provider['id'] = $result2['id_proveedor'];
+        $provider['name'] = $result2['nombre'];
+        $provider['phone'] = $result2['telefono'];
+        $provider['secondaryPhone'] = $result2['telefono_secundario'];
+        $provider['email'] = $result2['correo'];
+        $provider['address'] = $result2['direccion'];
+        $provider['deleted'] = $result2['eliminado'];
+
+        $purchase['provider'] = $provider;
+
+        // Obtener los productos de la compra
+        $sql3 = "SELECT * FROM vista_obtener_productos_compra WHERE id_compra = ?";
+        $stmt3 = $this->db->prepare($sql3);
+        $stmt3->execute([$purchaseId]);
+        $results = $stmt3->get_result();
+
+        $products = [];
+        while ($row = $results->fetch_assoc()) {
+            $product = $row;
+            $products[] = $product;
+        }
+        $purchase['products'] = $products;
+
+        // Por último, obtener los detalles del pago
+
+        $sql4 = "SELECT * FROM vista_obtener_pagos_compra WHERE purchaseId = ?";
+        $stmt4 = $this->db->prepare($sql4);
+        $stmt4->execute([$purchaseId]);
+        $result4 = $stmt4->get_result();
+
+        $payments = [];
+        while ($row = $result4->fetch_assoc()) {
+            $payment = $row;
+            $payments[] = $payment;
+        }
+        $purchase['payments'] = $payments;
+
+        return $purchase;
     }
 
     public function create(array $data)
@@ -72,18 +164,19 @@ class PurchasesModel extends Model
             // Verificar exito
             if ($stmt2->affected_rows > 0) {
                 // Añadir productos de la compra
-                $sql1 = "INSERT INTO detalles_compra (id_compra, id_producto, cantidad_producto, precio_de_compra, iva_de_compra) VALUES ";
+                $sql1 = "INSERT INTO detalles_compra (id_compra, id_producto, cantidad_producto, precio_de_compra, iva_de_compra, id_almacen) VALUES ";
                 $args1 = [];
 
                 $compraID = $this->db->insert_id;
 
                 foreach ($data['products'] as $key => $product) {
-                    $sql1 .= "(?, ?, ?, ?, ?),";
+                    $sql1 .= "(?, ?, ?, ?, ?, ?),";
                     $args1[] = $compraID;
                     $args1[] = $product['id'];
                     $args1[] = $product['quantity'];
                     $args1[] = $product['unitPrice'];
                     $args1[] = $product['iva'];
+                    $args1[] = $product['warehouseId'];
                 }
                 $sql1 = substr($sql1, 0, -1);
 
@@ -178,5 +271,67 @@ class PurchasesModel extends Model
         $stmt = $this->db->prepare($sql);
 
         $stmt->execute([$purchaseId, $amount, $date, $reference, $methodId]);
+    }
+
+    public function delete($purchaseId)
+    {
+        // Contador del número de filas afectadas
+        $affectedRows = 0;
+
+        // Desactivar auto commit
+        $this->db->autocommit(false);
+
+        // Iniciar transacción
+        $this->db->begin_transaction();
+
+        // Obtener los productos de la compra
+        $sql1 = "SELECT * FROM detalles_compra WHERE id_compra = ?";
+        $stmt1 = $this->db->prepare($sql1);
+
+        try {
+            $stmt1->execute([$purchaseId]);
+        } catch (Exception $e) {
+            // Revertir transacción
+            $this->db->rollback();
+            $this->db->autocommit(true);
+            throw $e;
+        }
+        $results1 = $stmt1->get_result();
+
+        // Actualizar el stock de los productos
+        while ($row = $results1->fetch_assoc()) {
+            $sql2 = "UPDATE productos_en_almacen SET stock_disponible = stock_disponible - ? WHERE id_producto = ? AND id_almacen = ?";
+            $stmt2 = $this->db->prepare($sql2);
+
+            try {
+                $stmt2->execute([$row['cantidad_producto'], $row['id_producto'], $row['id_almacen']]);
+            } catch (Exception $e) {
+                // Revertir transacción
+                $this->db->rollback();
+                $this->db->autocommit(true);
+                throw $e;
+            }
+        }
+        $affectedRows += $this->db->affected_rows;
+
+        // Eliminar la compra
+        $sql3 = "DELETE FROM compra WHERE id_compra = ?";
+        $stmt3 = $this->db->prepare($sql3);
+
+        try {
+            $stmt3->execute([$purchaseId]);
+        } catch (Exception $e) {
+            // Revertir transacción
+            $this->db->rollback();
+            $this->db->autocommit(true);
+            throw $e;
+        }
+        $affectedRows += $this->db->affected_rows;
+
+        // Confirmar transacción
+        $this->db->commit();
+        $this->db->autocommit(true);
+
+        return true;
     }
 }

@@ -9,14 +9,12 @@ class PaymentsModel extends Model
         'id' => 'id_pago',
         'date' => 'fecha_pago',
         'amount' => 'monto_total',
-        'noteId' => 'id_nota',
         'orderId' => 'id_pedido',
         'purchaseId' => 'id_compra',
     ];
     protected array $searchableAttributes = [
         'date',
         'amount',
-        'noteId',
         'orderId',
         'purchaseId'
     ];
