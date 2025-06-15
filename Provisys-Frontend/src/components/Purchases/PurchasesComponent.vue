@@ -1,11 +1,3 @@
-<!--
-
-    probablemente todo esto está mal. Hay que implementarlo debidamente
-
--->
-
-
-
 <template>
     <div class="w-full gap-4 flex flex-col text-xl">
         <h1 class="text-stone-700 font-medium">Listado de Compras</h1>
@@ -20,7 +12,7 @@
                         <p class="text-stone-700 text-sm font-medium">Fecha de compra</p>
                         <div class="w-full flex flex-col pl-6 gap-1">
                             <div class="w-full flex items-center gap-1">
-                                <p class="w-[50px] shrink-0 text-stone-700 text-sm font-medium">Desde:</p>
+                                <p class="w-[50px] shrink-d0 text-stone-700 text-sm font-medium">Desde:</p>
                                 <el-date-picker style="width: 100%;" v-model="purchasesFilter.date.from" type="date"
                                     placeholder="aaaa-mm-dd" size="default"
                                     :disabled-date="(date) => { return date >= Date.now() }" />
@@ -89,26 +81,47 @@
 
             <!-- Purchases -->
             <div class="w-full flex flex-col gap-4 overflow-x-hidden">
-                <!-- Searcher -->
-                <div class="w-full flex items-center gap-1">
-                    <el-input style="width: 100%;" v-model="purchasesFilter.searcher" placeholder="Buscar Compra..."
-                        :prefix-icon="Search" />
-                </div>
 
                 <!-- Table -->
-                <el-table class="pointer-rows" :data="computedPurchases" stripe border style="width:100%"
-                    max-height="500" @row-click="(e) => { handlePurchaseClick(e) }">
+                <el-table class="pointer-rows" :data="purchases" stripe border style="width:100%" max-height="500"
+                    @row-click="(e) => { handlePurchaseClick(e) }">
                     <el-table-column prop="id" label="Id" min-width="60" />
-                    <el-table-column prop="date" label="Fecha" width="120" />
-                    <el-table-column prop="provider.name" label="Proveedor" min-width="180" />
-                    <el-table-column prop="total" label="Valor" min-width="100">
+                    <el-table-column prop="date" label="Fecha" width="120">
                         <template #default="scope">
-                            ${{ scope.row.total }}
+                            {{ scope.row.date.split(' ')[0] }}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="totalProducts" label="Cant. Productos" min-width="100" />
+                    <el-table-column prop="provider.name" label="Proveedor" min-width="180" />
+                    <el-table-column prop="products" label="Valor" min-width="100">
+                        <template #default="scope">
+                            ${{
+                                scope.row.products.reduce((acc, curr) => {
+                                    return acc + (curr.price * curr.quantity) + (curr.price * curr.quantity * curr.iva / 100)
+                                }, 0).toFixed(2)
+                            }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="products" label="Cant. Productos" min-width="100">
+                        <template #default="scope">
+                            {{
+                                scope.row.products.reduce((acc, curr) => {
+                                    return acc + curr.quantity
+                                }, 0)
+                            }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="pendingPayment" label="Pagado" min-width="200">
+                        <template #default="scope">
+                            ${{
+                                scope.row.pendingPayment.monto_pagado.toFixed(2)
+                            }}
+                            /
+                            ${{
+                                scope.row.pendingPayment.monto_total.toFixed(2)
+                            }}
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="provider.phone" label="Contacto" min-width="180" />
-                    <el-table-column prop="provider.address" label="Dirección" min-width="180" />
                 </el-table>
 
                 <!-- Pagination -->
@@ -135,24 +148,29 @@
                             <span class="font-normal">{{ selectedPurchase.provider.name }}</span>
                         </p>
                         <p class="text-stone-700 text-sm font-bold">Fecha:
-                            <span class="font-normal">{{ selectedPurchase.date }}</span>
+                            <span class="font-normal">{{ selectedPurchase.date.split(' ')[0] }}</span>
                         </p>
-                        <p class="text-stone-700 text-sm font-bold">Dirección:
+                        <p class="text-stone-700 text-sm font-bold">Dirección Proveedor:
                             <span class="font-normal">{{ selectedPurchase.provider.address }}</span>
                         </p>
                     </div>
                     <div class="flex flex-col">
-                        <p class="text-stone-700 text-sm font-bold">Estado:
-                            <span v-if="selectedPurchase.status === 'completed'"
-                                class="text-green-600">Completada</span>
-                            <span v-else-if="selectedPurchase.status === 'pending'"
-                                class="text-yellow-600">Pendiente</span>
-                            <span v-else class="text-red-600">Cancelada</span>
+                        <p class="text-stone-700 text-sm font-bold">Pagado:
+                            <span class="font-bold"
+                                :class="selectedPurchase.pendingPayment.monto_pagado >= parseFloat(selectedPurchase.pendingPayment.monto_total) ? 'text-green-600' : 'text-red-600'">
+                                ${{
+                                    selectedPurchase.pendingPayment.monto_pagado.toFixed(2)
+                                }}
+                                /
+                                ${{
+                                    parseFloat(selectedPurchase.pendingPayment.monto_total).toFixed(2)
+                                }}
+                            </span>
                         </p>
-                        <p class="text-stone-700 text-sm font-bold">Contacto:
-                            <span class="font-normal">{{ selectedPurchase.provider.contact }}</span>
+                        <p class="text-stone-700 text-sm font-bold">Correo Proveedor:
+                            <span class="font-normal">{{ selectedPurchase.provider.email }}</span>
                         </p>
-                        <p class="text-stone-700 text-sm font-bold">Teléfono:
+                        <p class="text-stone-700 text-sm font-bold">Teléfono Proveedor:
                             <span class="font-normal">{{ selectedPurchase.provider.phone }}</span>
                         </p>
                     </div>
@@ -160,7 +178,7 @@
 
                 <Line orientation="horizontal" class="bg-stone-200" />
 
-                <!-- Purchase Products -->
+                <!-- Purchased Products -->
                 <div class="w-full flex flex-col gap-4">
                     <h3 class="text-stone-700 text-lg font-medium">Productos:</h3>
                     <el-table :data="selectedPurchase.products" stripe border style="width:100%" max-height="500">
@@ -171,22 +189,29 @@
                                 <span class="line-clamp-3">{{ scope.row.description }}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="unitPrice" label="Precio Unitario" width="120">
+                        <el-table-column prop="price" label="Precio Unitario" width="120">
                             <template #default="scope">
-                                ${{ scope.row.unitPrice }}
+                                ${{ scope.row.price }}
                             </template>
                         </el-table-column>
                         <el-table-column prop="quantity" label="Cantidad" width="120" />
+                        <el-table-column prop="iva" label="IVA" width="120">
+                            <template #default="scope">
+                                {{ scope.row.iva }}%
+                            </template>
+                        </el-table-column>
                         <el-table-column label="Subtotal" width="120">
                             <template #default="scope">
-                                ${{ (scope.row.unitPrice * scope.row.quantity).toFixed(2) }}
+                                ${{ (scope.row.price * scope.row.quantity + (scope.row.price * scope.row.quantity *
+                                    scope.row.iva / 100)
+                                ).toFixed(2) }}
                             </template>
                         </el-table-column>
                     </el-table>
                     <div class="flex justify-end">
                         <p class="text-stone-700 text-lg font-medium">Total: ${{
                             selectedPurchase.products.reduce((acc, curr) => {
-                                return acc + (curr.unitPrice * curr.quantity)
+                                return acc + (curr.price * curr.quantity) + (curr.price * curr.quantity * curr.iva / 100)
                             }, 0).toFixed(2)
                         }}
                         </p>
@@ -200,10 +225,54 @@
                     <el-button class="!ml-0" type="danger" :disabled="fetchingModal" @click="handleCancelPurchase">
                         Cancelar Compra
                     </el-button>
-                    <el-button v-if="selectedPurchase.status === 'pending'" class="!ml-0" type="success"
-                        :disabled="fetchingModal" @click="handleCompletePurchase">
-                        Completar Compra
+                    <!-- Add Payment -->
+                    <el-button class="!ml-0" type="primary" :disabled="fetchingModal" @click="toggleAddPaymentModal">
+                        Agregar Pago
                     </el-button>
+                </div>
+            </template>
+        </el-dialog>
+
+        <!-- Add Payment Modal -->
+        <el-dialog v-model="showAddPaymentModal" title="Agregar Pago" width="80%" :fullscreen="fullScreenModals">
+            <Line orientation="horizontal" class="bg-stone-200" />
+            <div class="w-full flex flex-col gap-4 mt-4" v-loading="fetchingModal">
+                <el-form :model="newPayment" class="p-4">
+                    <el-form-item label="Método de Pago">
+                        <!-- Select Payment Method -->
+                        <el-select v-model="newPayment.methodId" placeholder="Seleccione un método de pago"
+                            style="width: 100%" remote :remote-method="getPaymentMethods" :loading="gettingPayments"
+                            filterable>
+                            <el-option v-for="item in paymentMethods" :key="item.value" :label="item.name"
+                                :value="item.id" />
+                        </el-select>
+                    </el-form-item>
+
+                    <el-form-item label="Monto" class="w-[200px]">
+                        <el-input-number v-model="newPayment.amount" controls-position="right" style="width: 100%"
+                            :precision="2" :min="0.01" :max="9999999999.99">
+                            <template #prefix>
+                                <span>$</span>
+                            </template>
+                        </el-input-number>
+                    </el-form-item>
+
+                    <el-form-item label="Fecha de Pago">
+                        <el-date-picker v-model="newPayment.date" type="date" placeholder="Seleccione una fecha"
+                            style="width: 100%" />
+                    </el-form-item>
+
+                    <el-form-item label="Número de referencia">
+                        <el-input v-model="newPayment.reference" placeholder="Ingrese el número de referencia"
+                            style="width: 100%" />
+                    </el-form-item>
+
+                </el-form>
+            </div>
+            <template #footer>
+                <div class="dialog-footer flex justify-end gap-4">
+                    <el-button @click="showAddPaymentModal = false">Cancelar</el-button>
+                    <el-button type="primary" @click="handleSavePayment" :loading="savingPayment">Guardar</el-button>
                 </div>
             </template>
         </el-dialog>
@@ -211,17 +280,22 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { Search } from 'lucide-vue-next';
 import Line from '@/components/Line.vue';
 import ThemeButton from '../ThemeButton.vue';
 import { confirmation, successNotification, errorNotification } from '@/utils/feedback';
+import axios from 'axios';
+import { handleRequestError } from '@/utils/fetchNotificationsHandlers';
+import { ElMessageBox } from 'element-plus';
+import { useFullScreenModals } from '@/composables/fullScreenModals';
 
 const fetchingModal = ref(false);
 const fetchingPurchases = ref(false);
-const fullScreenModals = ref(false);
 const selectedPurchase = ref(null);
 const isSelectedPurchase = ref(false);
+
+const purchases = ref([]);
 
 const purchasesFilter = ref({
     date: {
@@ -233,7 +307,7 @@ const purchasesFilter = ref({
         from: null,
         to: null
     },
-    searcher: ''
+    search: ''
 });
 
 const paginationConfig = ref({
@@ -241,45 +315,184 @@ const paginationConfig = ref({
     totalRows: 100
 });
 
-const computedPurchases = computed(() => {
-    // Add your computed purchases logic here
-    return [];
-});
-
 const handlePurchaseClick = (purchase) => {
     selectedPurchase.value = purchase;
     isSelectedPurchase.value = true;
 };
 
+const getPurchases = () => {
+    fetchingPurchases.value = true;
+    let data = {
+        search: purchasesFilter.value.search ? purchasesFilter.value.search : null,
+        date: {
+            from: purchasesFilter.value.date.from,
+            to: purchasesFilter.value.date.to
+        },
+        value: {
+            from: purchasesFilter.value.value.from,
+            to: purchasesFilter.value.value.to
+        },
+        provider: purchasesFilter.value.provider ? purchasesFilter.value.provider : null
+    }
+
+    axios.post(import.meta.env.VITE_API_URL + '/purchases', data, {
+        headers: {
+            'Authorization': localStorage.getItem('token')
+        }
+    }).then(response => {
+        purchases.value = response.data.response.purchases;
+        paginationConfig.value.totalRows = response.data.response.count;
+    }).catch(error => {
+        handleRequestError(error);
+    }).finally(() => {
+        fetchingPurchases.value = false;
+    });
+}
 const handlePageChange = (page) => {
-    // Add your page change logic here
 };
 
 const handleCancelPurchase = () => {
-    confirmation("Alerta", "¿Está seguro de que desea cancelar la compra?",
+    confirmation("Alerta", "¿Está seguro de que desea eliminar PERMANENTEMENTE la compra?",
         () => {
-            fetchingModal.value = true;
-            setTimeout(() => {
-                fetchingModal.value = false;
-                if (Math.random() > 0.5) {
-                    successNotification("Compra cancelada exitosamente");
-                } else {
-                    errorNotification("Error al cancelar la compra");
-                }
-            }, 2000)
+            ElMessageBox.prompt('Si realmente desea eliminar la compra PERMANENTEMENTE, escriba "Eliminar"', 'Si la compra es eliminada, se eliminarán también todos los pagos asociados a la misma', {
+                confirmButtonText: 'Eliminar',
+                cancelButtonText: 'Cancelar',
+                inputPattern: /Eliminar/,
+                inputErrorMessage: 'La entrada no coincide con la expresión'
+            }).then(({ value }) => {
+                fetchingModal.value = true;
+                axios.post(import.meta.env.VITE_API_URL + '/purchases/delete', {
+                    id: selectedPurchase.value.id
+                }, {
+                    headers: {
+                        'Authorization': localStorage.getItem('token')
+                    }
+                }).then(response => {
+                    successNotification("Compra eliminada", "La compra ha sido eliminada correctamente");
+                    getPurchases();
+                }).catch(error => {
+                    handleRequestError(error);
+                }).finally(() => {
+                    isSelectedPurchase.value = false;
+                    selectedPurchase.value = null;
+                    fetchingModal.value = false;
+                });
+            }).catch(() => { });
         },
         () => { }
     )
 }
 
-const handleCompletePurchase = () => {
-    confirmation("Alerta", "¿Está seguro de que desea completar la compra?",
-        () => {
-            successNotification("Compra completada exitosamente");
-        },
-        () => { }
-    )
+// Add Payment Modal Implementation
+
+const showAddPaymentModal = ref(false);
+const savingPayment = ref(false);
+const gettingPayments = ref(false);
+
+const newPayment = ref({
+    amount: null,
+    date: null,
+    reference: null,
+    methodId: null,
+})
+
+const toggleAddPaymentModal = async () => {
+    if ((selectedPurchase.value.pendingPayment.monto_pagado - selectedPurchase.value.pendingPayment.monto_total) >= 0) {
+        ElMessageBox.confirm('El monto total ya ha sido cubierto', '¿Está seguro de que desea continuar?', {
+            confirmButtonText: 'Sí',
+            cancelButtonText: 'Cancelar',
+            type: 'warning'
+        }).then(() => {
+            showAddPaymentModal.value = !showAddPaymentModal.value;
+        }).catch(() => { return });
+    } else {
+        showAddPaymentModal.value = !showAddPaymentModal.value;
+    }
+
 }
+
+const handleSavePayment = () => {
+    // validate
+    if (!newPayment.value.amount || newPayment.value.amount <= 0) {
+        errorNotification("Error de validación: El monto debe ser mayor a 0");
+        return;
+    }
+
+    if (!newPayment.value.date) {
+        errorNotification("Error de validación: La fecha es requerida");
+        return;
+    }
+
+    if (!newPayment.value.methodId) {
+        errorNotification("Error de validación: El método de pago es requerido");
+        return;
+    }
+
+    savingPayment.value = true;
+
+    let data = {
+        purchaseId: selectedPurchase.value.id,
+        amount: newPayment.value.amount,
+        date: newPayment.value.date.toISOString().split('T')[0],
+        reference: newPayment.value.reference,
+        methodId: newPayment.value.methodId,
+    }
+
+    axios.post(import.meta.env.VITE_API_URL + '/purchases/add-payment', data, {
+        headers: {
+            'Authorization': localStorage.getItem('token')
+        }
+    }).then(response => {
+        successNotification("Pago guardado", "El pago ha sido guardado correctamente");
+        showAddPaymentModal.value = false;
+        getPurchases();
+        newPayment.value = {
+            amount: null,
+            date: null,
+            reference: null,
+            methodId: null,
+        };
+        isSelectedPurchase.value = false;
+        selectedPurchase.value = null;
+
+    }).catch(error => {
+        handleRequestError(error);
+    }).finally(() => {
+        savingPayment.value = false;
+    });
+
+}
+
+const paymentMethods = ref([]);
+const getPaymentMethods = () => {
+    gettingPayments.value = true;
+
+    let data = {
+        filters: {
+            deleted: 0
+        }
+    }
+
+    axios.post(import.meta.env.VITE_API_URL + '/paymentMethods', data, {
+        headers: {
+            'Authorization': localStorage.getItem('token')
+        }
+    }).then(response => {
+        paymentMethods.value = response.data.response.paymentMethods;
+    }).catch(error => {
+        handleRequestError(error);
+    }).finally(() => {
+        gettingPayments.value = false;
+    });
+}
+
+onMounted(() => {
+    getPurchases();
+})
+
+const {
+    fullScreenModals
+} = useFullScreenModals();
 </script>
 
 <style>
@@ -293,5 +506,9 @@ const handleCompletePurchase = () => {
 
 .el-date-table td.disabled .el-date-table-cell {
     background-color: var(--color-red-100) !important;
+}
+
+.el-select__popper {
+    z-index: 10000 !important;
 }
 </style>

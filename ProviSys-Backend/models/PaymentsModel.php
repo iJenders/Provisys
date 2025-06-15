@@ -73,63 +73,19 @@ class PaymentsModel extends Model
 
     public function isVerified($id)
     {
-        // Desactivar el commit automático
-        $this->db->autocommit(false);
+        $sql = "SELECT * FROM vista_total_pagado WHERE id_pago = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+        $results = $stmt->get_result();
 
-        // Comenzar la transacción
-        $this->db->begin_transaction();
+        $returnVal = [];
 
-        $transactionSuccessful = true; // Esto se utilizará para lanzar un error más adelante si algo sale mal
+        $row = $results->fetch_assoc();
+        $returnVal['monto_pagado'] = $row['monto_pagado'] == null ? 0.00 : floatval($row['monto_pagado']);
+        $returnVal['monto_total'] = floatval($row['monto_total']);
 
-        try {
-            $sql1 = "SELECT * FROM cuota WHERE id_pago = ?";
 
-            // Preparar y ejecutar la consulta
-            $stmt1 = $this->db->prepare($sql1);
-
-            $stmt1->execute([$id]);
-
-            // Obtener resultados
-            $results1 = $stmt1->get_result();
-
-            $confirmedPayment = 0.00;
-            // Recorrer todas las cuotas, verificando si todas están verificadas
-            while ($row = $results1->fetch_assoc()) {
-                if ($row['verificado'] != '1') {
-                    return false;
-                } else {
-                    $confirmedPayment += $row['monto'];
-                }
-            }
-
-            // Comprobar que el monto total de las cuotas cubra el monto total del pago
-            $sql2 = "SELECT * FROM pago WHERE id_pago = ?";
-            $stmt2 = $this->db->prepare($sql2);
-            $stmt2->execute([$id]);
-            $results2 = $stmt2->get_result();
-            $paymentMount = $results2->fetch_assoc()['monto_total'];
-
-            if ($confirmedPayment != $paymentMount) {
-                return false;
-            }
-
-            // Correcto, confirmar la transacción
-            $this->db->commit();
-        } catch (Exception $e) {
-            // Error, revertir la transacción
-            $this->db->rollback();
-            $transactionSuccessful = false;
-        }
-
-        // Reactivar el commit automático
-        $this->db->autocommit(true);
-
-        // Lanzar un error si la transacción no se confirmó correctamente
-        if (!$transactionSuccessful) {
-            throw new Exception("Error en la transacción");
-        }
-
-        return true;
+        return $returnVal;
     }
 
     public function getFees($id)

@@ -1,10 +1,9 @@
-
 <script setup>
 import { ref } from 'vue';
 import { ShoppingCart, Users, History } from 'lucide-vue-next';
 import PurchasesComponent from '@/components/Purchases/PurchasesComponent.vue';
 import ProvidersComponent from '@/components/Purchases/ProvidersComponent.vue';
-import HistoryComponent from '@/components/Purchases/HistoryComponent.vue';
+import AddPurchase from '@/components/Purchases/AddPurchase.vue';
 
 const purchaseButtons = [
     {
@@ -13,14 +12,14 @@ const purchaseButtons = [
         component: PurchasesComponent
     },
     {
+        name: 'Registro de Compras',
+        icon: ShoppingCart,
+        component: AddPurchase
+    },
+    {
         name: 'Proveedores',
         icon: Users,
         component: ProvidersComponent
-    },
-    {
-        name: 'Historial',
-        icon: History,
-        component: HistoryComponent
     }
 ]
 

@@ -84,7 +84,7 @@ class Validator
         return $this;
     }
 
-    public function minValue(int $min): Validator
+    public function minValue(float $min): Validator
     {
         if ($this->text < $min) {
             $this->errors[] = 'El campo de ' . $this->getAlias() . '  debe ser mayor o igual a ' . $min . '.';
@@ -92,7 +92,7 @@ class Validator
         return $this;
     }
 
-    public function maxValue(int $max): Validator
+    public function maxValue(float $max): Validator
     {
         if ($this->text > $max) {
             $this->errors[] = 'El campo de ' . $this->getAlias() . '  debe ser menor o igual a ' . $max . '.';

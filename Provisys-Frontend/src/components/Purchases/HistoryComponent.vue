@@ -1,3 +1,0 @@
-<template>
-    Historial
-</template>
