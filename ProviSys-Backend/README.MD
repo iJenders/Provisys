@@ -37,11 +37,13 @@ Se utiliza una arquitectura de capas MVC (Modelo-Vista-Controlador) para organiz
    cd Provisys/ProviSys-Backend
    ```
 
-2. Configura tus variables de entorno en el archivo env.php.
+2. Importa la base de datos desde el archivo `db.sql` que se encuentra en "Documentacion", en la raíz del proyecto.
 
-3. Asegúrate de que el servidor Apache esté configurado para usar el archivo .htaccess, de lo contrario no funcionará el routing.
+3. Configura tus variables de entorno en el archivo env.php.
 
-4. Inicia el servidor:
+4. Asegúrate de que el servidor Apache esté configurado para usar el archivo .htaccess, de lo contrario no funcionará el routing.
+
+5. Inicia el servidor:
 
    1. Si usas php puro.
 
@@ -50,7 +52,6 @@ Se utiliza una arquitectura de capas MVC (Modelo-Vista-Controlador) para organiz
    ```
 
    2. En caso de usar un WAMP o LAMP, asegúrate de que la carpeta del proyecto esté en la ruta raíz de tu WAMP/LAMP (**htdocs** en XAMPP y **www** en Laragon).
-
 ---
 
 ## Estructura del Proyecto
