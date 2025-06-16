@@ -156,8 +156,8 @@ onMounted(() => {
                             </div>
                             <div>
                                 <h3 class="text-lg font-medium text-gray-800 mb-1">Correo Electrónico</h3>
-                                <p class="text-gray-600">info@codalca.com</p>
-                                <p class="text-gray-600">ventas@codalca.com</p>
+                                <p class="text-gray-600">info@empresa.com</p>
+                                <p class="text-gray-600">ventas@empresa.com</p>
                             </div>
                         </div>
 

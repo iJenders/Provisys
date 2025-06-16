@@ -47,7 +47,7 @@ const handleAddToCart = (e) => {
 
 <template>
     <div class="relative shadow-lg w-[285px]" @mouseenter="showButtons = true" @mouseleave="showButtons = false">
-        <img :src="product.image" alt="" class="w-full h-auto"
+        <img :src="product.image" alt="" class="w-full object-cover aspect-1/1"
             :class="product.stock <= 0 ? 'brightness-50 saturate-50 opacity-80' : ''">
         <div class="flex flex-col p-4 gap-2">
             <h3 class="text-xl font-bold text-stone-800">{{ product.name }}</h3>
@@ -91,7 +91,7 @@ const handleAddToCart = (e) => {
     <ElDialog v-model="showAddToCartModal" title="Añadir al carrito" width="70%" @close="showAddToCartModal = false">
         <div class="flex flex-col gap-4 p-2">
             <div class="flex items-center gap-4">
-                <img :src="product.image" alt="" class="w-40 h-40 object-cover rounded shadow" />
+                <img :src="product.image" :alt="product.name" class="w-50 h-50 object-cover rounded shadow" />
                 <div>
                     <h4 class="text-lg font-bold text-stone-800">{{ product.name }}</h4>
                     <p class="text-stone-600 text-sm">{{ product.description }}</p>

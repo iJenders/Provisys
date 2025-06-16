@@ -48,6 +48,32 @@ class ProductsController
         }
     }
 
+    public static function getShopProducts()
+    {
+        // Obtener campos de la solicitud
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        $page = $data['page'] ?? 1;
+        $filters = $data['filters'] ?? [];
+        $search = $data['search'] ?? '';
+
+        // Validar página
+        $pageValidator = new Validator($page, 'page');
+        $pageValidation = $pageValidator->required()->numeric()->minValue(1);
+        if ($pageValidation->getErrors()) {
+            Responses::json(['errors' => $pageValidation->getErrors()], 400);
+        }
+
+        $model = new ProductsModel();
+
+        try {
+            $products = $model->getShopProducts(offset: ($page - 1) * 10);
+            Responses::json($products, 200);
+        } catch (Exception $e) {
+            Responses::json(['errors' => [$e->getMessage()]], 500);
+        }
+    }
+
     public static function createProduct()
     {
         // Obtener datos de la solicitud

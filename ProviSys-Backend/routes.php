@@ -213,6 +213,12 @@ $POST_ROUTES = [
             ['PermissionMiddleware', ['get_product']]
         ]
     ],
+    '/products/shop' => [
+        'action' => ['ProductsController', 'getShopProducts'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+        ]
+    ],
     '/products/create' => [
         'action' => ['ProductsController', 'createProduct'],
         'middlewares' => [

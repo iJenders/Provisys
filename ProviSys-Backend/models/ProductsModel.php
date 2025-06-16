@@ -48,6 +48,38 @@ class ProductsModel extends Model
         return $products;
     }
 
+    public function getShopProducts($offset = 0)
+    {
+        // Armar consulta
+        $sql = "SELECT * FROM vista_obtener_productos_tienda";
+        $sql2 = "SELECT COUNT(*) FROM vista_obtener_productos_tienda";
+
+        // Añadir orden
+        $sql .= " ORDER BY stock DESC";
+
+        // Añadir límite y offset
+        $sql .= " LIMIT 10 OFFSET $offset";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $products = [];
+        while ($row = $result->fetch_assoc()) {
+            $products[] = $row;
+        }
+
+        $stmt2 = $this->db->prepare($sql2);
+        $stmt2->execute();
+        $result2 = $stmt2->get_result();
+        $count = $result2->fetch_row()[0];
+
+        return [
+            'products' => $products,
+            'count' => $count
+        ];
+    }
+
     // Método para añadir compatibilidad con almacenes
     public function setStorageCompatibility($productId, array $storageIds)
     {
