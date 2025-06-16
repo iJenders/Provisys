@@ -327,34 +327,51 @@ class Model
         return $insertedId;
     }
 
-    public function corePoweredDelete($id)
+    public function corePoweredDelete($id, $forced = false)
     {
         if (empty($this->table) || empty($this->attributes)) {
             throw new \Exception("La tabla y los atributos deben ser definidos en la clase hija.");
         }
 
-        if (!isset($this->attributes['deleted']) || empty($this->attributes['deleted'])) {
-            throw new \Exception("El campo 'deleted' no está definido en la tabla. Este campo es necesario para la eliminación lógica. Probablemente estés utilizando una tabla sin eliminación lógica. Por favor, asegúrate de que la tabla tenga el campo 'deleted'.");
+        if (!$forced) {
+            if (!isset($this->attributes['deleted']) || empty($this->attributes['deleted'])) {
+                throw new \Exception("El campo 'deleted' no está definido en la tabla. Este campo es necesario para la eliminación lógica. Probablemente estés utilizando una tabla sin eliminación lógica. Por favor, asegúrate de que la tabla tenga el campo 'deleted'.");
+            }
+
+            $sql = "UPDATE " . $this->table . " SET " . $this->attributes['deleted'] . " = NOT " . $this->attributes['deleted'] . " WHERE " . ($this->attributes[$this->primaryKey]) . " = ?";
+
+            // Preparar y ejecutar la consulta
+            $stmt = $this->db->prepare($sql);
+
+            if (!$stmt) {
+                throw new \Exception("Error al preparar la consulta: " . $this->db->error);
+            }
+
+            // Ejecutar la consulta
+            $result = $stmt->execute([$id]);
+
+            if (!$result) {
+                throw new \Exception("Error al ejecutar la consulta: " . $stmt->error);
+            }
+
+            // Retornar el número de filas afectadas
+            return $stmt->affected_rows;
+        } else {
+            $sql = "DELETE FROM " . $this->table . " WHERE " . $this->attributes[$this->primaryKey] . " = ?";
+
+            // Preparar y ejecutar la consulta
+            $stmt = $this->db->prepare($sql);
+            if (!$stmt) {
+                throw new \Exception("Error al preparar la consulta: " . $this->db->error);
+            }
+            // Ejecutar la consulta
+            $result = $stmt->execute([$id]);
+            if (!$result) {
+                throw new \Exception("Error al ejecutar la consulta: " . $stmt->error);
+            }
+            // Retornar el número de filas afectadas
+            return $stmt->affected_rows;
         }
-
-        $sql = "UPDATE " . $this->table . " SET " . $this->attributes['deleted'] . " = NOT " . $this->attributes['deleted'] . " WHERE " . ($this->attributes[$this->primaryKey]) . " = ?";
-
-        // Preparar y ejecutar la consulta
-        $stmt = $this->db->prepare($sql);
-
-        if (!$stmt) {
-            throw new \Exception("Error al preparar la consulta: " . $this->db->error);
-        }
-
-        // Ejecutar la consulta
-        $result = $stmt->execute([$id]);
-
-        if (!$result) {
-            throw new \Exception("Error al ejecutar la consulta: " . $stmt->error);
-        }
-
-        // Retornar el número de filas afectadas
-        return $stmt->affected_rows;
     }
 
     public function corePoweredUpdate($id, $data)

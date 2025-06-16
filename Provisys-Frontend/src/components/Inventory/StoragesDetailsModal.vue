@@ -126,7 +126,7 @@ const { fullScreenModals } = useFullScreenModals();
                         <el-input v-model="selectedStorage.description" type="textarea" />
                     </el-form-item>
                     <el-form-item label="Vehicular">
-                        <el-switch v-model="selectedStorage.vehicle" />
+                        <el-switch disabled v-model="selectedStorage.vehicle" />
                     </el-form-item>
                 </el-form>
             </div>

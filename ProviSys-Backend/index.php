@@ -3,7 +3,7 @@
 
 // Siempre es bueno incluir esto al principio de tu script PHP que maneja solicitudes API
 // para evitar cualquier salida accidental antes de las cabeceras.
-ob_start(); 
+ob_start();
 
 // 1. Permite cualquier origen (*): Esto significa que cualquier dominio puede hacer solicitudes.
 header('Access-Control-Allow-Origin: *');
@@ -27,7 +27,7 @@ header('Access-Control-Max-Age: 86400'); // 86400 segundos = 24 horas
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     // Si estás usando PHP-FPM o Apache con mod_php, es crucial terminar el script aquí
     // para que no se procese más lógica y no se envíe ningún cuerpo de respuesta innecesario.
-    exit(0); 
+    exit(0);
 }
 
 // Cargar los archivos necesarios para la aplicación
@@ -44,6 +44,16 @@ foreach ($controllers as $controller) {
         include_once 'controllers/' . $controller->getFilename();
     }
 }
+
+/**
+ *  No sé por qué, pero desde la feature de productos, se imprimen 3 líneas mientras se
+ *  importan los controllers. No sé qué controller lo hace, ni por qué (Pues no encontré
+ *  ni una línea de código que imprima texto alguno), pero lo logré solucionar limpiando
+ *  el buffer de salida con esta línea xD
+ *
+ * - iJenders
+ */
+ob_clean();
 
 // Automáticamente incluir todos los middlewares de la carpeta "middlewares"
 // Esto es útil para evitar tener que incluir cada middleware manualmente

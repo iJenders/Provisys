@@ -1,11 +1,12 @@
 <script setup>
 import ThemeButton from '@/components/ThemeButton.vue'
 
-import { ref, computed } from 'vue'
-import { ElInput, ElSelect, ElOption, ElTooltip, ElDialog } from 'element-plus'
+import { ref, computed, onMounted } from 'vue'
+import { ElInput, ElSelect, ElOption, ElTooltip, ElDialog, ElPagination } from 'element-plus'
 import { SlidersHorizontal, ArrowUpNarrowWide, ArrowDownNarrowWide } from 'lucide-vue-next'
 import Line from '@/components/Line.vue'
 import ProductComponent from '@/components/ProductComponent.vue'
+import axios from 'axios'
 
 const orderOptions = [
     {
@@ -26,166 +27,50 @@ const orderOptions = [
     },
 ]
 
-let productsExample = ref([
-    {
-        id: 1,
-        name: 'Producto 1',
-        price: 10.99,
-        stock: 5,
-        description: 'Descripción del producto 1.',
-        image: '/src/assets/images/product1.png',
-        provider: "Parmalat"
-    },
-    {
-        id: 2,
-        name: 'Producto 2',
-        price: 20.99,
-        stock: 10,
-        description: 'Descripción del producto 2.',
-        image: '/src/assets/images/product2.png',
-        provider: "Parmalat"
-    },
-    {
-        id: 3,
-        name: 'Producto 3',
-        price: 30.99,
-        stock: 0,
-        description: 'Descripción del producto 3.',
-        image: '/src/assets/images/product3.png',
-        provider: "Parmalat"
-    },
-    {
-        id: 4,
-        name: 'Producto 4',
-        price: 40.99,
-        stock: 2,
-        description: 'Descripción del producto 4.',
-        image: '/src/assets/images/product4.png',
-        provider: "Parmalat"
-    }, {
-        id: 1,
-        name: 'Producto 1',
-        price: 10.99,
-        stock: 5,
-        description: 'Descripción del producto 1.',
-        image: '/src/assets/images/product1.png',
-        provider: "Parmalat"
-    },
-    {
-        id: 2,
-        name: 'Producto 2',
-        price: 20.99,
-        stock: 10,
-        description: 'Descripción del producto 2.',
-        image: '/src/assets/images/product2.png',
-        provider: "Parmalat"
-    },
-    {
-        id: 3,
-        name: 'Producto 3',
-        price: 30.99,
-        stock: 0,
-        description: 'Descripción del producto 3.',
-        image: '/src/assets/images/product3.png',
-        provider: "Parmalat"
-    },
-    {
-        id: 4,
-        name: 'Producto 4',
-        price: 40.99,
-        stock: 2,
-        description: 'Descripción del producto 4.',
-        image: '/src/assets/images/product4.png',
-        provider: "Parmalat"
-    }, {
-        id: 1,
-        name: 'Producto 1',
-        price: 10.99,
-        stock: 5,
-        description: 'Descripción del producto 1.',
-        image: '/src/assets/images/product1.png',
-        provider: "Parmalat"
-    },
-    {
-        id: 2,
-        name: 'Producto 2',
-        price: 20.99,
-        stock: 10,
-        description: 'Descripción del producto 2.',
-        image: '/src/assets/images/product2.png',
-        provider: "Parmalat"
-    },
-    {
-        id: 3,
-        name: 'Producto 3',
-        price: 30.99,
-        stock: 0,
-        description: 'Descripción del producto 3.',
-        image: '/src/assets/images/product3.png',
-        provider: "Parmalat"
-    },
-    {
-        id: 4,
-        name: 'Producto 4',
-        price: 40.99,
-        stock: 2,
-        description: 'Descripción del producto 4.',
-        image: '/src/assets/images/product4.png',
-        provider: "Parmalat"
-    }, {
-        id: 1,
-        name: 'Producto 1',
-        price: 10.99,
-        stock: 5,
-        description: 'Descripción del producto 1.',
-        image: '/src/assets/images/product1.png',
-        provider: "Parmalat"
-    },
-    {
-        id: 2,
-        name: 'Producto 2',
-        price: 20.99,
-        stock: 10,
-        description: 'Descripción del producto 2.',
-        image: '/src/assets/images/product2.png',
-        provider: "Parmalat"
-    },
-    {
-        id: 3,
-        name: 'Producto 3',
-        price: 30.99,
-        stock: 0,
-        description: 'Descripción del producto 3.',
-        image: '/src/assets/images/product3.png',
-        provider: "Parmalat"
-    },
-    {
-        id: 4,
-        name: 'Producto 4',
-        price: 40.99,
-        stock: 2,
-        description: 'Descripción del producto 4.',
-        image: '/src/assets/images/product4.png',
-        provider: "Parmalat"
-    }
-])
+let productsExample = ref([])
 
-let paginationInfo = ref({
-    currentPage: 1,
-    totalPages: 10,
-    productsPerPage: 16,
-    totalProducts: 100
-})
-
-const getCurrentShowingProducts = computed(() => {
-    let firstOffset = (paginationInfo.value.currentPage - 1) * paginationInfo.value.productsPerPage
-    let lastOffset = firstOffset + paginationInfo.value.productsPerPage
-    return `${firstOffset + 1} - ${lastOffset > paginationInfo.value.totalProducts ? paginationInfo.value.totalProducts : lastOffset}`
-})
+const paginationConfig = ref({
+    page: 1,
+    rowsPerPage: 10,
+    totalRows: 0
+});
 
 const orderOptionSelected = ref(null);
 const orderOptionsAsc = ref(true);
+
+const handlePageChange = (page) => {
+    paginationConfig.value.page = page;
+    getProducts();
+}
+
+const getProducts = () => {
+    axios.post(import.meta.env.VITE_API_URL + '/products/shop', {
+        page: paginationConfig.value.page,
+        orderBy: orderOptionSelected.value,
+        order: orderOptionsAsc.value ? 'ASC' : 'DESC'
+    }).then(response => {
+        productsExample.value = response.data.response.products.map(product => {
+            return {
+                id: product.id,
+                name: product.nombre,
+                price: parseFloat(product.precio),
+                stock: parseInt(product.stock),
+                description: product.descripcion_producto,
+                image: import.meta.env.VITE_API_URL + '/products/image/?id=' + product.id,
+                provider: product.fabricante
+            }
+        });
+        paginationConfig.value.totalRows = response.data.response.count;
+    }).catch(error => {
+        console.log(error)
+    })
+}
+
+onMounted(() => {
+    getProducts();
+})
 </script>
+
 <template>
     <!-- Main Banner -->
     <section class="flex flex-col items-center justify-center w-full h-[350px] relative">
@@ -206,10 +91,11 @@ const orderOptionsAsc = ref(true);
             </a>
             <Line class="bg-stone-400" orientation="vertical" />
             <p class="text-lg flex items-center font-bold text-stone-700">
-                Mostrando {{ getCurrentShowingProducts }} de {{ paginationInfo.totalProducts }} productos
+                Total: {{ paginationConfig.totalRows }} productos
             </p>
         </div>
-        <Line class="bg-stone-300 md:hidden" orientation="horizontal" />
+
+        <!-- Order Options -->
         <div class="flex align-center gap-4 min-h-[32px]">
             <p class=" text-lg font-bold text-stone-700">
                 Ordenar por:
@@ -219,7 +105,9 @@ const orderOptionsAsc = ref(true);
                     <ElOption v-for="option in orderOptions" :label="option.label" :value="option.value" />
                 </ElSelect>
             </div>
+
             <Line class="bg-stone-400" orientation="vertical" />
+
             <div class="text-lg flex items-center font-bold text-stone-700">
                 <el-tooltip effect="dark" content="Ascendente" placement="top">
                     <a href="javascript:" class="flex items-center justify-center gap-2 text-lg font-bold"
@@ -247,22 +135,12 @@ const orderOptionsAsc = ref(true);
     </section>
 
     <!-- Pagination -->
-    <section class="flex items-center justify-center w-full p-6 md:px-20">
-        <div class="flex items-center justify-center gap-4">
-            <ThemeButton class="border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
-                :class="[paginationInfo.currentPage <= 1 ? 'saturate-0' : '']"
-                :enabled="paginationInfo.currentPage > 1">
-                Anterior
-            </ThemeButton>
-            <div class="text-green-600 font-medium">
-                Página 1 de 10
-            </div>
-            <ThemeButton class="border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
-                :class="[paginationInfo.currentPage >= paginationInfo.totalPages ? 'saturate-0' : '']"
-                :enabled="paginationInfo.currentPage < paginationInfo.totalPages">
-                Siguiente
-            </ThemeButton>
-        </div>
+    <section class="flex flex-col items-center justify-center w-full p-6 md:px-20 gap-2">
+        <el-pagination layout="prev, pager, next" background :page-size="paginationConfig.rowsPerPage"
+            :total="paginationConfig.totalRows" @change="handlePageChange" />
+        <p class="text-lg font-medium text-stone-700">
+            Mostrando {{ paginationConfig.rowsPerPage }} de {{ paginationConfig.totalRows }} productos
+        </p>
     </section>
 </template>
 

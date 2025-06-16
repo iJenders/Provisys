@@ -4,45 +4,10 @@ import ProductComponent from '@/components/ProductComponent.vue'
 import { useMouse } from '@/composables/mouse.js'
 import { onMounted, ref } from 'vue'
 import { MapPin, ShoppingBag, Target, Award, Users, TrendingUp, Truck } from 'lucide-vue-next';
+import axios from 'axios';
+import { handleRequestError } from '@/utils/fetchNotificationsHandlers';
 
-let productsExample = [
-    {
-        id: 1,
-        name: 'Producto 1',
-        price: 10.99,
-        stock: 5,
-        description: 'Descripción del producto 1.',
-        image: '/src/assets/images/product1.png',
-        provider: "Parmalat"
-    },
-    {
-        id: 2,
-        name: 'Producto 2',
-        price: 20.99,
-        stock: 10,
-        description: 'Descripción del producto 2.',
-        image: '/src/assets/images/product2.png',
-        provider: "Parmalat"
-    },
-    {
-        id: 3,
-        name: 'Producto 3',
-        price: 30.99,
-        stock: 0,
-        description: 'Descripción del producto 3.',
-        image: '/src/assets/images/product3.png',
-        provider: "Parmalat"
-    },
-    {
-        id: 4,
-        name: 'Producto 4',
-        price: 40.99,
-        stock: 2,
-        description: 'Descripción del producto 4.',
-        image: '/src/assets/images/product4.png',
-        provider: "Parmalat"
-    },
-]
+let productsExample = ref([]);
 
 const ratio = 0.05; // Cuanto mayor sea este valor, menos suave será la transición
 const withTransitionMouseX = ref(null);
@@ -62,6 +27,32 @@ onMounted(() => {
     frame();
 })
 
+const getProducts = () => {
+    axios.post(import.meta.env.VITE_API_URL + '/products/shop', {
+    }).then(response => {
+        let mapped = response.data.response.products.map((product, index) => {
+            return {
+                id: product.id,
+                name: product.nombre,
+                price: parseFloat(product.precio),
+                stock: parseInt(product.stock),
+                description: product.descripcion_producto,
+                image: import.meta.env.VITE_API_URL + '/products/image/?id=' + product.id,
+                provider: product.fabricante
+            }
+        })
+
+        for (let i = 0; i < 4; i++) {
+            productsExample.value.push(mapped[i])
+        }
+    }).catch(error => {
+        handleRequestError(error)
+    })
+}
+
+onMounted(() => {
+    getProducts()
+})
 </script>
 <template>
     <!-- Main Banner -->
@@ -73,7 +64,7 @@ onMounted(() => {
             </p>
             <h1 class="text-4xl font-bold text-green-700">Todo lo que Necesitas en un Solo Lugar</h1>
             <p class="font-semibold text-stone-800">
-                CODALCA te ofrece una amplia gama de productos para tu empresa, con la eficiencia y el compromiso que
+                Te ofrecemos una amplia gama de productos para tu empresa, con la eficiencia y el compromiso que
                 nos
                 caracterizan en la región.
             </p>
@@ -102,9 +93,9 @@ onMounted(() => {
         <div class=" mb-12 px-4 py-20 backdrop-blur-xs backdrop-brightness-50">
             <img src="@/assets/images/codalca.png" alt="Company Logo" class="w-50 mx-auto mb-4" />
             <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">
-                Comercializadora De Alimentos Lara C.A.
+                Comercializadora De Alimentos
             </h1>
-            <h2 class="text-xl md:text-2xl font-medium text-white">CODALCA</h2>
+            <h2 class="text-xl md:text-2xl font-medium text-white">Provisys</h2>
         </div>
     </div>
     <div class="max-w-5xl mx-auto px-4 py-12 md:py-16">
