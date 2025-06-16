@@ -299,6 +299,46 @@ $POST_ROUTES = [
             ['PermissionMiddleware', ['get_payment']]
         ]
     ],
+    '/payments/details' => [
+        'action' => ['PaymentsController', 'getPaymentDetails'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_payment']]
+        ]
+    ],
+    '/payments/verify-installment' => [
+        'action' => ['PaymentsController', 'verifyInstallment'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_payment']]
+        ]
+    ],
+    '/payments/delete-installment' => [
+        'action' => ['PaymentsController', 'deleteInstallment'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_payment']]
+        ]
+    ],
+    '/payments/create-installment' => [
+        'action' => ['PaymentsController', 'createInstallment'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_payment']]
+        ]
+    ],
+    '/payments/history' => [
+        'action' => ['PaymentsController', 'getPaymentHistory'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_payment']]
+        ]
+    ],
     '/providers' => [
         'action' => ['ProvidersController', 'getAll'],
         'middlewares' => [

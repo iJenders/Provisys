@@ -17,7 +17,7 @@ const paymentButtons = [
         component: PaymentsComponent
     },
     {
-        name: 'Historial',
+        name: 'Historial de Cuotas',
         icon: History,
         component: HistoryComponent
     }
