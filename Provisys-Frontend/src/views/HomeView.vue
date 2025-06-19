@@ -42,7 +42,8 @@ const getProducts = () => {
             }
         })
 
-        for (let i = 0; i < 4; i++) {
+        let objects = (mapped.length <= 4 ? mapped.length : 4);
+        for (let i = 0; i < objects; i++) {
             productsExample.value.push(mapped[i])
         }
     }).catch(error => {

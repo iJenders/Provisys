@@ -97,7 +97,7 @@ class PaymentsModel extends Model
 
         // Obtener el nombre del usuario que hizo el pedido, si no es null
         if ($payment['orderId'] != null) {
-            $sql2 = "SELECT nombre_usuario FROM usuario INNER JOIN pedido ON usuario.id_usuario = pedido.id_usuario WHERE pedido.id_pedido = ?";
+            $sql2 = "SELECT usuario.nombre_usuario FROM usuario INNER JOIN pedido ON usuario.nombre_usuario = pedido.nombre_usuario WHERE pedido.id_pedido = ?";
             $stmt2 = $this->db->prepare($sql2);
             $stmt2->execute([$payment['orderId']]);
 

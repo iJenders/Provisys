@@ -5,6 +5,7 @@ const confirmation = (title, message, successCallback, cancelCallback) => {
     confirmButtonText: "Sí",
     cancelButtonText: "Cancelar",
     type: "warning",
+    zIndex: 10100,
   })
     .then(() => {
       if (successCallback !== undefined) {

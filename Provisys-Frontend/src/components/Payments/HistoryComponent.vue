@@ -37,10 +37,10 @@ onMounted(() => {
       </el-table-column>
       <el-table-column prop="amount" label="Monto Cuota" min-width="120">
         <template #default="scope">
-          ${{ scope.row.amount }}
+          <span class="font-semibold">${{ scope.row.amount }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="payment" label="Monto Pago Total" min-width="200">
+      <el-table-column prop="payment" label="Monto Total a Pagar" min-width="200">
         <template #default="scope">
           ${{ scope.row.payment.amount }}
         </template>
