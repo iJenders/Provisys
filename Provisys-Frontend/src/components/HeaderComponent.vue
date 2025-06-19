@@ -1,13 +1,15 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
-import { User, ShoppingCart, MonitorCog, LogOut, UserPlus, LogIn, X, Menu } from 'lucide-vue-next'
+import { User, ShoppingCart, MonitorCog, LogOut, UserPlus, LogIn, X, Menu, Truck } from 'lucide-vue-next'
 import { useShoppingCartStore } from '@/stores/shoppingCart.js'
 import { ElMessageBox, ElNotification } from 'element-plus'
 import { useAuthStore } from '@/stores/authStore'
 import Line from './Line.vue'
 import ThemeButton from './ThemeButton.vue'
 import ShoppingCartItem from './ShoppingCartItem.vue'
+import axios from 'axios'
+import { handleRequestError } from '@/utils/fetchNotificationsHandlers'
 
 const authStore = useAuthStore()
 
@@ -61,6 +63,14 @@ const userOptions = [
         link: '/profile',
         userCondition: () => {
             return authStore.isAuthenticated;
+        }
+    },
+    {
+        name: 'Mis pedidos',
+        icon: Truck,
+        link: '/user-orders',
+        userCondition: () => {
+            return authStore.isAuthenticated && authStore.isClient;
         }
     },
     {
@@ -128,6 +138,52 @@ const handleLogout = () => {
     })
 }
 
+const confirmOrder = () => {
+    ElMessageBox.confirm('¿Estás seguro de que deseas realizar la compra? Asegurate de revisar los productos en el carrito primero', 'Confirmación', {
+        confirmButtonText: 'Sí',
+        cancelButtonText: 'No',
+        type: 'warning'
+    }).then(() => {
+
+        let data = {
+            products: shoppingCart.value.map(item => {
+                return {
+                    id: item.product.id,
+                    quantity: item.quantity
+                }
+            })
+        }
+
+        axios.post(import.meta.env.VITE_API_URL + '/orders/create', data, {
+            headers: {
+                Authorization: `Bearer ${authStore.token}`
+            }
+        }).then(response => {
+            shoppingCartStore.clearCart();
+            shoppingCart.value = []
+            ElNotification({
+                title: 'Éxito',
+                message: 'Has realizado la compra correctamente.',
+                type: 'success',
+                duration: 3000,
+                offset: 80,
+                zIndex: 10000
+            })
+        }).catch(error => {
+            handleRequestError(error)
+        }).finally(() => {
+            showUserMenu.value = false
+            showShoppingCart.value = false
+        })
+
+
+
+
+    }).catch(() => {
+        // El usuario canceló la acción
+    })
+}
+
 onMounted(() => {
     shoppingCart.value = shoppingCartStore.products
     if (window.innerWidth < 768) {
@@ -185,7 +241,7 @@ onMounted(() => {
         </section>
     </header>
 
-    <!-- Shopping Cart Tooltip -->
+    <!-- Shopping Cart Dropdown -->
     <Transition>
         <aside v-if="showShoppingCart"
             class="fixed right-0 top-[76px] shadow-[0_0_20px_rgba(0,0,0,0.25)] bg-white w-full md:w-[420px] p-8 rounded-2xl z-9999">
@@ -212,9 +268,9 @@ onMounted(() => {
                     </div>
                     <Line class="bg-stone-200" orientation="horizontal" />
                     <div class="flex justify-end items-center">
-                        <ThemeButton
+                        <ThemeButton @click="confirmOrder"
                             class="border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white rounded-full">
-                            Proceder al Pago
+                            Confirmar Pedido
                         </ThemeButton>
                     </div>
                 </div>
@@ -234,7 +290,7 @@ onMounted(() => {
         </aside>
     </Transition>
 
-    <!-- User Menu Tooltip -->
+    <!-- User Menu Dropdown -->
     <Transition>
         <aside v-show="showUserMenu"
             class="fixed right-0 top-[76px] shadow-[0_0_20px_rgba(0,0,0,0.25)] bg-white w-full md:w-[420px] p-8 rounded-2xl z-9999">

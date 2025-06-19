@@ -148,8 +148,8 @@ class AuthController
                 $lastNames,
                 $email,
                 $phone,
-                $secondaryPhone,
-                $address
+                $address,
+                secondaryPhone: $secondaryPhone,
             );
 
             Responses::json([

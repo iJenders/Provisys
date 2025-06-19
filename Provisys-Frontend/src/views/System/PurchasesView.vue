@@ -12,7 +12,7 @@ const purchaseButtons = [
         component: PurchasesComponent
     },
     {
-        name: 'Registro de Compras',
+        name: 'Registrar Nueva Compra',
         icon: ShoppingCart,
         component: AddPurchase
     },

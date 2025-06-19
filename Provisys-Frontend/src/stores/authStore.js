@@ -11,6 +11,7 @@ export const useAuthStore = defineStore("auth", () => {
   const userPermissions = ref([]);
 
   const isAuthenticated = computed(() => !!user.value);
+  const isClient = computed(() => user.value?.roleId == "2");
 
   const logout = (pushToRoot = true) => {
     localStorage.removeItem("token");
@@ -62,6 +63,7 @@ export const useAuthStore = defineStore("auth", () => {
     user,
     userPermissions,
     isAuthenticated,
+    isClient,
     logout,
     refreshUser,
     checkPermission,

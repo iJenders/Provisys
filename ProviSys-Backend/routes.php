@@ -416,6 +416,62 @@ $POST_ROUTES = [
             ['AuthMiddleware'],
             ['PermissionMiddleware', ['update_purchase']]
         ]
+    ],
+    '/orders' => [
+        'action' => ['OrdersController', 'getAll'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_order']]
+        ]
+    ],
+    '/orders/user' => [
+        'action' => ['OrdersController', 'getUserOrders'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware']
+        ]
+    ],
+    '/orders/products' => [
+        'action' => ['OrdersController', 'getProducts'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware']
+        ]
+    ],
+    '/orders/create' => [
+        'action' => ['OrdersController', 'createOrder'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware']
+        ]
+    ],
+    '/orders/bill' => [
+        'action' => ['OrdersController', 'billOrder'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware']
+        ]
+    ],
+    '/orders/deliver' => [
+        'action' => ['OrdersController', 'deliverOrder'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware']
+        ]
+    ],
+    '/orders/cancel' => [
+        'action' => ['OrdersController', 'cancelOrder'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware']
+        ]
+    ],
+    '/orders/registerPayment' => [
+        'action' => ['OrdersController', 'registerPayment'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware']
+        ]
     ]
 ];
-?>

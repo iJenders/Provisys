@@ -159,4 +159,14 @@ class ProductsModel extends Model
 
         return $result->num_rows > 0;
     }
+
+    public function enoughStock($productId, $quantity)
+    {
+        $sql = "SELECT * FROM productos_en_almacen WHERE id_producto = ? AND eliminado = 0 AND (stock_disponible - stock_reservado) >= ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$productId, $quantity]);
+        $result = $stmt->get_result();
+
+        return $result->num_rows > 0;
+    }
 }

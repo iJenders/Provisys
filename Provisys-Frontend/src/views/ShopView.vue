@@ -2,7 +2,7 @@
 import ThemeButton from '@/components/ThemeButton.vue'
 
 import { ref, computed, onMounted } from 'vue'
-import { ElInput, ElSelect, ElOption, ElTooltip, ElDialog, ElPagination } from 'element-plus'
+import { ElInput, ElSelect, ElOption, ElTooltip, ElDialog, ElPagination, ElNotification } from 'element-plus'
 import { SlidersHorizontal, ArrowUpNarrowWide, ArrowDownNarrowWide } from 'lucide-vue-next'
 import Line from '@/components/Line.vue'
 import ProductComponent from '@/components/ProductComponent.vue'
@@ -28,6 +28,7 @@ const orderOptions = [
 ]
 
 let productsExample = ref([])
+const gettingProducts = ref(false);
 
 const paginationConfig = ref({
     page: 1,
@@ -44,6 +45,7 @@ const handlePageChange = (page) => {
 }
 
 const getProducts = () => {
+    gettingProducts.value = true;
     axios.post(import.meta.env.VITE_API_URL + '/products/shop', {
         page: paginationConfig.value.page,
         orderBy: orderOptionSelected.value,
@@ -62,8 +64,16 @@ const getProducts = () => {
         });
         paginationConfig.value.totalRows = response.data.response.count;
     }).catch(error => {
-        console.log(error)
-    })
+        ElNotification.error({
+            title: 'Error',
+            message: "OOPS! Ocurrió un error al obtener los productos",
+            duration: 5000,
+            offset: 80,
+            zIndex: 10000,
+        });
+    }).finally(() => {
+        gettingProducts.value = false;
+    });
 }
 
 onMounted(() => {
@@ -128,7 +138,7 @@ onMounted(() => {
     </div>
 
     <!-- Products Wrapper -->
-    <section class="flex flex-col items-center justify-center w-full p-6 md:px-20">
+    <section class="flex flex-col items-center justify-center w-full p-6 md:px-20" :loading="gettingProducts">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <ProductComponent v-for="product in productsExample" :key="product.id" :product="product" />
         </div>

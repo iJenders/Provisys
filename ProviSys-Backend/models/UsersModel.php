@@ -75,6 +75,21 @@ class UsersModel
         return CredentialsModel::getCredential($this->username);
     }
 
+    public function toArray()
+    {
+        return [
+            'username' => $this->username,
+            'registerDate' => $this->registerDate,
+            'names' => $this->names,
+            'lastNames' => $this->lastNames,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'secondaryPhone' => $this->secondaryPhone,
+            'address' => $this->address,
+            'roleId' => $this->roleId
+        ];
+    }
+
     // Métodos estáticos
     public static function getUser($username)
     {
@@ -132,20 +147,39 @@ class UsersModel
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
         $registerDate = date('Y-m-d H:i:s');
 
-        $startTransactionQuery = "START TRANSACTION";
-        $commitTransactionQuery = "COMMIT";
-        $rollbackTransactionQuery = "ROLLBACK";
-        $insertCredentialQuery = "INSERT INTO credencial (nombre_usuario, password) VALUES ('$username', '$hashedPassword')";
-        $insertUserQuery = "INSERT INTO usuario (nombre_usuario, fecha_registro, nombres, apellidos, correo, telefono, telefono_secundario, direccion, id_rol) VALUES ('$username', '$registerDate', '$names', '$lastNames', '$email', '$phone', '$secondaryPhone', '$address', '$roleId')";
+        $db->autocommit(false);
 
-        $db->query($startTransactionQuery);
-        $db->query($insertCredentialQuery);
-        if ($db->query($insertUserQuery)) {
-            $db->query($commitTransactionQuery);
-            return new UsersModel($username, $registerDate, $names, $lastNames, $email, $phone, $secondaryPhone, $address, $roleId);
-        } else {
-            $db->query($rollbackTransactionQuery);
-            throw new Exception("Error al crear el usuario: " . $db->error);
+        $sql1 = "INSERT INTO credencial (nombre_usuario, password) VALUES (?, ?)";
+        $sql2 = "INSERT INTO usuario (nombre_usuario, fecha_registro, nombres, apellidos, correo, telefono, direccion, id_rol";
+        $sqlValues = ") VALUES (?, ?, ?, ?, ?, ?, ?, ?";
+
+        $params = [$username, $registerDate, $names, $lastNames, $email, $phone, $address, $roleId];
+        if ($secondaryPhone !== null) {
+            $sql2 .= ", telefono_secundario";
+
+            $sqlValues .= ", ?";
+            $params[] = $secondaryPhone;
+        }
+        $sqlValues .= ")";
+
+        $sql2 .= $sqlValues;
+
+        try {
+            $stmt1 = $db->prepare($sql1);
+            $stmt1->execute([$username, $hashedPassword]);
+
+            $stmt2 = $db->prepare($sql2);
+            $stmt2->execute($params);
+
+            $db->commit();
+            $db->autocommit(true);
+
+            return UsersModel::getUser($username);
+
+        } catch (Exception $e) {
+            $db->rollback();
+            $db->autocommit(true);
+            throw $e;
         }
     }
 }
