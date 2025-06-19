@@ -50,6 +50,24 @@ $GET_ROUTES = [
     ],
     '/products/image' => [
         'action' => ['ProductsController', 'getImage'],
+    ],
+    '/reports/1' => [
+        'action' => ['ReportsController', 'actualInventoryValue'],
+    ],
+    '/reports/2' => [
+        'action' => ['ReportsController', 'providersRanking'],
+    ],
+    '/reports/3' => [
+        'action' => ['ReportsController', 'ingressesEgresses'],
+    ],
+    '/reports/4' => [
+        'action' => ['ReportsController', 'waitingOrders'],
+    ],
+    '/reports/5' => [
+        'action' => ['ReportsController', 'inventoryEntry'],
+    ],
+    '/reports/6' => [
+        'action' => ['ReportsController', 'inventoryExit'],
     ]
 ];
 

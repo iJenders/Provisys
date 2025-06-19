@@ -24,11 +24,10 @@ CREATE TABLE IF NOT EXISTS `almacen` (
   `id_almacen` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(45) NOT NULL,
   `descripcion_almacen` varchar(255) NOT NULL,
-  `es_vehiculo` tinyint NOT NULL DEFAULT '0',
   `eliminado` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_almacen`),
   UNIQUE KEY `id_almacen_UNIQUE` (`id_almacen`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb3;
 
 -- Data exporting was unselected.
 
@@ -40,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `categoria_producto` (
   `eliminado` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_categoria`),
   UNIQUE KEY `id_categoria_UNIQUE` (`id_categoria`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb3;
 
 -- Data exporting was unselected.
 
@@ -52,7 +51,7 @@ CREATE TABLE IF NOT EXISTS `compra` (
   PRIMARY KEY (`id_compra`),
   KEY `fk_compra_proveedor1_idx` (`id_proveedor`),
   CONSTRAINT `fk_compra_proveedor1` FOREIGN KEY (`id_proveedor`) REFERENCES `proveedor` (`id_proveedor`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb3;
 
 -- Data exporting was unselected.
 
@@ -82,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `cuota` (
   KEY `fk_cuota_metodo_de_pago1_idx` (`id_metodo`),
   CONSTRAINT `fk_cuota_metodo_de_pago1` FOREIGN KEY (`id_metodo`) REFERENCES `metodo_de_pago` (`id_metodo`),
   CONSTRAINT `fk_cuota_pago1` FOREIGN KEY (`id_pago`) REFERENCES `pago` (`id_pago`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb3;
 
 -- Data exporting was unselected.
 
@@ -177,25 +176,6 @@ CREATE TABLE IF NOT EXISTS `metodo_de_pago` (
 
 -- Data exporting was unselected.
 
--- Dumping structure for table provisys.movimiento_de_inventario
-CREATE TABLE IF NOT EXISTS `movimiento_de_inventario` (
-  `id_movimiento` int unsigned NOT NULL,
-  `fecha` datetime NOT NULL,
-  `motivo` varchar(255) NOT NULL DEFAULT '',
-  `cantidad_producto` int unsigned NOT NULL,
-  `id_producto` varchar(24) NOT NULL,
-  `id_almacen1` int NOT NULL,
-  `id_almacen2` int NOT NULL,
-  PRIMARY KEY (`id_movimiento`),
-  UNIQUE KEY `id_perdida_UNIQUE` (`id_movimiento`),
-  KEY `fk_movimiento_de_inventario_productos_en_almacen1_idx` (`id_producto`,`id_almacen1`),
-  KEY `fk_movimiento_de_inventario_productos_en_almacen2_idx` (`id_almacen2`),
-  CONSTRAINT `fk_movimiento_de_inventario_productos_en_almacen1` FOREIGN KEY (`id_producto`, `id_almacen1`) REFERENCES `productos_en_almacen` (`id_producto`, `id_almacen`),
-  CONSTRAINT `fk_movimiento_de_inventario_productos_en_almacen2` FOREIGN KEY (`id_almacen2`) REFERENCES `productos_en_almacen` (`id_almacen`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
-
--- Data exporting was unselected.
-
 -- Dumping structure for table provisys.pago
 CREATE TABLE IF NOT EXISTS `pago` (
   `id_pago` int unsigned NOT NULL AUTO_INCREMENT,
@@ -209,7 +189,7 @@ CREATE TABLE IF NOT EXISTS `pago` (
   KEY `fk_pago_compra1_idx` (`id_compra`),
   CONSTRAINT `fk_pago_compra1` FOREIGN KEY (`id_compra`) REFERENCES `compra` (`id_compra`) ON DELETE CASCADE,
   CONSTRAINT `fk_pago_pedido1` FOREIGN KEY (`id_pedido`) REFERENCES `pedido` (`id_pedido`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8mb3;
 
 -- Data exporting was unselected.
 
@@ -223,7 +203,7 @@ CREATE TABLE IF NOT EXISTS `pedido` (
   UNIQUE KEY `id_pedido_UNIQUE` (`id_pedido`),
   KEY `fk_pedidos_usuario1_idx` (`nombre_usuario`),
   CONSTRAINT `fk_pedidos_usuario1` FOREIGN KEY (`nombre_usuario`) REFERENCES `usuario` (`nombre_usuario`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb3;
 
 -- Data exporting was unselected.
 
@@ -474,6 +454,17 @@ CREATE TABLE `vista_obtener_proveedor_compra` (
 	`eliminado` TINYINT(3) NOT NULL
 ) ENGINE=MyISAM;
 
+-- Dumping structure for view provisys.vista_reporte_estado_inventario
+-- Creating temporary table to overcome VIEW dependency errors
+CREATE TABLE `vista_reporte_estado_inventario` (
+	`id` VARCHAR(24) NOT NULL COLLATE 'utf8mb3_general_ci',
+	`nombre` VARCHAR(45) NOT NULL COLLATE 'utf8mb3_general_ci',
+	`precio` DECIMAL(12,2) NOT NULL,
+	`iva` DECIMAL(12,2) NOT NULL,
+	`stock` INT(10) UNSIGNED ZEROFILL NOT NULL,
+	`subtotal` DECIMAL(39,8) NULL
+) ENGINE=MyISAM;
+
 -- Dumping structure for view provisys.vista_total_pagado
 -- Creating temporary table to overcome VIEW dependency errors
 CREATE TABLE `vista_total_pagado` (
@@ -521,6 +512,11 @@ CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vista_obtener_productos_ti
 -- Removing temporary table and create final VIEW structure
 DROP TABLE IF EXISTS `vista_obtener_proveedor_compra`;
 CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vista_obtener_proveedor_compra` AS select `c`.`id_compra` AS `id_compra`,`p`.`id_proveedor` AS `id_proveedor`,`p`.`nombre` AS `nombre`,`p`.`telefono` AS `telefono`,`p`.`telefono_secundario` AS `telefono_secundario`,`p`.`correo` AS `correo`,`p`.`direccion` AS `direccion`,`p`.`eliminado` AS `eliminado` from (`proveedor` `p` join `compra` `c` on((`p`.`id_proveedor` = `c`.`id_proveedor`)));
+
+-- Dumping structure for view provisys.vista_reporte_estado_inventario
+-- Removing temporary table and create final VIEW structure
+DROP TABLE IF EXISTS `vista_reporte_estado_inventario`;
+CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vista_reporte_estado_inventario` AS select `p`.`id_producto` AS `id`,`p`.`nombre` AS `nombre`,`p`.`precio` AS `precio`,`iva`.`iva` AS `iva`,`pa`.`stock_disponible` AS `stock`,((`p`.`precio` * `pa`.`stock_disponible`) * (1 + (`iva`.`iva` / 100))) AS `subtotal` from ((`producto` `p` join `productos_en_almacen` `pa` on((`p`.`id_producto` = `pa`.`id_producto`))) join `iva` on((`p`.`id_iva` = `iva`.`id_iva`))) where (`pa`.`stock_disponible` > 0) order by `pa`.`stock_disponible` desc;
 
 -- Dumping structure for view provisys.vista_total_pagado
 -- Removing temporary table and create final VIEW structure

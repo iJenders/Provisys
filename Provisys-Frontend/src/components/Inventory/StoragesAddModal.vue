@@ -8,9 +8,6 @@
                 <el-form-item label="Descripción">
                     <el-input type="textarea" v-model="storageForm.description" placeholder="Descripción del almacén" />
                 </el-form-item>
-                <el-form-item>
-                    <el-checkbox v-model="storageForm.vehicle" label="Almacén Vehicular" />
-                </el-form-item>
             </el-form>
         </div>
         <template #footer>
