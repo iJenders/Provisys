@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `almacen` (
   `eliminado` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_almacen`),
   UNIQUE KEY `id_almacen_UNIQUE` (`id_almacen`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb3;
 
 -- Data exporting was unselected.
 
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `categoria_producto` (
   `eliminado` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_categoria`),
   UNIQUE KEY `id_categoria_UNIQUE` (`id_categoria`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb3;
 
 -- Data exporting was unselected.
 
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `compra` (
   PRIMARY KEY (`id_compra`),
   KEY `fk_compra_proveedor1_idx` (`id_proveedor`),
   CONSTRAINT `fk_compra_proveedor1` FOREIGN KEY (`id_proveedor`) REFERENCES `proveedor` (`id_proveedor`)
-) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb3;
 
 -- Data exporting was unselected.
 
@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS `cuota` (
   KEY `fk_cuota_metodo_de_pago1_idx` (`id_metodo`),
   CONSTRAINT `fk_cuota_metodo_de_pago1` FOREIGN KEY (`id_metodo`) REFERENCES `metodo_de_pago` (`id_metodo`),
   CONSTRAINT `fk_cuota_pago1` FOREIGN KEY (`id_pago`) REFERENCES `pago` (`id_pago`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb3;
 
 -- Data exporting was unselected.
 
@@ -209,7 +209,7 @@ CREATE TABLE IF NOT EXISTS `pago` (
   KEY `fk_pago_compra1_idx` (`id_compra`),
   CONSTRAINT `fk_pago_compra1` FOREIGN KEY (`id_compra`) REFERENCES `compra` (`id_compra`) ON DELETE CASCADE,
   CONSTRAINT `fk_pago_pedido1` FOREIGN KEY (`id_pedido`) REFERENCES `pedido` (`id_pedido`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb3;
 
 -- Data exporting was unselected.
 
@@ -223,7 +223,7 @@ CREATE TABLE IF NOT EXISTS `pedido` (
   UNIQUE KEY `id_pedido_UNIQUE` (`id_pedido`),
   KEY `fk_pedidos_usuario1_idx` (`nombre_usuario`),
   CONSTRAINT `fk_pedidos_usuario1` FOREIGN KEY (`nombre_usuario`) REFERENCES `usuario` (`nombre_usuario`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb3;
 
 -- Data exporting was unselected.
 
@@ -282,6 +282,7 @@ CREATE TABLE IF NOT EXISTS `productos_en_almacen` (
   `stock_reservado` int(10) unsigned zerofill NOT NULL DEFAULT '0000000000',
   `eliminado` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_producto`,`id_almacen`),
+  UNIQUE KEY `id_producto` (`id_producto`),
   KEY `fk_productos_has_almacenes_almacenes1_idx` (`id_almacen`),
   KEY `fk_productos_has_almacenes_productos1_idx` (`id_producto`),
   CONSTRAINT `fk_productos_has_almacenes_almacenes1` FOREIGN KEY (`id_almacen`) REFERENCES `almacen` (`id_almacen`),
@@ -402,6 +403,21 @@ CREATE TABLE `vista_obtener_pagos_compra` (
 	`methodDescription` VARCHAR(255) NOT NULL COLLATE 'utf8mb3_general_ci'
 ) ENGINE=MyISAM;
 
+-- Dumping structure for view provisys.vista_obtener_pedidos_clientes
+-- Creating temporary table to overcome VIEW dependency errors
+CREATE TABLE `vista_obtener_pedidos_clientes` (
+	`nombre_usuario` VARCHAR(255) NOT NULL COLLATE 'utf8mb3_general_ci',
+	`id_pedido` INT(10) UNSIGNED NOT NULL,
+	`estado` INT(10) NOT NULL,
+	`fecha_pedido` DATETIME NOT NULL,
+	`total_productos` DECIMAL(32,0) NULL,
+	`valor` DECIMAL(61,8) NULL,
+	`id_pago` INT(10) UNSIGNED NOT NULL,
+	`total_pagado` DECIMAL(34,2) NULL,
+	`verificados` INT(10) NULL,
+	`por_pagar` INT(10) NULL
+) ENGINE=MyISAM;
+
 -- Dumping structure for view provisys.vista_obtener_productos_compra
 -- Creating temporary table to overcome VIEW dependency errors
 CREATE TABLE `vista_obtener_productos_compra` (
@@ -412,6 +428,22 @@ CREATE TABLE `vista_obtener_productos_compra` (
 	`price` DECIMAL(12,2) NOT NULL,
 	`quantity` INT(10) UNSIGNED NOT NULL,
 	`iva` DECIMAL(12,2) NOT NULL
+) ENGINE=MyISAM;
+
+-- Dumping structure for view provisys.vista_obtener_productos_pedido
+-- Creating temporary table to overcome VIEW dependency errors
+CREATE TABLE `vista_obtener_productos_pedido` (
+	`id_pedido` INT(10) UNSIGNED NOT NULL,
+	`id_producto` VARCHAR(24) NOT NULL COLLATE 'utf8mb3_general_ci',
+	`nombre_producto` VARCHAR(45) NOT NULL COLLATE 'utf8mb3_general_ci',
+	`descripcion_producto` VARCHAR(255) NOT NULL COLLATE 'utf8mb3_general_ci',
+	`id_categoria` INT(10) UNSIGNED NOT NULL,
+	`nombre_categoria` VARCHAR(45) NOT NULL COLLATE 'utf8mb3_general_ci',
+	`id_fabricante` VARCHAR(24) NOT NULL COLLATE 'utf8mb3_general_ci',
+	`nombre_fabricante` VARCHAR(128) NOT NULL COLLATE 'utf8mb3_general_ci',
+	`cantidad_producto` INT(10) UNSIGNED NOT NULL,
+	`precio_de_venta` DECIMAL(12,2) NOT NULL,
+	`iva_de_venta` DECIMAL(12,2) NOT NULL
 ) ENGINE=MyISAM;
 
 -- Dumping structure for view provisys.vista_obtener_productos_tienda
@@ -465,10 +497,20 @@ CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vista_obtener_pagos` AS se
 DROP TABLE IF EXISTS `vista_obtener_pagos_compra`;
 CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vista_obtener_pagos_compra` AS select `c`.`id_cuota` AS `id`,`co`.`id_compra` AS `purchaseID`,`c`.`fecha_cuota` AS `date`,`c`.`monto` AS `amount`,`c`.`nro_referencia` AS `reference`,`c`.`verificado` AS `verified`,`m`.`id_metodo` AS `methodId`,`m`.`nombre_metodo` AS `methodName`,`m`.`descripcion` AS `methodDescription` from (((`cuota` `c` join `pago` `p` on((`c`.`id_pago` = `p`.`id_pago`))) join `compra` `co` on((`p`.`id_compra` = `co`.`id_compra`))) join `metodo_de_pago` `m` on((`c`.`id_metodo` = `m`.`id_metodo`)));
 
+-- Dumping structure for view provisys.vista_obtener_pedidos_clientes
+-- Removing temporary table and create final VIEW structure
+DROP TABLE IF EXISTS `vista_obtener_pedidos_clientes`;
+CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vista_obtener_pedidos_clientes` AS with `pedido_general` as (select `pe`.`nombre_usuario` AS `nombre_usuario`,`pe`.`id_pedido` AS `id_pedido`,`pe`.`estado` AS `estado`,`pe`.`fecha_pedido` AS `fecha_pedido`,sum(`dp`.`cantidad_producto`) AS `total_productos`,sum(((`dp`.`cantidad_producto` * `dp`.`precio_de_venta`) * (1 + (`dp`.`iva_de_venta` / 100)))) AS `valor` from (`pedido` `pe` join `detalles_pedido` `dp` on((`pe`.`id_pedido` = `dp`.`id_pedido`))) group by `pe`.`id_pedido`) select `pg`.`nombre_usuario` AS `nombre_usuario`,`pg`.`id_pedido` AS `id_pedido`,`pg`.`estado` AS `estado`,`pg`.`fecha_pedido` AS `fecha_pedido`,`pg`.`total_productos` AS `total_productos`,`pg`.`valor` AS `valor`,`vop`.`id_pago` AS `id_pago`,`vop`.`total_pagado` AS `total_pagado`,`vop`.`verificados` AS `verificados`,`vop`.`por_pagar` AS `por_pagar` from (`pedido_general` `pg` join `vista_obtener_pagos` `vop` on((`pg`.`id_pedido` = `vop`.`id_pedido`)));
+
 -- Dumping structure for view provisys.vista_obtener_productos_compra
 -- Removing temporary table and create final VIEW structure
 DROP TABLE IF EXISTS `vista_obtener_productos_compra`;
 CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vista_obtener_productos_compra` AS select `dc`.`id_compra` AS `id_compra`,`p`.`id_producto` AS `id`,`p`.`nombre` AS `name`,`p`.`descripcion_producto` AS `description`,`dc`.`precio_de_compra` AS `price`,`dc`.`cantidad_producto` AS `quantity`,`dc`.`iva_de_compra` AS `iva` from (`detalles_compra` `dc` join `producto` `p` on((`p`.`id_producto` = `dc`.`id_producto`)));
+
+-- Dumping structure for view provisys.vista_obtener_productos_pedido
+-- Removing temporary table and create final VIEW structure
+DROP TABLE IF EXISTS `vista_obtener_productos_pedido`;
+CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vista_obtener_productos_pedido` AS with `producto_hidratado` as (select `p`.`id_producto` AS `id_producto`,`p`.`nombre` AS `nombre_producto`,`p`.`descripcion_producto` AS `descripcion_producto`,`p`.`id_categoria` AS `id_categoria`,`c`.`nombre` AS `nombre_categoria`,`p`.`id_fabricante` AS `id_fabricante`,`f`.`nombre` AS `nombre_fabricante` from (((`producto` `p` join `iva` on((`p`.`id_iva` = `iva`.`id_iva`))) join `fabricante` `f` on((`p`.`id_fabricante` = `f`.`id_fabricante`))) join `categoria_producto` `c` on((`p`.`id_categoria` = `c`.`id_categoria`))) group by `p`.`id_producto`) select `pe`.`id_pedido` AS `id_pedido`,`ph`.`id_producto` AS `id_producto`,`ph`.`nombre_producto` AS `nombre_producto`,`ph`.`descripcion_producto` AS `descripcion_producto`,`ph`.`id_categoria` AS `id_categoria`,`ph`.`nombre_categoria` AS `nombre_categoria`,`ph`.`id_fabricante` AS `id_fabricante`,`ph`.`nombre_fabricante` AS `nombre_fabricante`,`dp`.`cantidad_producto` AS `cantidad_producto`,`dp`.`precio_de_venta` AS `precio_de_venta`,`dp`.`iva_de_venta` AS `iva_de_venta` from ((`pedido` `pe` join `detalles_pedido` `dp` on((`pe`.`id_pedido` = `dp`.`id_pedido`))) join `producto_hidratado` `ph` on((`ph`.`id_producto` = `dp`.`id_producto`)));
 
 -- Dumping structure for view provisys.vista_obtener_productos_tienda
 -- Removing temporary table and create final VIEW structure
