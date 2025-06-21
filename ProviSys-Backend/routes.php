@@ -491,5 +491,29 @@ $POST_ROUTES = [
             ['JsonMiddleware'],
             ['AuthMiddleware']
         ]
+    ],
+    '/wastes' => [
+        'action' => ['WastesController', 'getAll'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_waste']]
+        ]
+    ],
+    '/wastes/create' => [
+        'action' => ['WastesController', 'createWaste'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['create_waste']]
+        ]
+    ],
+    '/wastes/delete' => [
+        'action' => ['WastesController', 'deleteWaste'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['delete_waste']]
+        ]
     ]
 ];

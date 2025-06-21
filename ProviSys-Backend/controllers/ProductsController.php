@@ -541,9 +541,6 @@ class ProductsController
                 if ($storage['deleted'] == 1) {
                     Responses::json(['errors' => ['El almacén especificado está eliminado']], 400);
                 }
-                if ($storage['vehicle'] == 1) {
-                    Responses::json(['errors' => ['El almacén especificado es un vehículo']], 400);
-                }
             }
         } catch (Exception $e) {
             Responses::json(['errors' => [$e->getMessage()]], 500);
@@ -611,9 +608,6 @@ class ProductsController
             }
             if ($storage['deleted'] == 1) {
                 Responses::json(['errors' => ['El almacén especificado está eliminado']], 400);
-            }
-            if ($storage['vehicle'] == 1) {
-                Responses::json(['errors' => ['El almacén especificado es un vehículo']], 400);
             }
         } catch (Exception $e) {
             Responses::json(['errors' => [$e->getMessage()]], 500);
