@@ -307,7 +307,7 @@ onMounted(() => {
                 <Line class="bg-stone-200" orientation="horizontal" />
                 <ul class="flex flex-col max-h-[320px] overflow-y-auto px-4">
                     <li v-for="option in userOptions" :key="option.name">
-                        <RouterLink :to="option.link" v-if="option.userCondition()"
+                        <RouterLink :to="option.link" v-if="option.userCondition()" @click="toggleUserMenu"
                             class="flex items-center my-2 text-lg text-shadow-lg text-shadow-stone-200 transition linear duration-200"
                             :class="[option.twColor ? option.twColor : 'text-green-600']">
                             <component :is="option.icon" size="26" class="inline-block mr-3" />
