@@ -240,6 +240,15 @@ class OrdersModel extends Model
         // Obtener el ID del usuario
         global $USER;
 
+        // Primero, verificar si el usuario está verificado
+        $userModel = UsersModel::getUser($USER);
+        if (!$userModel || !$userModel->getVerified()) {
+            Responses::json(
+                ['errors' => ['El usuario no está verificado']],
+                403
+            );
+        }
+
         try {
             // Crear el pedido
             $sql1 = "INSERT INTO pedido (nombre_usuario, fecha_pedido, estado) VALUES (?, NOW(), 0)";

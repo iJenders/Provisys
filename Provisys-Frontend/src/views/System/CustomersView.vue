@@ -14,10 +14,9 @@
             </div>
         </div>
 
-
-
         <!-- Customers Table -->
         <el-table :data="customers" stripe style="width: 100%" :loading="loading" class="border border-gray-200">
+            <el-table-column prop="username" label="Nombre de Usuario" width="250" />
             <el-table-column prop="fullName" label="Nombre Completo" width="250">
                 <template #default="scope">
                     {{ scope.row.names }} {{ scope.row.lastNames }}
