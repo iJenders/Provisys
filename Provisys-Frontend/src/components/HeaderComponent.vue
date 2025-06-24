@@ -10,6 +10,9 @@ import ThemeButton from './ThemeButton.vue'
 import ShoppingCartItem from './ShoppingCartItem.vue'
 import axios from 'axios'
 import { handleRequestError } from '@/utils/fetchNotificationsHandlers'
+import { useFullScreenModals } from '@/composables/fullScreenModals'
+
+const { screen } = useFullScreenModals()
 
 const authStore = useAuthStore()
 
@@ -90,6 +93,10 @@ const showUserMenu = ref(false)
 
 // For responsive design, we will toggle the links menu
 const showLinksMenu = ref(true)
+
+const showLinksMenuComputed = computed(() => {
+    return showLinksMenu.value || screen.value >= 768
+})
 
 const getSubTotal = computed(() => {
     let subtotal = 0
@@ -215,7 +222,7 @@ onMounted(() => {
         <Transition>
             <section
                 class="HeaderLinks flex flex-col md:items-center md:justify-center fixed left-0 top-[80px] md:w-full bg-emerald-700 z-10000 overflow-hidden rounded-b-xl px-8 pb-8 md:relative md:left-auto md:top-auto md:w-auto md:h-auto md:bg-transparent md:px-0 md:pb-0"
-                v-show="showLinksMenu">
+                v-show="showLinksMenuComputed">
                 <ul class="flex flex-col md:flex-row md:items-center md:justify-center h-full gap-4 md:gap-0">
                     <li v-for="link in headerLinks" class="mx-4">
                         <RouterLink v-if="link.userCondition()" :to="link.link"

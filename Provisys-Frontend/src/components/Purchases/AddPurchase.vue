@@ -92,6 +92,15 @@
                                     100)).toFixed(2) }}
                             </p>
                         </div>
+
+                        <!-- Actions -->
+                        <div class="w-[50px] flex items-end">
+                            <el-button type="danger" circle @click="removeProduct(index)">
+                                <el-icon>
+                                    <X />
+                                </el-icon>
+                            </el-button>
+                        </div>
                     </div>
                 </TransitionGroup>
             </div>
@@ -125,7 +134,7 @@ import { successNotification, errorNotification } from '@/utils/feedback';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { ElMessageBox, ElNotification } from 'element-plus';
-import { CornerRightDown } from 'lucide-vue-next';
+import { X } from 'lucide-vue-next';
 import { handleRequestError } from '@/utils/fetchNotificationsHandlers';
 
 const allowRepeatedProducts = ref(false);
@@ -380,20 +389,3 @@ const onProductChange = (product, index) => {
     }
 }
 </script>
-
-<style>
-/*
-    Transiciones para la lista
-*/
-
-.list-enter-active,
-.list-leave-active {
-    transition: all 0.2s ease;
-}
-
-.list-enter-from,
-.list-leave-to {
-    opacity: 0;
-    transform: translateX(30px);
-}
-</style>

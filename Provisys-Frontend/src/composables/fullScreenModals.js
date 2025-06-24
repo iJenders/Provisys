@@ -1,21 +1,23 @@
-import { onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 
 export const useFullScreenModals = () => {
-  const fullScreenModals = ref(window.innerWidth < 768);
+  const screen = ref(window.innerWidth);
+  const fullScreenModals = computed(() => screen.value < 768);
 
   onMounted(() => {
     window.addEventListener("resize", () => {
-      fullScreenModals.value = window.innerWidth < 768;
+      screen.value = window.innerWidth;
     });
   });
 
   onUnmounted(() => {
     window.removeEventListener("resize", () => {
-      fullScreenModals.value = window.innerWidth < 768;
+      screen.value = window.innerWidth;
     });
   });
 
   return {
     fullScreenModals,
+    screen,
   };
 };
