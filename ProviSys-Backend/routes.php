@@ -50,6 +50,24 @@ $GET_ROUTES = [
     ],
     '/products/image' => [
         'action' => ['ProductsController', 'getImage'],
+    ],
+    '/reports/1' => [
+        'action' => ['ReportsController', 'actualInventoryValue'],
+    ],
+    '/reports/2' => [
+        'action' => ['ReportsController', 'providersRanking'],
+    ],
+    '/reports/3' => [
+        'action' => ['ReportsController', 'ingressesEgresses'],
+    ],
+    '/reports/4' => [
+        'action' => ['ReportsController', 'waitingOrders'],
+    ],
+    '/reports/5' => [
+        'action' => ['ReportsController', 'inventoryEntry'],
+    ],
+    '/reports/6' => [
+        'action' => ['ReportsController', 'inventoryExit'],
     ]
 ];
 
@@ -472,6 +490,46 @@ $POST_ROUTES = [
         'middlewares' => [
             ['JsonMiddleware'],
             ['AuthMiddleware']
+        ]
+    ],
+    '/wastes' => [
+        'action' => ['WastesController', 'getAll'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_waste']]
+        ]
+    ],
+    '/wastes/create' => [
+        'action' => ['WastesController', 'createWaste'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['create_waste']]
+        ]
+    ],
+    '/wastes/delete' => [
+        'action' => ['WastesController', 'deleteWaste'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['delete_waste']]
+        ]
+    ],
+    '/clients' => [
+        'action' => ['UsersController', 'getAllClients'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_user']]
+        ]
+    ],
+    '/clients/update' => [
+        'action' => ['UsersController', 'editClient'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['update_user']]
         ]
     ]
 ];

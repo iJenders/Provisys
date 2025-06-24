@@ -8,7 +8,6 @@ class StoragesModel extends Model
         'id' => 'id_almacen',
         'name' => 'nombre',
         'description' => 'descripcion_almacen',
-        'vehicle' => 'es_vehiculo',
         'deleted' => 'eliminado'
     ];
     protected array $searchableAttributes = [

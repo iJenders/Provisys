@@ -4,8 +4,6 @@ import { ref } from 'vue';
 import { Warehouse, Trash2, ArrowLeftRight, ShoppingCart } from 'lucide-vue-next';
 import StoragesComponent from '@/components/Inventory/StoragesComponent.vue';
 import WastesComponent from '@/components/Inventory/WastesComponent.vue';
-import MovementsComponent from '@/components/Inventory/MovementsComponent.vue';
-import AutosellsComponent from '@/components/Inventory/AutosellsComponent.vue';
 
 const inventoryButtons = [
     {
@@ -18,16 +16,6 @@ const inventoryButtons = [
         icon: Trash2,
         component: WastesComponent
     },
-    {
-        name: 'Movimientos',
-        icon: ArrowLeftRight,
-        component: MovementsComponent
-    },
-    {
-        name: 'Auto-ventas',
-        icon: ShoppingCart,
-        component: AutosellsComponent
-    }
 ]
 
 const activeSection = ref(0);

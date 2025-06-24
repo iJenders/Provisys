@@ -128,13 +128,6 @@ onMounted(() => {
                     </el-table-column>
                     <el-table-column prop="name" label="Nombre" min-width="150" />
                     <el-table-column prop="description" label="Descripción" min-width="250" />
-                    <el-table-column prop="vehicle" label="Vehicular" min-width="100">
-                        <template #default="scope">
-                            <el-text :type="scope.row.vehicle ? 'success' : 'danger'">
-                                {{ scope.row.vehicle ? 'Si' : 'No' }}
-                            </el-text>
-                        </template>
-                    </el-table-column>
                 </el-table>
 
                 <!-- Pagination -->

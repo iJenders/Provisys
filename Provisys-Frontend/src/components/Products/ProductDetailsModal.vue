@@ -304,8 +304,8 @@ onMounted(() => {
             </el-button>
         </div>
         <TransitionGroup name="fade">
-            <div v-if="selectedProduct && !showWarehouses" key="a" class="w-full flex flex-col md:flex-row gap-4 mt-4"
-                v-loading="fetchingModal">
+            <div v-if="selectedProduct" v-show="!showWarehouses" key="a"
+                class="w-full flex flex-col md:flex-row gap-4 mt-4" v-loading="fetchingModal">
                 <!-- Product Image -->
                 <div
                     class="w-full md:w-fit justify-center items-center   shrink-0 justify-center flex flex-col gap-6 relative md:border-stone-200 md:border-r-[2px] md:pr-4">
@@ -373,23 +373,25 @@ onMounted(() => {
                 </div>
             </div>
             <!-- Product per Storage Details -->
-            <div v-if="selectedProduct && showWarehouses" key="b" class="w-full flex flex-col gap-4 mt-4"
+            <div v-if="selectedProduct" v-show="showWarehouses" key="b" class="w-full flex flex-col gap-4 mt-4"
                 v-loading="fetchingModal">
                 <Line orientation="horizontal" class="bg-stone-200" />
 
                 <!-- Storage Selection -->
-                <div class="w-full flex items-center gap-2 flex-wrap">
-                    <p class="text-xl font-bold text-stone-700">Almacenes Compatibles:</p>
-                    <el-select v-model="inputSelectedWarehouse" value-key="id" class="w-full h-fit"
-                        placeholder="Buscar almacen para añadir..." multiple :loading="fetchingWarehouses" filterable
-                        remote :remote-method="handleWarehouseSearch">
-                        <el-option v-for="warehouse in warehouses" :key="warehouse.id" :label="warehouse.name"
-                            :value="warehouse" />
-                    </el-select>
+                <div class="w-full flex flex-col gap-2" v-if="compatibleStorages && compatibleStorages.length < 1">
+                    <div class="w-full flex items-center gap-2 flex-wrap">
+                        <p class="text-xl font-bold text-stone-700">Almacenes Compatibles:</p>
+                        <el-select v-model="inputSelectedWarehouse" value-key="id" class="w-full h-fit"
+                            placeholder="Buscar almacen para añadir..." multiple :loading="fetchingWarehouses"
+                            filterable remote :remote-method="handleWarehouseSearch">
+                            <el-option v-for="warehouse in warehouses" :key="warehouse.id" :label="warehouse.name"
+                                :value="warehouse" />
+                        </el-select>
+                    </div>
+                    <el-button class="w-fit" type="success" @click="setCompatibleStorages">
+                        Agregar a almacenes compatibles
+                    </el-button>
                 </div>
-                <el-button class="w-fit" type="success" @click="setCompatibleStorages">
-                    Agregar a almacenes compatibles
-                </el-button>
 
                 <!-- Product per Storage Details -->
                 <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

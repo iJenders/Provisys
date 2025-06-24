@@ -13,8 +13,9 @@ class UsersModel
     private $secondaryPhone;
     private $address;
     private $roleId;
+    private $verified;
 
-    public function __construct($username, $registerDate, $names, $lastNames, $email, $phone, $secondaryPhone, $address, $roleId)
+    public function __construct($username, $registerDate, $names, $lastNames, $email, $phone, $secondaryPhone, $address, $roleId, $verified)
     {
         $this->username = $username;
         $this->registerDate = $registerDate;
@@ -25,6 +26,7 @@ class UsersModel
         $this->secondaryPhone = $secondaryPhone;
         $this->address = $address;
         $this->roleId = $roleId;
+        $this->verified = $verified;
 
         // Obtener la conexión a la base de datos
         $this->db = DBConnection::getInstance()->getConnection();
@@ -41,38 +43,77 @@ class UsersModel
     }
     public function getNames()
     {
-        return $this->names;
+        return $this->names ?? '';
     }
     public function getLastNames()
     {
-        return $this->lastNames;
+        return $this->lastNames ?? '';
     }
     public function getEmail()
     {
-        return $this->email;
+        return $this->email ?? '';
     }
     public function getPhone()
     {
-        return $this->phone;
+        return $this->phone ?? '';
     }
     public function getSecondaryPhone()
     {
-        return $this->secondaryPhone;
+        return $this->secondaryPhone ?? '';
     }
     public function getAddress()
     {
-        return $this->address;
+        return $this->address ?? '';
     }
     public function getRoleId()
     {
-        return $this->roleId;
+        return $this->roleId ?? 0;
     }
-
+    public function getVerified()
+    {
+        return $this->verified ?? 0;
+    }
     public function getCredentials()
     {
         // Obtener las credenciales del usuario
         include_once 'models/CredentialsModel.php';
         return CredentialsModel::getCredential($this->username);
+    }
+
+    // Setters
+    public function setNames($names)
+    {
+        $this->names = $names;
+    }
+
+    public function setLastNames($lastNames)
+    {
+        $this->lastNames = $lastNames;
+    }
+
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    }
+
+    public function setPhone($phone)
+    {
+        $this->phone = $phone;
+    }
+
+    public function setSecondaryPhone($secondaryPhone)
+    {
+        $this->secondaryPhone = $secondaryPhone;
+    }
+
+    public function setAddress($address)
+    {
+        $this->address = $address;
+    }
+
+    public function setVerified($verified)
+    {
+        $this->verified = $verified;
     }
 
     public function toArray()
@@ -86,11 +127,47 @@ class UsersModel
             'phone' => $this->phone,
             'secondaryPhone' => $this->secondaryPhone,
             'address' => $this->address,
-            'roleId' => $this->roleId
+            'roleId' => $this->roleId,
+            'verified' => $this->verified
         ];
     }
 
     // Métodos estáticos
+    public static function getAllClients($offset = 0, $search = '')
+    {
+        $db = DBConnection::getInstance()->getConnection();
+        $query = "SELECT * FROM usuario WHERE id_rol = 2";
+        if ($search !== '') {
+            $query .= " AND (nombres LIKE '%$search%' OR apellidos LIKE '%$search%' OR correo LIKE '%$search%' OR telefono LIKE '%$search%' OR telefono_secundario LIKE '%$search%' OR direccion LIKE '%$search%')";
+        }
+        $result = $db->query($query);
+
+        $users = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $user = new UsersModel(
+                $row['nombre_usuario'],
+                $row['fecha_registro'],
+                $row['nombres'],
+                $row['apellidos'],
+                $row['correo'],
+                $row['telefono'],
+                $row['telefono_secundario'],
+                $row['direccion'],
+                $row['id_rol'],
+                intval($row['verificado'])
+            );
+            $users[] = $user->toArray();
+        }
+
+        // Count
+        $query = "SELECT COUNT(*) as count FROM usuario WHERE id_rol = 2";
+        $result = $db->query($query);
+        $count = $result->fetch_assoc()['count'];
+
+        return ['users' => $users, 'count' => intval($count)];
+    }
+
     public static function getUser($username)
     {
         $db = DBConnection::getInstance()->getConnection();
@@ -111,7 +188,8 @@ class UsersModel
                 $user['telefono'],
                 $user['telefono_secundario'],
                 $user['direccion'],
-                $user['id_rol']
+                $user['id_rol'],
+                $user['verificado']
             );
         } else {
             return null; // No se encontró el usuario
@@ -181,5 +259,26 @@ class UsersModel
             $db->autocommit(true);
             throw $e;
         }
+    }
+
+    public function update()
+    {
+        $db = DBConnection::getInstance()->getConnection();
+
+        $sql = "UPDATE usuario SET nombres = ?, apellidos = ?, correo = ?, telefono = ?, telefono_secundario = ?, direccion = ?, id_rol = ?, verificado = ? WHERE nombre_usuario = ?";
+        $params = [];
+
+        $params[] = $this->getNames();
+        $params[] = $this->getLastNames();
+        $params[] = $this->getEmail();
+        $params[] = $this->getPhone();
+        $params[] = $this->getSecondaryPhone();
+        $params[] = $this->getAddress();
+        $params[] = $this->getRoleId();
+        $params[] = $this->getVerified();
+        $params[] = $this->getUsername();
+
+        $stmt = $db->prepare($sql);
+        $stmt->execute($params);
     }
 }
