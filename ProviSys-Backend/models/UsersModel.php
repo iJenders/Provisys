@@ -35,7 +35,7 @@ class UsersModel
     // Getters
     public function getUsername()
     {
-        return $this->username;
+        return $this->username ?? '';
     }
     public function getRegisterDate()
     {

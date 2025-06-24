@@ -2,12 +2,12 @@
 
 class Validator
 {
-    private string $text = "";
+    private $text;
     private array $errors = [];
 
     private string $alias = "";
 
-    public function __construct(string $text, string $alias = "")
+    public function __construct($text, string $alias = "")
     {
         $this->text = $text;
         $this->alias = $alias;
@@ -226,6 +226,14 @@ class Validator
         // Sea booleano, ya sea false, true, 0 o 1, o sus equivalentes strings
         if (!is_bool($this->text) && !is_numeric($this->text) && !in_array($this->text, ['false', 'true', '0', '1'])) {
             $this->errors[] = 'El campo de ' . $this->getAlias() . '  debe ser un valor booleano.';
+        }
+        return $this;
+    }
+
+    public function isArray(): Validator
+    {
+        if (!is_array($this->text)) {
+            $this->errors[] = 'El campo de ' . $this->getAlias() . '  debe ser un array.';
         }
         return $this;
     }
