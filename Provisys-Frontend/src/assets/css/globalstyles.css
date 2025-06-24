@@ -13,3 +13,7 @@
 .el-select__popper{
     z-index: 10000 !important;
 }
+
+.el-overlay{
+    z-index: 10000 !important;
+}

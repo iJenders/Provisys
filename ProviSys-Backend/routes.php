@@ -515,5 +515,21 @@ $POST_ROUTES = [
             ['AuthMiddleware'],
             ['PermissionMiddleware', ['delete_waste']]
         ]
+    ],
+    '/clients' => [
+        'action' => ['UsersController', 'getAllClients'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_user']]
+        ]
+    ],
+    '/clients/update' => [
+        'action' => ['UsersController', 'editClient'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['update_user']]
+        ]
     ]
 ];

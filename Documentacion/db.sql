@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS `cuota` (
 
 -- Dumping structure for table provisys.desperdicio
 CREATE TABLE IF NOT EXISTS `desperdicio` (
-  `id_desperdicio` int unsigned NOT NULL,
+  `id_desperdicio` int unsigned NOT NULL AUTO_INCREMENT,
   `fecha` datetime NOT NULL,
   `motivo` varchar(255) NOT NULL DEFAULT '',
   `cantidad_producto` int unsigned NOT NULL,
@@ -95,11 +95,12 @@ CREATE TABLE IF NOT EXISTS `desperdicio` (
   `iva_producto` decimal(12,2) NOT NULL,
   `id_producto` varchar(24) NOT NULL,
   `id_almacen` int NOT NULL,
+  `eliminado` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_desperdicio`,`id_producto`,`id_almacen`),
   UNIQUE KEY `id_desperdicio_UNIQUE` (`id_desperdicio`),
   KEY `fk_desperdicio_productos_en_almacen1_idx` (`id_producto`,`id_almacen`),
   CONSTRAINT `fk_desperdicio_productos_en_almacen1` FOREIGN KEY (`id_producto`, `id_almacen`) REFERENCES `productos_en_almacen` (`id_producto`, `id_almacen`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3;
 
 -- Data exporting was unselected.
 
@@ -333,6 +334,7 @@ CREATE TABLE IF NOT EXISTS `usuario` (
   `telefono` varchar(16) NOT NULL,
   `telefono_secundario` varchar(16) DEFAULT NULL,
   `direccion` varchar(255) NOT NULL,
+  `verificado` tinyint DEFAULT '0',
   `id_rol` int unsigned NOT NULL,
   PRIMARY KEY (`nombre_usuario`),
   UNIQUE KEY `correo_electrónico_UNIQUE` (`correo`),
