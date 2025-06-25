@@ -49,12 +49,6 @@
                         </el-icon>
                         Editar
                     </el-button>
-                    <el-button type="danger" link size="small" @click="handleDelete(scope.row)" :disabled="scope.row.status">
-                        <el-icon>
-                            <Delete />
-                        </el-icon>
-                        Eliminar
-                    </el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -68,6 +62,20 @@
         <!-- Add/Edit Employee Dialog -->
         <el-dialog v-model="dialogVisible" :title="employeeForm.id ? 'Editar Empleado' : 'Nuevo Empleado'" width="80%">
             <el-form ref="employeeFormRef" :model="employeeForm" :rules="rules" label-width="120px">
+                <el-row :gutter="20">
+                    <el-col :span="24" :sm="12">
+                        <el-form-item label="Usuario" prop="username">
+                            <el-input v-model="employeeForm.username" placeholder="Nombre de usuario"
+                                :disabled="!!employeeForm.id" />
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24" :sm="12" v-if="!employeeForm.id">
+                        <el-form-item label="Contraseña" prop="password">
+                            <el-input v-model="employeeForm.password" type="password" placeholder="Contraseña"
+                                show-password />
+                        </el-form-item>
+                    </el-col>
+                </el-row>
                 <el-row :gutter="20">
                     <el-col :span="24" :sm="12">
                         <el-form-item label="Nombre" prop="names">
@@ -96,15 +104,23 @@
 
                 <el-row :gutter="20">
                     <el-col :span="24" :sm="12">
+                        <el-form-item label="Teléfono Secundario" prop="secondaryPhone">
+                            <el-input v-model="employeeForm.secondaryPhone" placeholder="Teléfono secundario" />
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="24" :sm="12">
+                        <el-form-item label="Dirección" prop="address">
+                            <el-input v-model="employeeForm.address" placeholder="Dirección" />
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+
+                <el-row :gutter="20">
+                    <el-col :span="24" :sm="12">
                         <el-form-item label="Rol" prop="roleId">
                             <el-select v-model="employeeForm.roleId" placeholder="Seleccionar rol">
                                 <el-option v-for="role in roles" :key="role.id" :label="role.name" :value="role.id" />
                             </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="24" :sm="12">
-                        <el-form-item label="Estado" prop="status">
-                            <el-switch v-model="employeeForm.status" active-text="Activo" inactive-text="Inactivo" />
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -127,6 +143,8 @@ import { ref, onMounted } from 'vue'
 import { Search, Edit, Delete, Plus } from 'lucide-vue-next'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import axios from 'axios'
+import { handleRequestError } from '@/utils/fetchNotificationsHandlers'
+import { successNotification } from '@/utils/feedback'
 
 const employees = ref([])
 const roles = ref([])
@@ -139,15 +157,24 @@ const dialogVisible = ref(false)
 const saving = ref(false)
 const employeeForm = ref({
     id: null,
+    username: '',
+    password: '',
     names: '',
     lastNames: '',
     email: '',
     phone: '',
-    roleId: null,
-    status: true
+    secondaryPhone: '',
+    address: '',
+    roleId: null
 })
 
 const rules = {
+    username: [
+        { required: true, message: 'Por favor, ingrese el nombre de usuario', trigger: 'blur' }
+    ],
+    password: [
+        { required: true, message: 'Por favor, ingrese la contraseña', trigger: 'blur' }
+    ],
     names: [
         { required: true, message: 'Por favor, ingrese el nombre', trigger: 'blur' }
     ],
@@ -171,44 +198,60 @@ const employeeFormRef = ref(null)
 const openAddDialog = () => {
     employeeForm.value = {
         id: null,
+        username: '',
+        password: '',
         names: '',
         lastNames: '',
         email: '',
         phone: '',
-        roleId: null,
-        status: true
+        secondaryPhone: '',
+        address: '',
+        roleId: null
     }
     dialogVisible.value = true
 }
 
 const openEditDialog = (employee) => {
-    employeeForm.value = { ...employee }
+    employeeForm.value = { ...employee, id: employee.username, password: '' }
     dialogVisible.value = true
 }
 
 const handleSave = async () => {
     if (!employeeFormRef.value) return
-    
+
     try {
         await employeeFormRef.value.validate()
         saving.value = true
 
-        const response = employeeForm.value.id
-            ? await axios.put(`/api/employees/${employeeForm.value.id}`, employeeForm.value)
-            : await axios.post('/api/employees', employeeForm.value)
+        if (employeeForm.value.id) {
+            await axios.post(import.meta.env.VITE_API_URL + '/employees/update', employeeForm.value, {
+                headers: {
+                    'Authorization': localStorage.getItem('token')
+                }
+            }).then(() => {
+                successNotification('Empleado actualizado correctamente')
 
-        ElMessage({
-            message: employeeForm.value.id ? 'Empleado actualizado correctamente' : 'Empleado creado correctamente',
-            type: 'success'
-        })
+                dialogVisible.value = false
+                getEmployees()
+            }).catch((error) => {
+                handleRequestError(error)
+            })
+        } else {
+            await axios.post(import.meta.env.VITE_API_URL + '/employees/create', employeeForm.value, {
+                headers: {
+                    'Authorization': localStorage.getItem('token')
+                }
+            }).then(() => {
+                successNotification('Empleado creado correctamente')
 
-        dialogVisible.value = false
-        await getEmployees()
+                dialogVisible.value = false
+                getEmployees()
+            }).catch((error) => {
+                handleRequestError(error)
+            })
+        }
     } catch (error) {
-        ElMessage({
-            message: error.response?.data?.message || 'Error al guardar el empleado',
-            type: 'error'
-        })
+        handleRequestError(error)
     } finally {
         saving.value = false
     }
@@ -226,18 +269,16 @@ const handleDelete = async (employee) => {
             }
         )
 
-        await axios.delete(`/api/employees/${employee.id}`)
-        ElMessage({
-            message: 'Empleado eliminado correctamente',
-            type: 'success'
+        await axios.post(import.meta.env.VITE_API_URL + '/employees/delete', { username: employee.username }, {
+            headers: {
+                'Authorization': localStorage.getItem('token')
+            }
         })
+        successNotification('Empleado eliminado correctamente')
         await getEmployees()
     } catch (error) {
         if (error !== 'cancel') {
-            ElMessage({
-                message: error.response?.data?.message || 'Error al eliminar el empleado',
-                type: 'error'
-            })
+            handleRequestError(error)
         }
     }
 }
@@ -254,20 +295,19 @@ const handlePageChange = () => {
 const getEmployees = async () => {
     loading.value = true
     try {
-        const response = await axios.get('/api/employees', {
-            params: {
-                page: currentPage.value,
-                limit: pageSize.value,
-                search: searchQuery.value
+        const response = await axios.post(import.meta.env.VITE_API_URL + '/employees', {
+            page: currentPage.value,
+            limit: pageSize.value,
+            search: searchQuery.value
+        }, {
+            headers: {
+                'Authorization': localStorage.getItem('token')
             }
         })
-        employees.value = response.data.data
-        totalEmployees.value = response.data.total
+        employees.value = response.data.response.employees
+        totalEmployees.value = response.data.response.count
     } catch (error) {
-        ElMessage({
-            message: error.response?.data?.message || 'Error al cargar empleados',
-            type: 'error'
-        })
+        handleRequestError(error)
     } finally {
         loading.value = false
     }
@@ -275,17 +315,19 @@ const getEmployees = async () => {
 
 const getRoles = async () => {
     try {
-        const response = await axios.get('/api/roles')
-        roles.value = response.data
-    } catch (error) {
-        ElMessage({
-            message: error.response?.data?.message || 'Error al cargar roles',
-            type: 'error'
+        const response = await axios.post(import.meta.env.VITE_API_URL + '/roles/all', {}, {
+            headers: {
+                'Authorization': localStorage.getItem('token')
+            }
         })
+        roles.value = response.data.response.roles
+    } catch (error) {
+        handleRequestError(error)
     }
 }
 
 onMounted(async () => {
-    await Promise.all([getEmployees(), getRoles()])
+    await getEmployees()
+    await getRoles()
 })
 </script>

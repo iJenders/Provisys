@@ -33,7 +33,7 @@
                             </el-icon>
                             Editar
                         </el-button>
-                        <el-button v-if="scope.row.disabled" type="danger" link size="small"
+                        <el-button v-if="!scope.row.disabled" type="danger" link size="small"
                             @click="handleDelete(scope.row)">
                             <el-icon>
                                 <Delete />
@@ -194,7 +194,8 @@ const handleSave = async () => {
 
         ElMessage({
             message: roleForm.value.id ? 'Rol actualizado correctamente' : 'Rol creado correctamente',
-            type: 'success'
+            type: 'success',
+            offset: 80
         })
 
         dialogVisible.value = false

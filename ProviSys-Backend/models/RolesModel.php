@@ -180,7 +180,7 @@ class RolesModel
     {
         $db = DBConnection::getInstance()->getConnection();
 
-        $query = "SELECT * FROM rol WHERE eliminado = 0";
+        $query = "SELECT * FROM rol WHERE eliminado = 0 AND id_rol <> 2";
 
         $result = $db->query($query);
 

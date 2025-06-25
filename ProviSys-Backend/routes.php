@@ -588,6 +588,38 @@ $POST_ROUTES = [
             ['PermissionMiddleware', ['delete_waste']]
         ]
     ],
+    '/employees' => [
+        'action' => ['EmployeeController', 'getAllEmployees'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_employee']]
+        ]
+    ],
+    '/employees/create' => [
+        'action' => ['EmployeeController', 'createEmployee'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['create_employee']]
+        ]
+    ],
+    '/employees/update' => [
+        'action' => ['EmployeeController', 'updateEmployee'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['update_employee']]
+        ]
+    ],
+    '/employees/delete' => [
+        'action' => ['EmployeeController', 'deleteEmployee'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['delete_employee']]
+        ]
+    ],
     '/clients' => [
         'action' => ['UsersController', 'getAllClients'],
         'middlewares' => [
