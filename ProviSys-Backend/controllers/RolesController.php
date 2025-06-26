@@ -292,12 +292,14 @@ class RolesController
 
     public static function updateRolePermissions()
     {
+        // Obtener los datos del cuerpo de la solicitud
         $data = json_decode(file_get_contents('php://input'), true);
         Validator::ensureFields($data, ['id', 'permissions']);
 
         $id = $data['id'];
         $permissions = $data['permissions'];
-
+$permissionsValidator = new Validator($id, 'id');
+        // Validar los datos de entrada
         $idValidator = new Validator($id, 'id');
         $idValidator->required()->numeric();
 
@@ -313,7 +315,14 @@ class RolesController
             Responses::json(['errors' => $permissionsValidator->getErrors()], 400);
             return;
         }
-        
+
+        // Validar que el rol no sea administrador ni cliente
+        if ($id == 1 || $id == 2) {
+            Responses::json(['errors' => ['No se puede actualizar los permisos de este rol.']], 400);
+            return;
+        }
+
+        // Actualizar los permisos del rol
         try {
             if (!RolesModel::roleExists($id)) {
                 Responses::json(['errors' => ['El rol no existe.']], 404);
