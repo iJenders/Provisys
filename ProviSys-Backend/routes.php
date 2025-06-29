@@ -95,6 +95,13 @@ $POST_ROUTES = [
             ['AuthMiddleware']
         ]
     ],
+    '/profile/update' => [
+        'action' => ['ProfileController', 'update'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware']
+        ]
+    ],
     '/categories' => [
         'action' => ['CategoriesController', 'getCategories'],
         'middlewares' => [
