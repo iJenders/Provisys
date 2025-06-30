@@ -35,7 +35,7 @@ class UsersModel
     // Getters
     public function getUsername()
     {
-        return $this->username;
+        return $this->username ?? '';
     }
     public function getRegisterDate()
     {
@@ -111,6 +111,11 @@ class UsersModel
         $this->address = $address;
     }
 
+    public function setRoleId($roleId)
+    {
+        $this->roleId = $roleId;
+    }
+
     public function setVerified($verified)
     {
         $this->verified = $verified;
@@ -133,6 +138,47 @@ class UsersModel
     }
 
     // Métodos estáticos
+    public static function getAllEmployees($offset = 0, $search = '', $limit = 10)
+    {
+        $db = DBConnection::getInstance()->getConnection();
+        
+        $whereClause = "WHERE u.id_rol <> 2";
+        if ($search !== '') {
+            $whereClause .= " AND (u.nombres LIKE '%$search%' OR u.apellidos LIKE '%$search%' OR u.correo LIKE '%$search%' OR u.telefono LIKE '%$search%' OR u.telefono_secundario LIKE '%$search%' OR u.direccion LIKE '%$search%')";
+        }
+
+        // Data query
+        $query = "SELECT u.*, r.nombre as role_name FROM usuario u JOIN rol r ON u.id_rol = r.id_rol " . $whereClause . " LIMIT $limit OFFSET $offset";
+        $result = $db->query($query);
+
+        $users = [];
+        while ($row = $result->fetch_assoc()) {
+            $user = new UsersModel(
+                $row['nombre_usuario'],
+                $row['fecha_registro'],
+                $row['nombres'],
+                $row['apellidos'],
+                $row['correo'],
+                $row['telefono'],
+                $row['telefono_secundario'],
+                $row['direccion'],
+                $row['id_rol'],
+                intval($row['verificado'])
+            );
+            $userArray = $user->toArray();
+            $userArray['role'] = ['name' => $row['role_name']];
+            $userArray['status'] = boolval($userArray['verified']);
+            $users[] = $userArray;
+        }
+
+        // Count query
+        $countQuery = "SELECT COUNT(*) as count FROM usuario u " . $whereClause;
+        $result = $db->query($countQuery);
+        $count = $result->fetch_assoc()['count'];
+
+        return ['users' => $users, 'count' => intval($count)];
+    }
+
     public static function getAllClients($offset = 0, $search = '')
     {
         $db = DBConnection::getInstance()->getConnection();
@@ -218,7 +264,7 @@ class UsersModel
         return $result->num_rows > 0; // Devuelve true si el correo electrónico ya está en uso, false en caso contrario
     }
 
-    public static function createUser($username, $password, $names, $lastNames, $email, $phone, $address, $roleId = 2, $secondaryPhone = null)
+    public static function createUser($username, $password, $names, $lastNames, $email, $phone, $address, $roleId = 2, $secondaryPhone = null, $verified = 0)
     {
         $db = DBConnection::getInstance()->getConnection();
 
@@ -228,10 +274,10 @@ class UsersModel
         $db->autocommit(false);
 
         $sql1 = "INSERT INTO credencial (nombre_usuario, password) VALUES (?, ?)";
-        $sql2 = "INSERT INTO usuario (nombre_usuario, fecha_registro, nombres, apellidos, correo, telefono, direccion, id_rol";
-        $sqlValues = ") VALUES (?, ?, ?, ?, ?, ?, ?, ?";
+        $sql2 = "INSERT INTO usuario (nombre_usuario, fecha_registro, nombres, apellidos, correo, telefono, direccion, id_rol, verificado";
+        $sqlValues = ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?";
 
-        $params = [$username, $registerDate, $names, $lastNames, $email, $phone, $address, $roleId];
+        $params = [$username, $registerDate, $names, $lastNames, $email, $phone, $address, $roleId, $verified];
         if ($secondaryPhone !== null) {
             $sql2 .= ", telefono_secundario";
 
@@ -254,6 +300,39 @@ class UsersModel
 
             return UsersModel::getUser($username);
 
+        } catch (Exception $e) {
+            $db->rollback();
+            $db->autocommit(true);
+            throw $e;
+        }
+    }
+
+    public static function deleteUser($username)
+    {
+        $db = DBConnection::getInstance()->getConnection();
+
+        $db->autocommit(false);
+
+        try {
+            // Primero, eliminar de la tabla usuario
+            $sql1 = "DELETE FROM usuario WHERE nombre_usuario = ?";
+            $stmt1 = $db->prepare($sql1);
+            $stmt1->execute([$username]);
+
+            // Luego, eliminar de la tabla credencial
+            $sql2 = "DELETE FROM credencial WHERE nombre_usuario = ?";
+            $stmt2 = $db->prepare($sql2);
+            $stmt2->execute([$username]);
+
+            if ($stmt1->affected_rows > 0 && $stmt2->affected_rows > 0) {
+                $db->commit();
+                $db->autocommit(true);
+                return true;
+            } else {
+                $db->rollback();
+                $db->autocommit(true);
+                return false;
+            }
         } catch (Exception $e) {
             $db->rollback();
             $db->autocommit(true);

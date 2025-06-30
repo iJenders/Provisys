@@ -33,6 +33,14 @@ class CredentialsModel
         return password_verify($password, $this->password);
     }
 
+    public function updatePassword($newPassword)
+    {
+        $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
+        $sql = "UPDATE credencial SET password = ? WHERE nombre_usuario = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$hashedPassword, $this->username]);
+    }
+
     // Métodos estáticos
     public static function getCredential($username)
     {

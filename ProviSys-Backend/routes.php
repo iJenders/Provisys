@@ -95,6 +95,13 @@ $POST_ROUTES = [
             ['AuthMiddleware']
         ]
     ],
+    '/profile/update' => [
+        'action' => ['ProfileController', 'update'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware']
+        ]
+    ],
     '/categories' => [
         'action' => ['CategoriesController', 'getCategories'],
         'middlewares' => [
@@ -355,6 +362,78 @@ $POST_ROUTES = [
             ['PermissionMiddleware', ['get_payment']]
         ]
     ],
+    '/roles' => [
+        'action' => ['RolesController', 'getRoles'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_role']]
+        ]
+    ],
+    '/roles/all' => [
+        'action' => ['RolesController', 'getAllActive'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_role']]
+        ]
+    ],
+    '/roles/get' => [
+        'action' => ['RolesController', 'getRole'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_role']]
+        ]
+    ],
+    '/roles/create' => [
+        'action' => ['RolesController', 'createRole'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['create_role']]
+        ]
+    ],
+    '/roles/edit' => [
+        'action' => ['RolesController', 'editRole'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['edit_role']]
+        ]
+    ],
+    '/roles/delete' => [
+        'action' => ['RolesController', 'deleteRole'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['delete_role']]
+        ]
+    ],
+    '/roles/permissions' => [
+        'action' => ['RolesController', 'getRolePermissions'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_role']]
+        ]
+    ],
+    '/roles/permissions/update' => [
+        'action' => ['RolesController', 'updateRolePermissions'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['edit_role']]
+        ]
+    ],
+    '/permissions/tree' => [
+        'action' => ['PermissionsController', 'getPermissionsTree'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_role']]
+        ]
+    ],
     '/payments/history' => [
         'action' => ['PaymentsController', 'getPaymentHistory'],
         'middlewares' => [
@@ -514,6 +593,38 @@ $POST_ROUTES = [
             ['JsonMiddleware'],
             ['AuthMiddleware'],
             ['PermissionMiddleware', ['delete_waste']]
+        ]
+    ],
+    '/employees' => [
+        'action' => ['EmployeeController', 'getAllEmployees'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['get_employee']]
+        ]
+    ],
+    '/employees/create' => [
+        'action' => ['EmployeeController', 'createEmployee'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['create_employee']]
+        ]
+    ],
+    '/employees/update' => [
+        'action' => ['EmployeeController', 'updateEmployee'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['update_employee']]
+        ]
+    ],
+    '/employees/delete' => [
+        'action' => ['EmployeeController', 'deleteEmployee'],
+        'middlewares' => [
+            ['JsonMiddleware'],
+            ['AuthMiddleware'],
+            ['PermissionMiddleware', ['delete_employee']]
         ]
     ],
     '/clients' => [
