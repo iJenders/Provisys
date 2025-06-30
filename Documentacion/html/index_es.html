@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Usuario de ProviSys</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #0056b3;
+        }
+        h1 {
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 10px;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        nav ul li a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+        section {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Manual de Usuario de ProviSys</h1>
+        </header>
+
+        <nav>
+            <h2>Tabla de Contenidos</h2>
+            <ul>
+                <li><a href="#introduction">1. Introducción</a></li>
+                <li><a href="#getting-started">2. Primeros Pasos</a></li>
+                <li><a href="#user-features">3. Funcionalidades de Usuario</a></li>
+                <li><a href="#system-admin">4. Administración del Sistema</a></li>
+                <li><a href="#conclusion">5. Conclusión</a></li>
+            </ul>
+        </nav>
+
+        <section id="introduction">
+            <h2>1. Introducción</h2>
+            <p>Bienvenido a ProviSys, su solución integral para la gestión de envíos e inventario general. Este manual lo guiará a través de las características y funcionalidades de la aplicación ProviSys.</p>
+        </section>
+
+        <section id="getting-started">
+            <h2>2. Primeros Pasos</h2>
+            <h3 id="register-view">2.1. Registro</h3>
+            <p>Para crear una nueva cuenta, vaya a la página de 'Registro' y complete el formulario. Se le pedirá que proporcione la siguiente información:</p>
+            <ul>
+                <li><strong>Información Personal:</strong>
+                    <ul>
+                        <li>Nombres</li>
+                        <li>Apellidos</li>
+                        <li>Correo Electrónico</li>
+                        <li>Teléfono Principal</li>
+                        <li>Teléfono Secundario (opcional)</li>
+                        <li>Dirección</li>
+                    </ul>
+                </li>
+                <li><strong>Información de la Cuenta:</strong>
+                    <ul>
+                        <li>Nombre de Usuario</li>
+                        <li>Contraseña</li>
+                        <li>Confirmar Contraseña</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Una casilla de <strong>Mostrar Contraseña</strong> está disponible para ayudarle a verificar su contraseña mientras escribe. Una vez que haya completado todos los campos, haga clic en el botón <strong>"Registrarse"</strong> para crear su cuenta. Si ya tiene una cuenta, puede hacer clic en el enlace <strong>"Iniciar Sesión"</strong> para ir a la página de inicio de sesión.</p>
+            <h3>2.2. Inicio de Sesión</h3>
+            <p>Una vez que tenga una cuenta, puede iniciar sesión desde la página de 'Login'. El formulario de inicio de sesión requiere la siguiente información:</p>
+            <ul>
+                <li><strong>Nombre de Usuario:</strong> Su nombre de usuario registrado.</li>
+                <li><strong>Contraseña:</strong> La contraseña de su cuenta.</li>
+            </ul>
+            <p>Para su comodidad, una casilla de <strong>Mostrar/Ocultar Contraseña</strong> está disponible para ayudarle a escribir su contraseña correctamente. Si no tiene una cuenta, puede hacer clic en el enlace <strong>"Regístrese aquí"</strong> para ir a la página de registro. Si ha olvidado su contraseña, el enlace <strong>"Recupérela aquí"</strong> lo llevará a la página de recuperación de contraseña.</p>
+        </section>
+
+        <section id="user-features">
+            <h2>3. Funcionalidades de Usuario</h2>
+            <p>Esta sección describe las funcionalidades disponibles para los usuarios regulares.</p>
+            <h3>3.1. Página de Inicio</h3>
+            <p>La página de inicio sirve como el punto de entrada principal a la aplicación, proporcionando una descripción general de la empresa y sus ofertas. Presenta:</p>
+            <ul>
+                <li><strong>Banner Principal:</strong> Un banner destacado con una breve introducción a los servicios de la empresa y un enlace directo al catálogo de productos.</li>
+                <li><strong>Productos Destacados:</strong> Una selección de productos destacados, que le da una idea de lo que está disponible en la tienda. Puede hacer clic en "Explorar más..." para ver el catálogo completo.</li>
+                <li><strong>Información de la Empresa:</strong> Secciones detalladas sobre la empresa, incluyendo:
+                    <ul>
+                        <li><strong>Ubicación:</strong> La dirección física de la empresa.</li>
+                        <li><strong>Actividad Principal:</strong> Una descripción del negocio principal de la empresa.</li>
+                        <li><strong>Nuestra Misión:</strong> La declaración de la misión de la empresa.</li>
+                        <li><strong>Nuestros Valores:</strong> Los valores fundamentales que impulsan a la empresa, como Calidad, Compromiso, Crecimiento y Distribución.</li>
+                    </ul>
+                </li>
+            </ul>
+            <h3>3.2. Tienda</h3>
+            <p>La página 'Tienda' es donde puede explorar y encontrar todos los productos ofrecidos. Está diseñada para proporcionar una experiencia de navegación fluida con las siguientes características:</p>
+            <ul>
+                <li><strong>Visualización de Productos:</strong> Los productos se muestran en un formato de cuadrícula claro, mostrando información esencial de cada artículo.</li>
+                <li><strong>Panel de Filtro y Orden:</strong> Encima de la lista de productos, un panel de control le permite refinar su búsqueda:
+                    <ul>
+                        <li><strong>Filtro:</strong> Un botón para filtrar productos según diferentes criterios.</li>
+                        <li><strong>Ordenar Por:</strong> Puede ordenar los productos por Nombre, Precio, Categoría o Stock.</li>
+                        <li><strong>Dirección de Orden:</strong> Puede organizar los productos ordenados en orden Ascendente o Descendente.</li>
+                    </ul>
+                </li>
+                <li><strong>Paginación:</strong> Si hay muchos productos, se dividirán en varias páginas. Puede usar los controles de paginación en la parte inferior de la página para navegar a través de ellos. El panel también muestra el número total de productos disponibles.</li>
+            </ul>
+            <h3>3.3. Mi Perfil</h3>
+            <p>La página 'Mi Perfil' le permite ver y gestionar los detalles de su cuenta. Se divide en dos secciones principales:</p>
+            <ul>
+                <li>
+                    <strong>Pestaña de Información Personal:</strong> Aquí puede ver su nombre de usuario y fecha de registro. También puede actualizar los siguientes datos personales:
+                    <ul>
+                        <li>Nombres</li>
+                        <li>Apellidos</li>
+                        <li>Correo Electrónico</li>
+                        <li>Teléfono Principal</li>
+                        <li>Teléfono Secundario</li>
+                        <li>Dirección</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Pestaña de Cambiar Contraseña:</strong> Esta sección le permite actualizar su contraseña. Deberá ingresar su nueva contraseña y luego confirmarla para asegurarse de que sea correcta.
+                </li>
+            </ul>
+            <p>Después de realizar cualquier cambio, haga clic en el botón <strong>"Guardar Cambios"</strong> para actualizar su perfil.</p>
+            <h3>3.4. Mis Pedidos</h3>
+            <p>La página 'Mis Pedidos' proporciona un historial completo de todos sus pedidos. Puede utilizar las siguientes funciones para gestionar y realizar un seguimiento de sus compras:</p>
+            <ul>
+                <li><strong>Panel de Filtros:</strong> En el lado izquierdo de la página, puede filtrar sus pedidos por:
+                    <ul>
+                        <li><strong>Fecha del Pedido:</strong> Especifique un rango de fechas (Desde/Hasta) para encontrar los pedidos realizados en ese período.</li>
+                        <li><strong>Valor:</strong> Filtre los pedidos según su valor total estableciendo un importe mínimo y máximo.</li>
+                    </ul>
+                    <p>Haga clic en <strong>"Aplicar Filtros"</strong> para ver los resultados o en <strong>"Limpiar"</strong> para restablecer los filtros.</p>
+                </li>
+                <li><strong>Lista de Pedidos:</strong> Sus pedidos se muestran en una tabla con las siguientes columnas:
+                    <ul>
+                        <li><strong>ID:</strong> El identificador único de cada pedido.</li>
+                        <li><strong>Estado:</strong> El estado actual del pedido (p. ej., Pendiente, Facturado, Entregado, Cancelado).</li>
+                        <li><strong>Fecha:</strong> La fecha en que se realizó el pedido.</li>
+                        <li><strong>Valor:</strong> El coste total del pedido.</li>
+                        <li><strong>Estado del Pago:</strong> Indica si el pago ha sido verificado.</li>
+                        <li><strong>Total Pagado:</strong> Muestra el importe pagado frente al valor total del pedido.</li>
+                        <li><strong>Cantidad de Productos:</strong> El número de artículos del pedido.</li>
+                    </ul>
+                </li>
+                <li><strong>Búsqueda y Paginación:</strong> Puede utilizar la barra de búsqueda para encontrar un pedido específico por su ID u otros detalles. Si tiene muchos pedidos, puede navegar por ellos utilizando los controles de paginación de la parte inferior.</li>
+                <li><strong>Detalles del Pedido:</strong> Al hacer clic en cualquier pedido de la tabla se abrirá una vista detallada con información completa sobre el pedido, incluida una lista de los productos comprados, sus cantidades y precios.</li>
+            </ul>
+            <h3>3.5. Contacto</h3>
+            <p>La página de 'Contacto' proporciona múltiples formas de ponerse en contacto con nosotros. Incluye las siguientes secciones:</p>
+            <ul>
+                <li>
+                    <strong>Información de Contacto:</strong> Una lista detallada de nuestros datos de contacto, que incluye:
+                    <ul>
+                        <li><strong>Dirección:</strong> Nuestra ubicación física, que se muestra en un mapa interactivo.</li>
+                        <li><strong>Teléfono:</strong> Nuestros números de teléfono de contacto.</li>
+                        <li><strong>Correo Electrónico:</strong> Nuestras direcciones de correo electrónico de contacto para consultas generales y ventas.</li>
+                        <li><strong>Horario Comercial:</strong> Nuestro horario de atención.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Síganos:</strong> Enlaces a nuestros perfiles en redes sociales, como Facebook, Instagram, Twitter y LinkedIn.
+                </li>
+                <li>
+                    <strong>Envíenos un Mensaje:</strong> Un formulario de contacto que puede utilizar para enviarnos un mensaje directamente desde el sitio web. El formulario requiere los siguientes campos:
+                    <ul>
+                        <li>Su Nombre</li>
+                        <li>Su Correo Electrónico</li>
+                        <li>Asunto</li>
+                        <li>Mensaje</li>
+                    </ul>
+                    <p>Después de enviar el formulario, recibirá una confirmación de que su mensaje ha sido enviado.</p>
+                </li>
+            </ul>
+        </section>
+
+        <section id="system-admin">
+            <h2>4. Administración del Sistema</h2>
+            <p>Esta sección es para administradores y cubre las funcionalidades de gestión del sistema.</p>
+            <h3>4.1. Resumen</h3>
+            <p>La vista de resumen proporciona un panel con métricas clave y una descripción general de alto nivel del estado del sistema.</p>
+            <p><strong>Nota:</strong> Esta función se encuentra actualmente en desarrollo y estará disponible en una futura actualización.</p>
+            <h3>4.2. Clientes</h3>
+            <p>La sección 'Clientes' permite a los administradores gestionar todas las cuentas de los clientes. Las principales características incluyen:</p>
+            <ul>
+                <li>
+                    <strong>Tabla de Clientes:</strong> Una tabla completa que muestra a todos los clientes con los siguientes detalles:
+                    <ul>
+                        <li>Nombre de Usuario</li>
+                        <li>Nombre Completo</li>
+                        <li>Correo Electrónico</li>
+                        <li>Teléfono</li>
+                        <li>Teléfono Secundario</li>
+                        <li>Dirección</li>
+                        <li>Estado (Verificado/No Verificado)</li>
+                    </ul>
+                </li>
+                <li><strong>Búsqueda y Paginación:</strong> Puede utilizar la barra de búsqueda para encontrar rápidamente un cliente específico. Si hay muchos clientes, puede navegar por la lista utilizando los controles de paginación en la parte inferior de la tabla.</li>
+                <li>
+                    <strong>Editar Cliente:</strong> Al hacer clic en el botón <strong>'Editar'</strong> junto a un cliente, se abrirá un cuadro de diálogo donde podrá:
+                    <ul>
+                        <li>Ver detalles no editables como el nombre de usuario, la fecha de registro y el rol.</li>
+                        <li>Actualizar la información personal del cliente, incluido el nombre, el correo electrónico, los números de teléfono y la dirección.</li>
+                        <li>Cambiar el estado del cliente entre 'Verificado' y 'No Verificado'.</li>
+                    </ul>
+                    <p>Haga clic en <strong>'Guardar'</strong> para aplicar los cambios o en <strong>'Cancelar'</strong> para cerrar el cuadro de diálogo sin guardar.</p>
+                </li>
+            </ul>
+            <h3>4.3. Empleados</h3>
+            <p>La sección 'Empleados' se divide en dos subsecciones principales: <strong>Empleados</strong> y <strong>Roles</strong>. Esto permite una gestión integral de las cuentas de los empleados y sus respectivos permisos dentro del sistema.</p>
+            
+            <h4>Gestión de Empleados</h4>
+            <p>Esta subsección proporciona herramientas para gestionar las cuentas de los empleados. Las principales características incluyen:</p>
+            <ul>
+                <li>
+                    <strong>Tabla de Empleados:</strong> Una tabla detallada que muestra a todos los empleados con la siguiente información:
+                    <ul>
+                        <li>Nombre de Usuario</li>
+                        <li>Nombre Completo</li>
+                        <li>Correo Electrónico</li>
+                        <li>Rol</li>
+                        <li>Estado (Activo/Inactivo)</li>
+                    </ul>
+                </li>
+                <li><strong>Búsqueda y Paginación:</strong> Puede utilizar la barra de búsqueda para encontrar empleados específicos y navegar por la lista utilizando los controles de paginación.</li>
+                <li>
+                    <strong>Añadir/Editar Empleado:</strong>
+                    <ul>
+                        <li>Haga clic en el botón <strong>'Nuevo Empleado'</strong> para abrir un cuadro de diálogo y crear una nueva cuenta de empleado rellenando sus datos, incluyendo nombre de usuario, contraseña, información personal y asignando un rol.</li>
+                        <li>Haga clic en el botón <strong>'Editar'</strong> junto a un empleado para actualizar su información. Tenga en cuenta que el nombre de usuario no se puede cambiar después de la creación.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h4>Gestión de Roles</h4>
+            <p>Esta subsección permite la gestión de los roles de los empleados y sus permisos asociados. Las principales características incluyen:</p>
+            <ul>
+                <li>
+                    <strong>Tabla de Roles:</strong> Una tabla que muestra todos los roles disponibles con los siguientes detalles:
+                    <ul>
+                        <li>Nombre</li>
+                        <li>Descripción</li>
+                    </ul>
+                </li>
+                <li><strong>Búsqueda y Paginación:</strong> Puede utilizar la barra de búsqueda para encontrar roles específicos y navegar por la lista utilizando los controles de paginación.</li>
+                <li>
+                    <strong>Añadir/Editar Rol:</strong>
+                    <ul>
+                        <li>Haga clic en el botón <strong>'Nuevo Rol'</strong> para crear un nuevo rol con un nombre y una descripción.</li>
+                        <li>Haga clic en el botón <strong>'Editar'</strong> para modificar el nombre, la descripción y los permisos de un rol existente.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Gestión de Permisos:</strong> Al editar un rol, puede gestionar sus permisos utilizando una estructura de árbol. Esto le permite conceder o revocar el acceso a diferentes módulos y funcionalidades del sistema.
+                </li>
+                <li><strong>Eliminar/Restaurar Rol:</strong> Puede eliminar un rol haciendo clic en el botón 'Eliminar'. Si un rol ha sido previamente desactivado, un botón 'Restaurar' estará disponible para reactivarlo.</li>
+            </ul>
+            <h3>4.4. Productos</h3>
+            <p>La sección 'Productos' se divide en cuatro subsecciones principales: <strong>Productos</strong>, <strong>Categorías</strong>, <strong>IVAs</strong> (Impuestos) y <strong>Proveedores</strong>. Esto permite una gestión integral de todos los aspectos relacionados con los productos disponibles en la tienda.</p>
+
+            <h4>Gestión de Productos</h4>
+            <p>Esta subsección proporciona herramientas para gestionar los productos. Las principales características incluyen:</p>
+            <ul>
+                <li><strong>Tabla de Productos:</strong> Una tabla detallada que muestra todos los productos con información clave.</li>
+                <li><strong>Filtrado y Búsqueda:</strong> Puede filtrar productos por categoría, proveedor y rango de precios, así como buscar productos específicos por nombre. También puede ver los productos eliminados.</li>
+                <li><strong>Añadir/Editar Producto:</strong> Puede añadir nuevos productos o editar los existentes a través de modales dedicados que le permiten establecer todos los detalles del producto, incluyendo nombre, descripción, precio, categoría, proveedor e imágenes.</li>
+                <li><strong>Detalles del Producto:</strong> Al hacer clic en un producto se abre una vista detallada con toda su información.</li>
+            </ul>
+
+            <h4>Gestión de Categorías</h4>
+            <p>Esta subsección permite la gestión de las categorías de productos. Las principales características incluyen:</p>
+            <ul>
+                <li><strong>Tabla de Categorías:</strong> Una tabla que muestra todas las categorías de productos con su nombre y descripción.</li>
+                <li><strong>Búsqueda y Paginación:</strong> Puede buscar categorías específicas y navegar por la lista utilizando los controles de paginación.</li>
+                <li><strong>Añadir/Editar Categoría:</strong> Puede añadir nuevas categorías o editar las existentes, incluyendo su nombre y descripción.</li>
+                <li><strong>Activar/Desactivar Categoría:</strong> Puede activar o desactivar categorías, lo que afectará su visibilidad en la tienda.</li>
+            </ul>
+
+            <h4>Gestión de IVAs (Impuestos)</h4>
+            <p>Esta subsección permite la gestión de las tasas de impuestos (IVA). Las principales características incluyen:</p>
+            <ul>
+                <li><strong>Tabla de IVA:</strong> Una tabla que muestra todas las tasas de impuestos con su nombre y valor.</li>
+                <li><strong>Búsqueda y Paginación:</strong> Puede buscar tasas de impuestos específicas y navegar por la lista utilizando los controles de paginación.</li>
+                <li><strong>Añadir/Editar IVA:</strong> Puede añadir nuevas tasas de impuestos o editar las existentes.</li>
+            </ul>
+
+            <h4>Gestión de Proveedores</h4>
+            <p>Esta subsección permite la gestión de los proveedores de productos. Las principales características incluyen:</p>
+            <ul>
+                <li><strong>Tabla de Proveedores:</strong> Una tabla que muestra a todos los proveedores con su información de contacto.</li>
+                <li><strong>Búsqueda y Paginación:</strong> Puede buscar proveedores específicos y navegar por la lista utilizando los controles de paginación.</li>
+                <li><strong>Añadir/Editar Proveedor:</strong> Puede añadir nuevos proveedores o editar su información existente.</li>
+            </ul>
+            <h3>4.5. Inventario</h3>
+            <p>La sección 'Inventario' se divide en dos subsecciones principales: <strong>Almacenes</strong> y <strong>Mermas</strong>. Esto permite una gestión integral de las ubicaciones de inventario y las pérdidas de productos.</p>
+
+            <h4>Gestión de Almacenes</h4>
+            <p>Esta subsección proporciona herramientas para gestionar las ubicaciones físicas o virtuales donde se almacenan los productos. Las principales características incluyen:</p>
+            <ul>
+                <li><strong>Tabla de Almacenes:</strong> Una tabla que muestra todos los almacenes con su nombre y descripción.</li>
+                <li><strong>Búsqueda y Filtrado:</strong> Puede buscar almacenes específicos y filtrar para ver solo los desactivados.</li>
+                <li><strong>Añadir/Editar Almacén:</strong> Puede añadir nuevos almacenes o editar los existentes a través de modales dedicados. Esto incluye establecer el nombre, la descripción y especificar si es un vehículo.</li>
+                <li><strong>Activar/Desactivar Almacén:</strong> Puede activar o desactivar almacenes según sea necesario.</li>
+            </ul>
+
+            <h4>Gestión de Mermas</h4>
+            <p>Esta subsección permite el seguimiento de las pérdidas de productos por caducidad, daño u otras razones. Las principales características incluyen:</p>
+            <ul>
+                <li><strong>Tabla de Mermas:</strong> Una tabla que muestra todos los registros de mermas, incluyendo el producto, la cantidad, el motivo y la fecha de la pérdida.</li>
+                <li><strong>Filtrado:</strong> Puede filtrar los registros de mermas por un rango de fechas para analizar las pérdidas en períodos específicos.</li>
+                <li><strong>Añadir Registro de Merma:</strong> Puede crear un nuevo registro de merma seleccionando un producto, especificando la cantidad perdida, proporcionando un motivo y estableciendo la fecha.</li>
+                <li><strong>Eliminar Registro de Merma:</strong> Puede eliminar los registros de mermas si se crearon por error.</li>
+            </ul>
+            <h3>4.6. Pedidos</h3>
+            <p>La sección 'Pedidos' se divide en cuatro subsecciones principales según el estado del pedido: <strong>En Espera</strong>, <strong>Facturados</strong>, <strong>Entregados</strong> y <strong>Cancelados</strong>. Esto permite una gestión clara y organizada de todo el ciclo de vida de los pedidos.</p>
+
+            <h4>Pedidos en Espera</h4>
+            <p>Esta subsección enumera todos los pedidos que se han realizado pero que aún no se han procesado. Las características clave incluyen:</p>
+            <ul>
+                <li><strong>Tabla de Pedidos:</strong> Una tabla que muestra todos los pedidos en espera con los detalles relevantes.</li>
+                <li><strong>Filtrado:</strong> Puede filtrar los pedidos por fecha y valor total para localizar fácilmente pedidos específicos.</li>
+                <li><strong>Detalles del Pedido:</strong> Al hacer clic en un pedido se abre un modal con información detallada, incluyendo los productos pedidos y los datos del cliente.</li>
+                <li><strong>Acciones:</strong> Desde el modal de detalles, puede optar por <strong>facturar</strong> el pedido, moviéndolo a la sección 'Facturados', o <strong>cancelarlo</strong>.</li>
+            </ul>
+
+            <h4>Pedidos Facturados</h4>
+            <p>Esta subsección enumera todos los pedidos que han sido facturados pero aún no entregados. Las características clave incluyen:</p>
+            <ul>
+                <li><strong>Tabla de Pedidos:</strong> Una tabla que muestra todos los pedidos facturados.</li>
+                <li><strong>Filtrado:</strong> Puede filtrar los pedidos por fecha y valor.</li>
+                <li><strong>Detalles del Pedido:</strong> Una vista detallada de cada pedido está disponible en un modal.</li>
+                <li><strong>Acciones:</strong> Desde el modal de detalles, puede marcar el pedido como <strong>entregado</strong> o <strong>cancelarlo</strong> si es necesario.</li>
+            </ul>
+
+            <h4>Pedidos Entregados</h4>
+            <p>Esta subsección enumera todos los pedidos que se han entregado con éxito al cliente. Las características clave incluyen:</p>
+            <ul>
+                <li><strong>Tabla de Pedidos:</strong> Una tabla que muestra todos los pedidos entregados.</li>
+                <li><strong>Filtrado:</strong> Puede filtrar los pedidos por fecha y valor.</li>
+                <li><strong>Detalles del Pedido:</strong> Una vista detallada de cada pedido está disponible para su revisión.</li>
+            </ul>
+
+            <h4>Pedidos Cancelados</h4>
+            <p>Esta subsección enumera todos los pedidos que han sido cancelados. Las características clave incluyen:</p>
+            <ul>
+                <li><strong>Tabla de Pedidos:</strong> Una tabla que muestra todos los pedidos cancelados.</li>
+                <li><strong>Filtrado:</strong> Puede filtrar los pedidos por fecha y valor.</li>
+                <li><strong>Detalles del Pedido:</strong> Una vista detallada de cada pedido cancelado está disponible para su revisión.</li>
+            </ul>
+            <h3>4.7. Compras</h3>
+            <p>La sección 'Compras' se divide en tres subsecciones principales: <strong>Compras</strong>, <strong>Registrar Nueva Compra</strong> y <strong>Proveedores</strong>. Esto permite una gestión integral de las actividades de compra de la empresa.</p>
+
+            <h4>Visualización de Compras</h4>
+            <p>Esta subsección proporciona un registro detallado de todas las compras pasadas. Las características clave incluyen:</p>
+            <ul>
+                <li><strong>Tabla de Compras:</strong> Una tabla que muestra todas las compras con información clave como fecha, proveedor, valor total y estado del pago.</li>
+                <li><strong>Filtrado:</strong> Puede filtrar las compras por rango de fechas, proveedor y valor para localizar fácilmente registros específicos.</li>
+                <li><strong>Detalles de la Compra:</strong> Al hacer clic en una compra se abre un modal con una vista completa de la compra, incluyendo todos los productos, cantidades, precios y detalles de pago.</li>
+            </ul>
+
+            <h4>Registro de una Nueva Compra</h4>
+            <p>Esta subsección proporciona un formulario para añadir nuevas compras al sistema. El proceso incluye:</p>
+            <ul>
+                <li><strong>Proveedor y Fecha:</strong> Seleccione el proveedor y la fecha de la compra.</li>
+                <li><strong>Añadir Productos:</strong> Puede añadir múltiples productos a la compra. Para cada producto, puede especificar la cantidad, el precio unitario, el IVA (impuesto) y el almacén donde se almacenarán los productos.</li>
+                <li><strong>Cálculo del Total:</strong> El sistema calcula automáticamente el subtotal de cada producto y el total de toda la compra.</li>
+                <li><strong>Guardar la Compra:</strong> Una vez introducidos todos los detalles, puede guardar la compra en el sistema.</li>
+            </ul>
+
+            <h4>Gestión de Proveedores</h4>
+            <p>Esta subsección permite la gestión de los proveedores de productos. La funcionalidad es la misma que en la sección 'Productos', permitiéndole añadir, editar y ver la información de los proveedores.</p>
+            <h3>4.8. Pagos</h3>
+            <p>La sección 'Pagos' se divide en tres subsecciones principales: <strong>Métodos</strong>, <strong>Pagos</strong> e <strong>Historial de Cuotas</strong>. Esto permite una gestión detallada de todas las actividades relacionadas con los pagos en el sistema.</p>
+
+            <h4>Gestión de Métodos de Pago</h4>
+            <p>Esta subsección permite a los administradores gestionar los métodos de pago disponibles en el sistema. Las características clave incluyen:</p>
+            <ul>
+                <li><strong>Tabla de Métodos:</strong> Una tabla que muestra todos los métodos de pago con sus nombres y descripciones.</li>
+                <li><strong>Búsqueda y Filtrado:</strong> Puede buscar métodos de pago específicos y filtrar para mostrar u ocultar los métodos desactivados.</li>
+                <li><strong>Añadir, Editar y Eliminar:</strong> Puede añadir nuevos métodos de pago, editar los existentes y eliminar los que ya no se utilicen.</li>
+            </ul>
+
+            <h4>Gestión de Pagos</h4>
+            <p>Esta subsección proporciona una visión general de todos los pagos, ya sea que provengan de pedidos de clientes o de compras a proveedores. Las características clave incluyen:</p>
+            <ul>
+                <li><strong>Lista de Pagos:</strong> Una lista de todos los pagos, que muestra el importe total, el importe pagado y el estado del pago (verificado o no verificado).</li>
+                <li><strong>Detalles del Pago:</strong> Al hacer clic en un pago se abre una vista detallada con información sobre el origen del pago (pedido o compra) y una lista de todas las cuotas.</li>
+                <li><strong>Gestión de Cuotas:</strong> Dentro de la vista detallada, puede añadir nuevas cuotas, verificar las existentes y eliminar cuotas si es necesario.</li>
+            </ul>
+
+            <h4>Historial de Cuotas</h4>
+            <p>Esta subsección proporciona un historial completo de todas las cuotas de pago registradas en el sistema. Las características clave incluyen:</p>
+            <ul>
+                <li><strong>Tabla de Historial:</strong> Una tabla que muestra todas las cuotas de pago con detalles como la fecha, el importe, el método de pago, la referencia, el estado (verificado o pendiente) y el origen del pago (pedido o compra).</li>
+            </ul>
+            <h3>4.9. Reportes</h3>
+            <p>La sección 'Reportes' permite a los administradores generar diversos informes para obtener información sobre las operaciones del negocio. El proceso es sencillo:</p>
+            <ul>
+                <li><strong>Seleccionar Tipo de Reporte:</strong> Elija el tipo de reporte que desea generar de una lista desplegable. Los informes disponibles son:
+                    <ul>
+                        <li>Estado actual del inventario</li>
+                        <li>Proveedores por volumen de compras</li>
+                        <li>Ingresos y egresos</li>
+                        <li>Pedidos en espera</li>
+                        <li>Entradas de inventario</li>
+                        <li>Salidas de inventario</li>
+                    </ul>
+                </li>
+                <li><strong>Seleccionar Rango de Fechas:</strong> Elija una fecha de inicio y fin para el reporte.</li>
+                <li><strong>Generar Reporte:</strong> Haga clic en el botón 'Generar' para crear el reporte. El reporte se abrirá en una nueva pestaña.</li>
+            </ul>
+        </section>
+
+        <section id="conclusion">
+            <h2>5. Conclusión</h2>
+            <p>Este manual de usuario proporciona una guía completa para utilizar la aplicación ProviSys. Cubre todas las características y funcionalidades principales, desde las páginas orientadas al usuario hasta el panel de administración del sistema. Esperamos que este manual le ayude a aprovechar al máximo ProviSys.</p>
+        </section>
+
+    </div>
+</body>
+</html>
