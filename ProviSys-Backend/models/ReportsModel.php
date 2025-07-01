@@ -91,6 +91,8 @@ class ReportsModel extends Model
             $sql .= " WHERE " . implode(" AND ", $where);
         }
 
+        $sql .= " ORDER BY cuota.fecha_cuota DESC";
+
         $stmt = $this->db->prepare($sql);
         $stmt->execute($args);
         $result = $stmt->get_result();
@@ -203,6 +205,126 @@ class ReportsModel extends Model
         while ($row = $result->fetch_assoc()) {
             $rows[] = $row;
         }
+        return $rows;
+    }
+
+    public function mostSellingProducts($from = null, $to = null)
+    {
+        $where = [];
+        $args = [];
+
+        $sql = "SELECT 
+                    p.id_producto,
+                    p.nombre,
+                    SUM(dp.cantidad_producto) AS total_vendido,
+                    SUM(dp.precio_de_venta * dp.cantidad_producto * (1 + dp.iva_de_venta / 100)) AS total_recaudado
+                FROM producto p
+                    INNER JOIN detalles_pedido dp ON p.id_producto = dp.id_producto
+                    INNER JOIN pedido pe ON dp.id_pedido = pe.id_pedido";
+
+        if ($from !== null) {
+            $where[] = "pe.fecha_pedido >= ?";
+            $args[] = $from;
+        }
+        if ($to !== null) {
+            $where[] = "pe.fecha_pedido <= ?";
+            $args[] = $to;
+        }
+
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode(" AND ", $where);
+        }
+
+        $sql .= " GROUP BY p.id_producto";
+
+        $sql .= " ORDER BY total_vendido DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($args);
+        $result = $stmt->get_result();
+        $rows = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+
+    public function lessSellingProducts($from = null, $to = null)
+    {
+        $where = [];
+        $args = [];
+
+        $sql = "SELECT 
+                    p.id_producto,
+                    p.nombre,
+                    SUM(IFNULL(dp.cantidad_producto, 0)) AS total_vendido,
+                    SUM(IFNULL(dp.precio_de_venta * dp.cantidad_producto * (1 + dp.iva_de_venta / 100), 0)) AS total_recaudado
+                FROM producto p
+                    LEFT JOIN detalles_pedido dp ON p.id_producto = dp.id_producto
+                    LEFT JOIN pedido pe ON dp.id_pedido = pe.id_pedido";
+
+        if ($from !== null) {
+            $where[] = "pe.fecha_pedido >= ?";
+            $args[] = $from;
+        }
+        if ($to !== null) {
+            $where[] = "pe.fecha_pedido <= ?";
+            $args[] = $to;
+        }
+
+        $where[] = "p.eliminado = 0";
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode(" AND ", $where);
+        }
+
+        $sql .= " GROUP BY p.id_producto";
+
+        $sql .= " ORDER BY total_vendido ASC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($args);
+        $result = $stmt->get_result();
+        $rows = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+
+    public function unverifiedPayments(){
+        $sql = "SELECT cuota.*, metodo_de_pago.nombre_metodo
+                FROM cuota
+                    INNER JOIN metodo_de_pago ON cuota.id_metodo=metodo_de_pago.id_metodo
+                WHERE cuota.verificado = 0 AND cuota.eliminado = 0";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $rows = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $rows[] = $row;
+        }
+
+        return $rows;
+    }
+
+    public function unverifiedPays(){
+        $sql = "SELECT * FROM vista_obtener_pagos WHERE verificados = 0 OR verificados IS NULL";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $rows = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $rows[] = $row;
+        }
+
         return $rows;
     }
 }
