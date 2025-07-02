@@ -327,4 +327,96 @@ class ReportsModel extends Model
 
         return $rows;
     }
+
+    public function cashFlow($from = null, $to = null)
+    {
+        $baseSql = "SELECT
+                        SUM(IF(p.id_pedido IS NOT NULL, c.monto, 0)) as ingresses,
+                        SUM(IF(p.id_compra IS NOT NULL, c.monto, 0)) as egresses
+                    FROM cuota c
+                    INNER JOIN pago p ON c.id_pago = p.id_pago";
+
+        $where = ["c.verificado = 1"];
+        $args = [];
+
+        if ($from !== null) {
+            $where[] = "c.fecha_cuota >= ?";
+            $args[] = $from;
+        }
+        if ($to !== null) {
+            $where[] = "c.fecha_cuota <= ?";
+            $args[] = $to;
+        }
+
+        if (!empty($where)) {
+            $baseSql .= " WHERE " . implode(" AND ", $where);
+        }
+
+        $stmt = $this->db->prepare($baseSql);
+        $stmt->execute($args);
+        $result = $stmt->get_result()->fetch_assoc();
+
+        return [
+            'ingresses' => $result['ingresses'] ?? 0,
+            'egresses' => $result['egresses'] ?? 0,
+        ];
+    }
+
+    public function profitabilityAnalysis($groupBy, $from = null, $to = null)
+    {
+        $groupingColumn = '';
+        if ($groupBy === 'category') {
+            $groupingColumn = 'cp.nombre';
+        } elseif ($groupBy === 'manufacturer') {
+            $groupingColumn = 'f.nombre';
+        } else {
+            return []; // Invalid group by
+        }
+
+        $sql = "SELECT
+                    $groupingColumn AS `group_name`,
+                    SUM(dp.cantidad_producto * dp.precio_de_venta) AS total_sales,
+                    SUM(dp.cantidad_producto * IFNULL(avg_costs.costo_promedio, 0)) AS total_cost
+                FROM detalles_pedido dp
+                JOIN pedido pe ON dp.id_pedido = pe.id_pedido
+                JOIN producto p ON dp.id_producto = p.id_producto
+                JOIN categoria_producto cp ON p.id_categoria = cp.id_categoria
+                JOIN fabricante f ON p.id_fabricante = f.id_fabricante
+                LEFT JOIN (
+                    SELECT 
+                        id_producto, 
+                        AVG(precio_de_compra) as costo_promedio
+                    FROM detalles_compra
+                    GROUP BY id_producto
+                ) as avg_costs ON p.id_producto = avg_costs.id_producto";
+
+        $where = ["pe.estado != 3"];
+        $args = [];
+
+        if ($from) {
+            $where[] = "pe.fecha_pedido >= ?";
+            $args[] = $from;
+        }
+        if ($to) {
+            $where[] = "pe.fecha_pedido <= ?";
+            $args[] = $to;
+        }
+
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode(" AND ", $where);
+        }
+
+        $sql .= " GROUP BY `group_name` ORDER BY total_sales DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($args);
+        $result = $stmt->get_result();
+
+        $rows = [];
+        while ($row = $result->fetch_assoc()) {
+            $rows[] = $row;
+        }
+
+        return $rows;
+    }
 }

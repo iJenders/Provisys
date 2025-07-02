@@ -500,4 +500,140 @@ class ReportsController
         $converter = new HTMLToPDF($html);
         $converter->convertToPDF();
     }
+
+    public static function cashFlowReport()
+    {
+        include_once __DIR__ . '/../utils/HTMLToPDF.php';
+        include_once __DIR__ . '/../utils/HTMLTemplate.php';
+        include_once __DIR__ . '/../models/ReportsModel.php';
+        include_once __DIR__ . '/../utils/Validator.php';
+
+        // Get date range
+        $startDate = $_GET['from'] ?? null;
+        $endDate = $_GET['to'] ?? null;
+
+        if ($startDate != null) {
+            $errs = new Validator($startDate, 'from')->required()->date()->getErrors();
+            if (count($errs) > 0) {
+                $startDate = null;
+            }
+        }
+        if ($endDate != null) {
+            $errs = new Validator($endDate, 'to')->required()->date()->getErrors();
+            if (count($errs) > 0) {
+                $endDate = null;
+            }
+        }
+
+        $reportsModel = new ReportsModel();
+        $data = $reportsModel->cashFlow(from: $startDate, to: $endDate);
+
+        $ingresses = floatval($data['ingresses']);
+        $egresses = floatval($data['egresses']);
+        $balance = $ingresses - $egresses;
+
+        $localDate = ($startDate ? "Desde: $startDate" : 'Inicio') . ' - ' . ($endDate ? "Hasta: $endDate" : 'Hoy');
+        $fullSubtitle = "Flujo de Caja <br/> || <br/> <span style='font-size: 12px; font-weight: normal;'>{$localDate}</span>";
+
+        $balanceColor = $balance >= 0 ? '#0a0' : '#f00';
+
+        $htmlContent = "
+            <div style='text-align: center; margin-top: 20px;'>
+                <div style='margin-bottom: 20px;'>
+                    <h2>Ingresos Totales</h2>
+                    <p style='font-size: 24px; color: #0a0; font-weight: bold;'>$" . number_format($ingresses, 2, ',', '.') . "</p>
+                </div>
+                <div style='margin-bottom: 20px;'>
+                    <h2>Egresos Totales</h2>
+                    <p style='font-size: 24px; color: #f00; font-weight: bold;'>$" . number_format($egresses, 2, ',', '.') . "</p>
+                </div>
+                <hr style='margin: 30px 0;'/>
+                <div style='margin-bottom: 20px;'>
+                    <h2>Balance General</h2>
+                    <p style='font-size: 28px; color: {$balanceColor}; font-weight: bold;'>$" . number_format($balance, 2, ',', '.') . "</p>
+                </div>
+            </div>
+        ";
+
+        $html = HTMLTemplate::getTemplate(
+            'Reporte Gerencial',
+            $fullSubtitle,
+            $htmlContent
+        );
+
+        $converter = new HTMLToPDF($html);
+        $converter->convertToPDF();
+    }
+
+    private static function generateProfitabilityReport($reportType)
+    {
+        include_once __DIR__ . '/../utils/HTMLToPDF.php';
+        include_once __DIR__ . '/../utils/HTMLTemplate.php';
+        include_once __DIR__ . '/../models/ReportsModel.php';
+        include_once __DIR__ . '/../utils/Validator.php';
+        include_once __DIR__ . '/../utils/HTMLTableGenerator.php';
+
+        $startDate = $_GET['from'] ?? null;
+        $endDate = $_GET['to'] ?? null;
+
+        if ($startDate) {
+            $errs = (new Validator($startDate, 'from'))->required()->date()->getErrors();
+            if (count($errs) > 0) $startDate = null;
+        }
+        if ($endDate) {
+            $errs = (new Validator($endDate, 'to'))->required()->date()->getErrors();
+            if (count($errs) > 0) $endDate = null;
+        }
+
+        $reportsModel = new ReportsModel();
+        $data = $reportsModel->profitabilityAnalysis($reportType, $startDate, $endDate);
+
+        $title = 'Reporte Gerencial';
+        $subtitle = '';
+        $headers = [];
+
+        if ($reportType === 'category') {
+            $subtitle = 'Análisis de Rentabilidad por Categoría';
+            $headers = ['Categoría', 'Ventas Totales', 'Costo Total', 'Ganancia Bruta', 'Margen (%)'];
+        } else {
+            $subtitle = 'Análisis de Rentabilidad por Fabricante';
+            $headers = ['Fabricante', 'Ventas Totales', 'Costo Total', 'Ganancia Bruta', 'Margen (%)'];
+        }
+
+        $dateRange = ($startDate ? "Desde: $startDate" : '') . ' - ' . ($endDate ? "Hasta: $endDate" : '');
+        $fullSubtitle = "$subtitle <br/> <span style='font-size: 12px; font-weight: normal;'>$dateRange</span>";
+
+        $rowRenderer = function ($row) {
+            $totalSales = floatval($row['total_sales']);
+            $totalCost = floatval($row['total_cost']);
+            $grossProfit = $totalSales - $totalCost;
+            $profitMargin = ($totalSales > 0) ? ($grossProfit / $totalSales) * 100 : 0;
+            $profitColor = $grossProfit >= 0 ? 'color: #0a0;' : 'color: #f00;';
+
+            return '<tr>'
+                . '<td>' . htmlspecialchars($row['group_name']) . '</td>'
+                . '<td>$' . number_format($totalSales, 2, ',', '.') . '</td>'
+                . '<td>$' . number_format($totalCost, 2, ',', '.') . '</td>'
+                . '<td style="font-weight: bold; ' . $profitColor . '">$' . number_format($grossProfit, 2, ',', '.') . '</td>'
+                . '<td style="font-weight: bold; ' . $profitColor . '">' . number_format($profitMargin, 2, ',', '.') . '%</td>'
+                . '</tr>';
+        };
+
+        $tableHtml = HTMLTableGenerator::generateTable('', '', $headers, $data, $rowRenderer);
+
+        $html = HTMLTemplate::getTemplate($title, $fullSubtitle, $tableHtml);
+
+        $converter = new HTMLToPDF($html);
+        $converter->convertToPDF();
+    }
+
+    public static function profitabilityByCategory()
+    {
+        self::generateProfitabilityReport('category');
+    }
+
+    public static function profitabilityByManufacturer()
+    {
+        self::generateProfitabilityReport('manufacturer');
+    }
 }

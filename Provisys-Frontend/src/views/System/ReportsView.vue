@@ -65,6 +65,9 @@
                 <div class="grid grid-cols-1 xl:grid-cols-3 gap-x-6">
                     <el-select v-model="gerencialReportType" placeholder="Seleccionar tipo" class="w-full">
                         <el-option label="Ranking de proveedores según volumen de compras" value="2" />
+                        <el-option label="Flujo de Caja (Ingresos vs. Egresos)" value="11" />
+                        <el-option label="Análisis de Rentabilidad por Categoría" value="12" />
+                        <el-option label="Análisis de Rentabilidad por Fabricante" value="13" />
                     </el-select>
 
                     <el-form-item label="Fecha Inicio">
