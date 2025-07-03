@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `almacen` (
   UNIQUE KEY `id_almacen_UNIQUE` (`id_almacen`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb3;
 
--- Dumping data for table provisys.almacen: ~3 rows (approximately)
+-- Dumping data for table provisys.almacen: ~2 rows (approximately)
 INSERT INTO `almacen` (`id_almacen`, `nombre`, `descripcion_almacen`, `eliminado`) VALUES
 	(5, 'Almacén 1', '...', 0),
 	(6, 'Almacén 2', '...', 0),
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `categoria_producto` (
   UNIQUE KEY `id_categoria_UNIQUE` (`id_categoria`)
 ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb3;
 
--- Dumping data for table provisys.categoria_producto: ~2 rows (approximately)
+-- Dumping data for table provisys.categoria_producto: ~0 rows (approximately)
 INSERT INTO `categoria_producto` (`id_categoria`, `nombre`, `descripcion`, `eliminado`) VALUES
 	(19, 'Snacks', '...', 0),
 	(20, 'Waifu', 'Waifus', 0);
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS `compra` (
   CONSTRAINT `fk_compra_proveedor1` FOREIGN KEY (`id_proveedor`) REFERENCES `proveedor` (`id_proveedor`)
 ) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb3;
 
--- Dumping data for table provisys.compra: ~3 rows (approximately)
+-- Dumping data for table provisys.compra: ~2 rows (approximately)
 INSERT INTO `compra` (`id_compra`, `fecha_compra`, `id_proveedor`) VALUES
 	(43, '2025-06-18 00:00:00', 'V-07000075456'),
 	(44, '2025-06-18 00:00:00', 'V-07000075456'),
@@ -97,15 +97,16 @@ CREATE TABLE IF NOT EXISTS `cuota` (
   KEY `fk_cuota_metodo_de_pago1_idx` (`id_metodo`),
   CONSTRAINT `fk_cuota_metodo_de_pago1` FOREIGN KEY (`id_metodo`) REFERENCES `metodo_de_pago` (`id_metodo`),
   CONSTRAINT `fk_cuota_pago1` FOREIGN KEY (`id_pago`) REFERENCES `pago` (`id_pago`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb3;
 
--- Dumping data for table provisys.cuota: ~5 rows (approximately)
+-- Dumping data for table provisys.cuota: ~6 rows (approximately)
 INSERT INTO `cuota` (`id_cuota`, `fecha_cuota`, `monto`, `nro_referencia`, `verificado`, `eliminado`, `id_metodo`, `id_pago`) VALUES
 	(26, '2025-06-18 00:00:00', 5.00, '0000000001', 1, 0, 1, 48),
 	(27, '2025-06-18 00:00:00', 0.80, '00000001', 1, 0, 3, 48),
 	(28, '2025-06-18 00:00:00', 3480.00, 'asdasdasd', 1, 0, 1, 51),
 	(32, '2025-06-19 00:00:00', 5000.00, '00000012578654', 1, 0, 1, 54),
-	(33, '2025-06-11 00:00:00', 29.00, '454654', 1, 0, 2, 53);
+	(33, '2025-06-11 00:00:00', 29.00, '454654', 1, 0, 2, 53),
+	(34, '2025-06-30 00:00:00', 100.00, 'sdasdasd', 1, 0, 2, 55);
 
 -- Dumping structure for table provisys.desperdicio
 CREATE TABLE IF NOT EXISTS `desperdicio` (
@@ -145,7 +146,7 @@ CREATE TABLE IF NOT EXISTS `detalles_compra` (
   CONSTRAINT `FK_detalles_compra_productos_en_almacen_2` FOREIGN KEY (`id_almacen`) REFERENCES `productos_en_almacen` (`id_almacen`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- Dumping data for table provisys.detalles_compra: ~3 rows (approximately)
+-- Dumping data for table provisys.detalles_compra: ~2 rows (approximately)
 INSERT INTO `detalles_compra` (`id_producto`, `id_compra`, `cantidad_producto`, `precio_de_compra`, `iva_de_compra`, `id_almacen`) VALUES
 	('000000001', 45, 1000, 5.00, 0.00, 6),
 	('0000777', 43, 5, 1.00, 16.00, 5),
@@ -186,7 +187,7 @@ CREATE TABLE IF NOT EXISTS `fabricante` (
   UNIQUE KEY `id_proveedor_UNIQUE` (`id_fabricante`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- Dumping data for table provisys.fabricante: ~2 rows (approximately)
+-- Dumping data for table provisys.fabricante: ~0 rows (approximately)
 INSERT INTO `fabricante` (`id_fabricante`, `nombre`, `telefono`, `telefono_secundario`, `correo`, `direccion`, `eliminado`) VALUES
 	('V-0000000001', 'Coca-cola', '+584125555555', '+584125555555', 'coca@cola.com', '...', 0),
 	('V-31271802', 'Monitas Chinas', '+584125372035', '', 'jende@jende.jende', '...', 0);
@@ -219,7 +220,7 @@ CREATE TABLE IF NOT EXISTS `metodo_de_pago` (
   UNIQUE KEY `id_metodo_UNIQUE` (`id_metodo`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb3;
 
--- Dumping data for table provisys.metodo_de_pago: ~6 rows (approximately)
+-- Dumping data for table provisys.metodo_de_pago: ~5 rows (approximately)
 INSERT INTO `metodo_de_pago` (`id_metodo`, `nombre_metodo`, `descripcion`, `eliminado`) VALUES
 	(1, 'Pago Móvil', 'Transacciones de transferencia por Pago Móvil', 0),
 	(2, 'Transferencia Bancaria', 'Transferencia Bancaria', 0),
@@ -265,7 +266,7 @@ CREATE TABLE IF NOT EXISTS `pedido` (
   CONSTRAINT `fk_pedidos_usuario1` FOREIGN KEY (`nombre_usuario`) REFERENCES `usuario` (`nombre_usuario`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb3;
 
--- Dumping data for table provisys.pedido: ~4 rows (approximately)
+-- Dumping data for table provisys.pedido: ~3 rows (approximately)
 INSERT INTO `pedido` (`id_pedido`, `fecha_pedido`, `estado`, `nombre_usuario`) VALUES
 	(5, '2025-06-18 20:27:22', 3, 'vanvan'),
 	(6, '2025-06-18 20:38:56', 3, 'vanvan'),
@@ -283,9 +284,9 @@ CREATE TABLE IF NOT EXISTS `permiso` (
   UNIQUE KEY `nombre_UNIQUE` (`nombre`),
   KEY `FK_permiso_permiso` (`id_permiso_padre`),
   CONSTRAINT `FK_permiso_permiso` FOREIGN KEY (`id_permiso_padre`) REFERENCES `permiso` (`id_permiso`)
-) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=80 DEFAULT CHARSET=utf8mb3;
 
--- Dumping data for table provisys.permiso: ~70 rows (approximately)
+-- Dumping data for table provisys.permiso: ~79 rows (approximately)
 INSERT INTO `permiso` (`id_permiso`, `nombre`, `descripcion`, `id_permiso_padre`) VALUES
 	(1, 'categories', 'Gestión de categorías', NULL),
 	(2, 'get_category', 'Ver categorías', 1),
@@ -356,7 +357,16 @@ INSERT INTO `permiso` (`id_permiso`, `nombre`, `descripcion`, `id_permiso_padre`
 	(67, 'create_ingress', 'Crear ingreso', 65),
 	(68, 'delete_ingress', 'Eliminar ingreso', 65),
 	(69, 'reports', 'Gestión de reportes', NULL),
-	(70, 'get_report', 'Ver reportes', 69);
+	(70, 'get_report', 'Ver reportes', 69),
+	(71, 'purchases', 'Gestión de Compras', NULL),
+	(72, 'get_purchase', 'Ver Compras', 71),
+	(73, 'create_purchase', 'Crear Compras', 71),
+	(74, 'delete_purchase', 'Eliminar Compras', 71),
+	(75, 'update_purchase', 'Editar Compras', 71),
+	(76, 'wastes', 'Gestión de pérdidas', NULL),
+	(77, 'get_waste', 'Ver pérdidas', 76),
+	(78, 'create_waste', 'Crear Pérdidas', 76),
+	(79, 'delete_waste', 'Eliminar Pérdidas', 76);
 
 -- Dumping structure for table provisys.permisos_de_rol
 CREATE TABLE IF NOT EXISTS `permisos_de_rol` (
@@ -369,7 +379,88 @@ CREATE TABLE IF NOT EXISTS `permisos_de_rol` (
   CONSTRAINT `fk_roles_has_permisos_roles1` FOREIGN KEY (`id_rol`) REFERENCES `rol` (`id_rol`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- Dumping data for table provisys.permisos_de_rol: ~0 rows (approximately)
+-- Dumping data for table provisys.permisos_de_rol: ~85 rows (approximately)
+INSERT INTO `permisos_de_rol` (`id_rol`, `id_permiso`) VALUES
+	(1, 1),
+	(1, 2),
+	(3, 2),
+	(1, 3),
+	(1, 4),
+	(1, 5),
+	(1, 6),
+	(1, 7),
+	(1, 8),
+	(1, 9),
+	(1, 10),
+	(1, 11),
+	(1, 12),
+	(1, 13),
+	(1, 14),
+	(1, 15),
+	(1, 16),
+	(1, 17),
+	(1, 18),
+	(1, 19),
+	(1, 20),
+	(1, 21),
+	(1, 22),
+	(1, 23),
+	(1, 24),
+	(1, 25),
+	(1, 26),
+	(1, 27),
+	(1, 28),
+	(1, 29),
+	(1, 30),
+	(1, 31),
+	(1, 32),
+	(1, 33),
+	(1, 34),
+	(1, 35),
+	(1, 36),
+	(1, 37),
+	(1, 38),
+	(1, 39),
+	(1, 40),
+	(1, 41),
+	(1, 42),
+	(1, 43),
+	(1, 44),
+	(1, 45),
+	(1, 46),
+	(1, 47),
+	(1, 48),
+	(1, 49),
+	(1, 50),
+	(1, 51),
+	(1, 52),
+	(1, 53),
+	(1, 54),
+	(1, 55),
+	(1, 56),
+	(1, 57),
+	(1, 58),
+	(1, 59),
+	(1, 60),
+	(1, 61),
+	(1, 62),
+	(1, 63),
+	(1, 64),
+	(1, 65),
+	(1, 66),
+	(1, 67),
+	(1, 68),
+	(1, 69),
+	(1, 70),
+	(1, 71),
+	(1, 72),
+	(1, 73),
+	(1, 74),
+	(1, 75),
+	(1, 76),
+	(1, 77),
+	(1, 78),
+	(1, 79);
 
 -- Dumping structure for table provisys.producto
 CREATE TABLE IF NOT EXISTS `producto` (
@@ -391,7 +482,7 @@ CREATE TABLE IF NOT EXISTS `producto` (
   CONSTRAINT `fk_productos_iva1` FOREIGN KEY (`id_iva`) REFERENCES `iva` (`id_iva`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- Dumping data for table provisys.producto: ~2 rows (approximately)
+-- Dumping data for table provisys.producto: ~0 rows (approximately)
 INSERT INTO `producto` (`id_producto`, `nombre`, `descripcion_producto`, `precio`, `id_categoria`, `id_iva`, `id_fabricante`, `eliminado`) VALUES
 	('000000001', 'Juguito de Navia', 'Juguito sabor a Navia', 7.50, 20, 3, 'V-31271802', 0),
 	('0000777', 'Galleta', 'galleta oreo', 5.00, 19, 1, 'V-0000000001', 0);
@@ -412,7 +503,7 @@ CREATE TABLE IF NOT EXISTS `productos_en_almacen` (
   CONSTRAINT `stocks` CHECK ((`stock_reservado` <= `stock_disponible`))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- Dumping data for table provisys.productos_en_almacen: ~2 rows (approximately)
+-- Dumping data for table provisys.productos_en_almacen: ~0 rows (approximately)
 INSERT INTO `productos_en_almacen` (`id_producto`, `id_almacen`, `stock_disponible`, `stock_reservado`, `eliminado`) VALUES
 	('000000001', 6, 0000001000, 0000000005, 0),
 	('0000777', 5, 0000001005, 0000000020, 0);
@@ -430,7 +521,7 @@ CREATE TABLE IF NOT EXISTS `proveedor` (
   UNIQUE KEY `id_proveedor_UNIQUE` (`id_proveedor`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- Dumping data for table provisys.proveedor: ~1 rows (approximately)
+-- Dumping data for table provisys.proveedor: ~0 rows (approximately)
 INSERT INTO `proveedor` (`id_proveedor`, `nombre`, `telefono`, `telefono_secundario`, `correo`, `direccion`, `eliminado`) VALUES
 	('V-07000075456', 'Proveedor 1', '+5844444444', NULL, 'contacto@empresa.com', '...', 0);
 
@@ -638,7 +729,7 @@ CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vista_obtener_compras` AS 
 -- Dumping structure for view provisys.vista_obtener_pagos
 -- Removing temporary table and create final VIEW structure
 DROP TABLE IF EXISTS `vista_obtener_pagos`;
-CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vista_obtener_pagos` AS select `p`.`id_pago` AS `id_pago`,`p`.`fecha_pago` AS `fecha_pago`,`p`.`monto_total` AS `monto_total`,`p`.`id_pedido` AS `id_pedido`,`p`.`id_compra` AS `id_compra`,sum(`c`.`monto`) AS `total_pagado`,(sum(`c`.`verificado`) = count(`c`.`id_cuota`)) AS `verificados`,(sum(`c`.`monto`) < `p`.`monto_total`) AS `por_pagar` from (`pago` `p` left join `cuota` `c` on((`p`.`id_pago` = `c`.`id_pago`))) group by `p`.`id_pago` order by `por_pagar` desc,`verificados`,`p`.`fecha_pago` desc;
+CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vista_obtener_pagos` AS select `p`.`id_pago` AS `id_pago`,`p`.`fecha_pago` AS `fecha_pago`,`p`.`monto_total` AS `monto_total`,`p`.`id_pedido` AS `id_pedido`,`p`.`id_compra` AS `id_compra`,sum(`c`.`monto`) AS `total_pagado`,(sum(`c`.`verificado`) = count(`c`.`id_cuota`)) AS `verificados`,(sum(`c`.`monto`) < `p`.`monto_total`) AS `por_pagar` from (`pago` `p` left join `cuota` `c` on((`p`.`id_pago` = `c`.`id_pago`))) group by `p`.`id_pago` order by `verificados`,`por_pagar` desc,`p`.`fecha_pago` desc;
 
 -- Dumping structure for view provisys.vista_obtener_pagos_compra
 -- Removing temporary table and create final VIEW structure
