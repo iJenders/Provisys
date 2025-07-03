@@ -203,7 +203,9 @@ class AuthController
             'roleId' => $user->getRoleId(),
         ];
 
-        Responses::json(['user' => $userData], 200);
+        $userPermissions = UsersModel::getUserPermissions($USER);
+
+        Responses::json(['user' => $userData, 'permissions' => $userPermissions], 200);
     }
 }
 

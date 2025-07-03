@@ -245,7 +245,7 @@ class OrdersModel extends Model
         if (!$userModel || !$userModel->getVerified()) {
             Responses::json(
                 ['errors' => ['El usuario no está verificado']],
-                403
+                401
             );
         }
 

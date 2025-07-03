@@ -40,6 +40,7 @@ export const useAuthStore = defineStore("auth", () => {
       )
       .then((response) => {
         user.value = response.data.response.user;
+        userPermissions.value = response.data.response.permissions;
         gettingPermissions = true;
       })
       .catch((error) => {
