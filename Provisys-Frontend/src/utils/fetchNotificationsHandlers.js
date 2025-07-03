@@ -1,4 +1,4 @@
-import { ElNotification } from "element-plus";
+import { ElMessageBox, ElNotification } from "element-plus";
 
 const handleRequestError = (error) => {
   let message = "";
@@ -8,6 +8,8 @@ const handleRequestError = (error) => {
   } else if (error.status === 401) {
     message =
       "No autorizado. Por favor, inicie sesión de nuevo o verifique sus credenciales.";
+  } else if (error.status === 403) {
+    message = "Acceso Denegado. Si cree que debe tener acceso a este recurso, contacte con el administrador.";
   } else if (error.status === 404) {
     message = "No se encontró el recurso solicitado.";
   } else if (error.status === 500) {

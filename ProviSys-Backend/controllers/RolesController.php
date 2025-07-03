@@ -169,9 +169,9 @@ class RolesController
         $descriptionValidator->required()->minLength(3)->maxLength(255)->alphaNumericWithSecureSpecialChars();
 
         if (isset($data['disabled'])) {
-            $disabled = $data['disabled'];
+            $disabled = intval($data['disabled']);
             $disabledValidator = new Validator($disabled, 'disabled');
-            $disabledValidator->required()->isTinyInt();
+            $disabledValidator->isTinyInt()->minValue(0)->maxValue(1);
             $errors = array_merge($idValidator->getErrors(), $nameValidator->getErrors(), $descriptionValidator->getErrors(), $disabledValidator->getErrors());
         } else {
             $errors = array_merge($idValidator->getErrors(), $nameValidator->getErrors(), $descriptionValidator->getErrors());
@@ -298,7 +298,7 @@ class RolesController
 
         $id = $data['id'];
         $permissions = $data['permissions'];
-$permissionsValidator = new Validator($id, 'id');
+        $permissionsValidator = new Validator($id, 'id');
         // Validar los datos de entrada
         $idValidator = new Validator($id, 'id');
         $idValidator->required()->numeric();

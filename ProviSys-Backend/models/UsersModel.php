@@ -242,6 +242,30 @@ class UsersModel
         }
     }
 
+    public static function getUserPermissions($username)
+    {
+        $db = DBConnection::getInstance()->getConnection();
+
+        $query =
+                "SELECT p.nombre
+                    FROM permiso p
+                        JOIN permisos_de_rol pr ON p.id_permiso = pr.id_permiso
+                        JOIN usuario u ON pr.id_rol = u.id_rol
+                    WHERE u.nombre_usuario = '$username'";
+
+        $result = $db->query($query);
+
+        if ($result->num_rows > 0) {
+            $permissions = [];
+            while ($row = $result->fetch_assoc()) {
+                $permissions[] = $row['nombre'];
+            }
+            return $permissions;
+        } else {
+            return [];
+        }
+    }
+
     public static function userExists($username)
     {
         $db = DBConnection::getInstance()->getConnection();

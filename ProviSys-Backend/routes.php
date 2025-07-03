@@ -68,7 +68,28 @@ $GET_ROUTES = [
     ],
     '/reports/6' => [
         'action' => ['ReportsController', 'inventoryExit'],
-    ]
+    ],
+    '/reports/7' => [
+        'action' => ['ReportsController', 'mostSellingProducts'],
+    ],
+    '/reports/8' => [
+        'action' => ['ReportsController', 'lessSellingProducts'],
+    ],
+    '/reports/9' => [
+        'action' => ['ReportsController', 'unverifiedPayments'],
+    ],
+    '/reports/10' => [
+        'action' => ['ReportsController', 'unverifiedPays'],
+    ],
+    '/reports/11' => [
+        'action' => ['ReportsController', 'cashFlowReport'],
+    ],
+    '/reports/12' => [
+        'action' => ['ReportsController', 'profitabilityByCategory'],
+    ],
+    '/reports/13' => [
+        'action' => ['ReportsController', 'profitabilityByManufacturer'],
+    ],
 ];
 
 // RUTAS POST

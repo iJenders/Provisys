@@ -81,7 +81,7 @@ const userOptions = [
         icon: MonitorCog,
         link: '/system',
         userCondition: () => {
-            return authStore.isAuthenticated && authStore.checkPermission('manage_system');
+            return authStore.isAuthenticated && !authStore.isClient;
         }
     },
 ]

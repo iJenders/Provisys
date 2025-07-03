@@ -128,7 +128,6 @@ class ManufacturersController
             'message' => 'Fabricante creado exitosamente'
         ], 201);
     }
-
     public static function updateManufacturer()
     {
         // Obtener campos de la consulta
